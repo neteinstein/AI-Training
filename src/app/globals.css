@@ -39,6 +39,10 @@
   --ochre: #d9a441; /* illustrations only */
   --destructive: #b91c1c;
 
+  /* Level glyph: the bars that are not filled, on white and on a green tint */
+  --glyph-rest: #cfc6b6;
+  --glyph-rest-on-tint: #b9cdbb;
+
   /* Lines */
   --border: #e9dfcf; /* card outlines, dividers (decorative) */
   --input: #8a8178; /* form-field outlines (3.7:1 on cream) */
@@ -105,6 +109,9 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-glyph-rest: var(--glyph-rest);
+  --color-glyph-rest-on-tint: var(--glyph-rest-on-tint);
 
   --color-area-forest: var(--area-forest);
   --color-area-forest-tint: var(--area-forest-tint);

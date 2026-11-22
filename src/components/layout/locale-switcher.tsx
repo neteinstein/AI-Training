@@ -10,22 +10,30 @@ import { cn } from "@/lib/utils";
  * PT | EN switch. Each option is a real link to the same page in the other language; with
  * JavaScript it also keeps the query string (for example the catalogue filters).
  */
-export function LocaleSwitcher({ className }: { className?: string }) {
-  const t = useTranslations();
-  const current = useLocale();
+type SiteLocale = (typeof routing.locales)[number];
+
+/**
+ * Click handler for a link to the same page in another language: plain links lose the query
+ * string (for example the catalogue filters), so with JavaScript the switch keeps it.
+ */
+export function useSwitchLocale() {
   const pathname = usePathname();
   const router = useRouter();
 
-  function keepQuery(
-    event: MouseEvent<HTMLAnchorElement>,
-    locale: (typeof routing.locales)[number],
-  ) {
+  return function switchLocale(event: MouseEvent<HTMLAnchorElement>, locale: SiteLocale) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
       return;
     }
     event.preventDefault();
     router.replace(`${pathname}${window.location.search}`, { locale });
-  }
+  };
+}
+
+export function LocaleSwitcher({ className }: { className?: string }) {
+  const t = useTranslations();
+  const current = useLocale();
+  const pathname = usePathname();
+  const keepQuery = useSwitchLocale();
 
   return (
     <div

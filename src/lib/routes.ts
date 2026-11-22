@@ -2,8 +2,20 @@
  * Every path in the app, without the language prefix (the navigation helpers in
  * src/i18n/navigation.ts add it).
  */
+/** Sections of the home page that other pages link to. */
+export const homeSections = {
+  courses: "courses",
+  howItWorks: "how-it-works",
+  contact: "contact",
+} as const;
+
 export const routes = {
   home: "/",
+  homeSection: (section: keyof typeof homeSections) => `/#${homeSections[section]}`,
+  /** The request form on the home page, with a course already chosen. */
+  requestInfo: (courseId?: string) =>
+    `/${courseId ? `?course=${courseId}` : ""}#${homeSections.contact}`,
+  coursesIn: (areaSlug: string) => `/courses?area=${areaSlug}`,
   courses: "/courses",
   course: (slug: string) => `/courses/${slug}`,
   privacy: "/privacy",

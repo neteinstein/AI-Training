@@ -68,7 +68,8 @@
       "samePassword": "Escolha uma palavra-passe diferente da anterior.",
       "weak": "Esta palavra-passe é demasiado fraca. Use pelo menos {min} caracteres.",
       "sessionMissing": "A sua sessão expirou. Peça uma nova ligação para continuar.",
-      "requestNewLink": "Pedir nova ligação"
+      "requestNewLink": "Pedir nova ligação",
+      "yourCourses": "{count, plural, one {O seu curso} other {Os seus cursos}}"
     },
     "signOut": "Sair",
     "generic": "Não foi possível concluir o pedido. Tente novamente."
@@ -89,7 +90,8 @@
     "fileRequired": "Escolha um ficheiro.",
     "emails": "Verifique {count, plural, one {este endereço} other {estes endereços}}: {invalid}",
     "tooManyEmails": "Convide no máximo {max} pessoas de cada vez.",
-    "passwordSame": "A nova palavra-passe tem de ser diferente da atual."
+    "passwordSame": "A nova palavra-passe tem de ser diferente da atual.",
+    "consent": "Assinale esta caixa para podermos responder ao seu pedido."
   },
   "Learn": {
     "title": "Os meus cursos",
@@ -99,5 +101,147 @@
   "Trainer": {
     "title": "Back-office",
     "loading": "A carregar…"
+  },
+  "Nav": {
+    "main": "Principal",
+    "courses": "Cursos",
+    "howItWorks": "Como funciona",
+    "contact": "Contacto",
+    "signIn": "Entrar",
+    "menu": "Menu",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "footer": "Rodapé",
+    "privacy": "Privacidade",
+    "memberArea": "Área reservada",
+    "home": "Página inicial"
+  },
+  "Home": {
+    "eyebrow": "Formação em inteligência artificial",
+    "title": "A IA ao serviço de quem ensina e de quem cuida.",
+    "lead": "Cursos práticos de inteligência artificial, pensados para a sua profissão. Sem jargão, com exemplos do seu dia a dia e todos os materiais num só lugar.",
+    "seeCourses": "Ver cursos",
+    "requestInfo": "Pedir informações",
+    "areas": {
+      "title": "Para a sua área",
+      "lead": "Cada curso parte dos desafios concretos de uma profissão.",
+      "courseCount": "{count, plural, =0 {Cursos em breve} one {# curso} other {# cursos}}",
+      "missingTitle": "A sua área não está aqui?",
+      "missingText": "Diga-nos qual é a sua profissão através do pedido de informações."
+    },
+    "levels": {
+      "title": "{count, plural, =2 {Dois níveis, ao seu ritmo} other {Um nível para cada etapa}}",
+      "lead": "Comece do zero ou aprofunde o que já faz. Cada curso indica o nível a que se destina."
+    },
+    "courses": {
+      "title": "Cursos",
+      "lead": "Escolha por área e por nível.",
+      "seeAll": "Ver todos os cursos"
+    },
+    "how": {
+      "title": "Como funciona",
+      "step1Title": "Peça informações",
+      "step1Text": "Use o formulário abaixo e indique o curso que lhe interessa.",
+      "step2Title": "Receba o convite",
+      "step2Text": "Enviamos-lhe um convite por email para criar a sua conta e escolher a palavra-passe.",
+      "step3Title": "Aprenda ao seu ritmo",
+      "step3Text": "Aceda aos materiais do curso no computador ou no telemóvel, sempre que precisar."
+    },
+    "contact": {
+      "title": "Pedir informações",
+      "lead": "Indique o curso que lhe interessa e como o podemos contactar. As inscrições são feitas por convite."
+    }
+  },
+  "Catalog": {
+    "title": "Cursos",
+    "lead": "Todos os cursos disponíveis, por área e por nível.",
+    "description": "Cursos de inteligência artificial por área profissional e por nível.",
+    "area": "Área",
+    "level": "Nível",
+    "allAreas": "Todas as áreas",
+    "allLevels": "Todos os níveis",
+    "hours": "{hours, plural, one {# hora} other {# horas}}",
+    "resultCount": "{count, plural, one {# curso} other {# cursos}}",
+    "empty": "Ainda não há cursos publicados. Volte em breve.",
+    "noMatch": "Não há cursos com esta combinação de área e nível.",
+    "clearFilters": "Limpar filtros"
+  },
+  "Course": {
+    "breadcrumb": "Localização",
+    "joinLabel": "Participar neste curso",
+    "joinTitle": "Quer participar?",
+    "joinText": "As inscrições são feitas por convite. Peça informações sobre este curso.",
+    "joinAction": "Pedir informações",
+    "haveInvite": "Já tem convite?",
+    "signIn": "Entrar",
+    "area": "Área",
+    "level": "Nível",
+    "duration": "Duração",
+    "related": "Também para {area}",
+    "about": "Sobre o curso",
+    "noDescription": "A descrição deste curso será publicada em breve.",
+    "onlyIn": {
+      "pt": "Este texto só está disponível em português.",
+      "en": "Este texto só está disponível em inglês."
+    }
+  },
+  "Request": {
+    "formLabel": "Pedido de informações",
+    "name": "Nome",
+    "email": "Email",
+    "organisation": "Organização",
+    "optional": "(opcional)",
+    "course": "Curso de interesse",
+    "noCourse": "Ainda não sei",
+    "message": "Mensagem",
+    "trap": "Não preencha este campo",
+    "consent": "Li a <link>política de privacidade</link> e aceito ser contactado(a) a propósito deste pedido.",
+    "submit": "Enviar pedido",
+    "sentTitle": "Pedido enviado",
+    "sentText": "Obrigado. Entraremos em contacto consigo em breve.",
+    "another": "Enviar outro pedido",
+    "tooMany": "Recebemos muitos pedidos neste momento. Tente novamente mais tarde.",
+    "failed": "Não foi possível enviar o pedido. Tente novamente dentro de momentos.",
+    "checkFields": "Verifique os campos assinalados."
+  },
+  "Privacy": {
+    "title": "Política de privacidade",
+    "description": "Como a plataforma trata os dados pessoais.",
+    "draftTitle": "Texto provisório",
+    "draftText": "Esta página descreve como a plataforma funciona. O texto definitivo, validado pela entidade responsável, será publicado antes do início dos cursos.",
+    "sections": {
+      "controller": {
+        "title": "Quem é responsável",
+        "text": "A {name} é gerida por [NOME DA ENTIDADE], responsável pelo tratamento dos dados pessoais recolhidos neste sítio. Contacto: [EMAIL DE CONTACTO]."
+      },
+      "data": {
+        "title": "Que dados recolhemos",
+        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido e os cursos em que está inscrito. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
+      },
+      "purpose": {
+        "title": "Para que os usamos",
+        "text": "Para responder ao seu pedido, enviar-lhe o convite e dar-lhe acesso aos materiais dos seus cursos. Não vendemos nem cedemos os seus dados para outros fins."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "text": "Usamos apenas os cookies necessários ao funcionamento: para manter a sua sessão iniciada e para lembrar o idioma que escolheu. Não usamos cookies de publicidade."
+      },
+      "thirdParties": {
+        "title": "Conteúdos de outros serviços",
+        "text": "Alguns materiais são vídeos do YouTube ou do Vimeo, ou documentos do Google. Esses conteúdos só são carregados quando decide abri-los; a partir desse momento aplica-se também a política de privacidade do respetivo serviço."
+      },
+      "storage": {
+        "title": "Onde ficam guardados",
+        "text": "Os dados ficam guardados em servidores na União Europeia, com acesso restrito aos formadores. [CONFIRMAR FORNECEDOR E REGIÃO]"
+      },
+      "retention": {
+        "title": "Durante quanto tempo",
+        "text": "Guardamos os pedidos de informação pelo tempo necessário para lhes responder, e as contas enquanto durar a sua participação nos cursos. [PRAZOS A DEFINIR]"
+      },
+      "rights": {
+        "title": "Os seus direitos",
+        "text": "Pode pedir para consultar, corrigir ou apagar os seus dados, ou retirar o seu consentimento, escrevendo para o contacto acima. Pode também apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD)."
+      }
+    }
   }
 }

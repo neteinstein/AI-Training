@@ -35,12 +35,26 @@ describe("Markdown rendering", () => {
     expect(html).toContain("<blockquote>");
   });
 
-  test("shifts headings down one level, since the page has its own h1", () => {
+  test("the largest heading used becomes an h2, since the page has its own h1", () => {
     const html = render("# Primeiro\n\n## Segundo\n\n### Terceiro");
     expect(html).not.toContain("<h1");
     expect(html).toContain("<h2>Primeiro</h2>");
     expect(html).toContain("<h3>Segundo</h3>");
     expect(html).toContain("<h4>Terceiro</h4>");
+  });
+
+  test("a text that starts at ## or ### is renumbered the same way", () => {
+    const sections = render("## Programa\n\n### Sessão 1\n\n## Formato");
+    expect(sections).toContain("<h2>Programa</h2>");
+    expect(sections).toContain("<h3>Sessão 1</h3>");
+    expect(sections).toContain("<h2>Formato</h2>");
+
+    const deep = render("#### Nota\n\n###### Detalhe");
+    expect(deep).toContain("<h2>Nota</h2>");
+    expect(deep).toContain("<h4>Detalhe</h4>");
+
+    // Headings inside a quote or a list are counted too.
+    expect(render("> ## Citado\n\n### Fora")).toContain("<h2>Citado</h2>");
   });
 
   test("external links open in a new tab without handing over the opener", () => {

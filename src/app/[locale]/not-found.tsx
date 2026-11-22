@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Logo } from "@/components/layout/logo";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
 
@@ -26,7 +26,7 @@ export default async function NotFoundPage() {
           {t("NotFound.title")}
         </h1>
         <p className="text-muted-foreground text-lg">{t("NotFound.description")}</p>
-        <Link href={routes.home} className={buttonVariants()}>
+        <Link href={routes.home} className={buttonClass()}>
           {t("Common.backToHome")}
         </Link>
       </main>

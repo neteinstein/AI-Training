@@ -287,9 +287,10 @@ describe("information requests", () => {
     course_id: "",
     message: "",
     locale: "pt",
+    consent: true,
   };
 
-  test("only name and email are required", () => {
+  test("only name, email and the consent box are required", () => {
     expect(infoRequestSchema.parse(request)).toEqual({
       name: "Maria Santos",
       email: "maria@example.org",
@@ -299,6 +300,15 @@ describe("information requests", () => {
       locale: "pt",
     });
     expect(infoRequestSchema.parse({ ...request, course_id: AREA_ID }).courseId).toBe(AREA_ID);
+  });
+
+  test("without consent nothing is sent", () => {
+    expect(problems(infoRequestSchema, { ...request, consent: false })).toEqual({
+      consent: "Assinale esta caixa para podermos responder ao seu pedido.",
+    });
+    expect(problems(infoRequestSchema, { ...request, consent: undefined }, "en")).toEqual({
+      consent: "Tick this box so that we can reply to your request.",
+    });
   });
 
   test("problems are explained per field", () => {

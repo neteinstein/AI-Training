@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { buttonVariants } from "@/components/ui/button";
+import { CourseSummary } from "@/components/catalog/course-summary";
+import { buttonClass } from "@/components/ui/button";
 import { SetPasswordForm } from "@/features/auth/set-password-form";
 import { Link } from "@/i18n/navigation";
+import { fetchMyCourses } from "@/lib/dal/learner-queries";
 import { getCurrentUser } from "@/lib/dal/session";
 import { routes } from "@/lib/routes";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Auth.setPassword");
@@ -45,12 +48,34 @@ async function SetPasswordGate() {
         >
           {t("sessionMissing")}
         </p>
-        <Link href={routes.forgotPassword} className={buttonVariants({ variant: "outline" })}>
+        <Link href={routes.forgotPassword} className={buttonClass({ variant: "outline" })}>
           {t("requestNewLink")}
         </Link>
       </div>
     );
   }
 
-  return <SetPasswordForm email={user.email} />;
+  // What the account gives access to: reassuring on a first visit, and a reminder otherwise.
+  const supabase = await createSupabaseServerClient();
+  const courses = await fetchMyCourses(supabase, user.id, await getLocale());
+
+  return (
+    <>
+      {courses.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-muted-foreground text-sm font-semibold">
+            {t("yourCourses", { count: courses.length })}
+          </h2>
+          <ul className="flex list-none flex-col gap-3">
+            {courses.slice(0, 3).map((course) => (
+              <li key={course.id}>
+                <CourseSummary course={course} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      <SetPasswordForm email={user.email} />
+    </>
+  );
 }

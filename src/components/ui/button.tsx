@@ -47,4 +47,15 @@ function Button({
   );
 }
 
-export { Button, buttonVariants };
+/**
+ * The same look for a link: `<Link className={buttonClass({ variant: "outline" })}>`.
+ * It resolves clashes between the base and the variant, which `buttonVariants()` alone does not.
+ */
+function buttonClass({
+  className,
+  ...variants
+}: VariantProps<typeof buttonVariants> & { className?: string } = {}) {
+  return cn(buttonVariants(variants), className);
+}
+
+export { Button, buttonClass, buttonVariants };

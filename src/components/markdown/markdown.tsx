@@ -10,8 +10,34 @@ import { cn } from "@/lib/utils";
  * Safety: raw HTML in the source is dropped, the output is sanitised, links can only be
  * http(s) or mailto, and images are not rendered (they would load from other sites).
  *
- * Headings are shifted down one level, because the page supplies its own <h1>.
+ * Headings are renumbered so that the largest one used becomes an <h2>, because the page
+ * supplies its own <h1>: a text written with "#" and one written with "##" both read well.
  */
+
+type HastNode = { type: string; tagName?: string; children?: HastNode[] };
+
+const HEADING = /^h([1-6])$/;
+
+function eachHeading(node: HastNode, visit: (heading: HastNode, level: number) => void) {
+  const match = node.type === "element" && node.tagName ? HEADING.exec(node.tagName) : null;
+  if (match) visit(node, Number(match[1]));
+  for (const child of node.children ?? []) eachHeading(child, visit);
+}
+
+/** Rehype plugin: moves all headings by the same amount, so the top level used is <h2>. */
+function rehypeHeadingsFromH2() {
+  return (tree: HastNode) => {
+    let top = 6;
+    eachHeading(tree, (_heading, level) => {
+      top = Math.min(top, level);
+    });
+    const shift = 2 - top;
+    if (shift === 0) return;
+    eachHeading(tree, (heading, level) => {
+      heading.tagName = `h${Math.min(6, level + shift)}`;
+    });
+  };
+}
 
 function ExternalLink({
   href,
@@ -47,11 +73,6 @@ function ScrollableTable({
 }
 
 const components: Components = {
-  h1: "h2",
-  h2: "h3",
-  h3: "h4",
-  h4: "h5",
-  h5: "h6",
   a: ExternalLink,
   table: ScrollableTable,
   th: ({ node: _node, ...props }) => (
@@ -85,7 +106,7 @@ export function Markdown({
         "prose-headings:font-heading prose-headings:font-semibold prose-headings:text-foreground prose-headings:tracking-[-0.01em]",
         "prose-h2:mt-9 prose-h2:mb-3 prose-h2:text-[1.625rem] prose-h2:leading-[1.3]",
         "prose-h3:mt-7 prose-h3:mb-2 prose-h3:text-[1.375rem] prose-h3:leading-[1.3]",
-        "prose-h4:text-lg",
+        "prose-h4:mt-6 prose-h4:mb-2 prose-h4:text-lg",
         "prose-p:my-4 prose-li:my-1.5 prose-strong:text-foreground prose-strong:font-semibold",
         "prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-primary-hover",
         // Quotes and code as tinted panels, not left-border accents.
@@ -94,13 +115,14 @@ export function Markdown({
         "prose-pre:bg-muted prose-pre:text-foreground prose-pre:rounded-2xl prose-pre:px-4 prose-pre:py-3.5 prose-pre:text-[0.9375rem] prose-pre:leading-[1.6] prose-pre:whitespace-pre-wrap",
         "prose-code:text-foreground prose-code:font-mono prose-code:font-normal prose-code:before:content-none prose-code:after:content-none",
         "prose-hr:border-border prose-li:marker:text-muted-foreground",
-        "first:[&>*]:mt-0 last:[&>*]:mb-0",
+        // No stray space above the first block or below the last one.
+        "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className,
       )}
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSanitize]}
+        rehypePlugins={[rehypeSanitize, rehypeHeadingsFromH2]}
         skipHtml
         disallowedElements={["img"]}
         components={components}

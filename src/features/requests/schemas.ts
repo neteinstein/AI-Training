@@ -26,6 +26,8 @@ export const infoRequestSchema = z
     course_id: optionalId,
     message: optionalText(MESSAGE_MAX),
     locale: localeChoice,
+    // The form's checkbox: without it we may not write back.
+    consent: z.boolean("consent").refine((value) => value, "consent"),
   })
   .transform((value): InfoRequestInput => ({
     name: value.name,

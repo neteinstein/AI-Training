@@ -27,12 +27,14 @@ test.describe("language routing", () => {
   });
 
   test("switching language keeps the page and its query string", async ({ page }) => {
+    // The footer link is there at every screen size; the header switch is tested elsewhere.
+    const footer = page.getByRole("contentinfo");
     await page.goto("/pt?ref=test");
-    await page.getByRole("link", { name: "English" }).click();
+    await footer.getByRole("link", { name: "English" }).click();
     await expect(page).toHaveURL(/\/en\?ref=test$/);
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
 
-    await page.getByRole("link", { name: "Português" }).click();
+    await footer.getByRole("link", { name: "Português" }).click();
     await expect(page).toHaveURL(/\/pt\?ref=test$/);
   });
 
