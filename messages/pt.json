@@ -1,0 +1,25 @@
+{
+  "Metadata": {
+    "title": "AI Training — formação em inteligência artificial",
+    "description": "Cursos práticos de inteligência artificial, pensados para a sua profissão."
+  },
+  "Common": {
+    "skipToContent": "Saltar para o conteúdo",
+    "language": "Idioma",
+    "backToHome": "Voltar à página inicial",
+    "opensInNewTab": "abre num novo separador"
+  },
+  "Languages": {
+    "pt": "Português",
+    "en": "English"
+  },
+  "NotFound": {
+    "title": "Página não encontrada",
+    "description": "A página que procura não existe ou foi movida."
+  },
+  "Error": {
+    "title": "Ocorreu um erro",
+    "description": "Não foi possível mostrar esta página. Tente novamente dentro de momentos.",
+    "retry": "Tentar novamente"
+  }
+}

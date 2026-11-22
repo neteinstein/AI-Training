@@ -1,0 +1,25 @@
+{
+  "Metadata": {
+    "title": "AI Training — artificial intelligence courses",
+    "description": "Practical artificial intelligence courses, designed for your profession."
+  },
+  "Common": {
+    "skipToContent": "Skip to content",
+    "language": "Language",
+    "backToHome": "Back to the home page",
+    "opensInNewTab": "opens in a new tab"
+  },
+  "Languages": {
+    "pt": "Português",
+    "en": "English"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved."
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "This page could not be shown. Please try again in a moment.",
+    "retry": "Try again"
+  }
+}
