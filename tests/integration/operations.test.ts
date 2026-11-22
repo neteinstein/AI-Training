@@ -22,13 +22,13 @@ import {
   deleteUsers,
   ensureKeeperTrainer,
   runId,
+  subjectsSentTo,
   visitor,
   type Catalogue,
   type TestUser,
 } from "./helpers";
 
 const pdf = buildSamplePdf(1, "Operations test");
-const mailpit = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
 
 let catalogue: Catalogue;
 let trainer: TestUser;
@@ -40,20 +40,6 @@ const address = (label: string) => {
   invitedEmails.push(email);
   return email;
 };
-
-/** Subjects of the messages sent to an address, newest first. */
-async function subjectsSentTo(email: string, atLeast = 1) {
-  let subjects: string[] = [];
-  for (let attempt = 0; attempt < 20 && subjects.length < atLeast; attempt += 1) {
-    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 250));
-    const response = await fetch(
-      `${mailpit}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`,
-    );
-    const body = (await response.json()) as { messages: { Subject: string }[] };
-    subjects = body.messages.map((message) => message.Subject);
-  }
-  return subjects;
-}
 
 async function profileOf(email: string) {
   const { data } = await admin()
@@ -408,6 +394,12 @@ describe("information requests", () => {
 });
 
 describe("file materials", () => {
+  const titled = (pt: string) => ({
+    title: { pt, en: "" },
+    description: { pt: "", en: "" },
+    contentLanguage: null,
+  });
+
   async function upload(courseId: string, extension = "pdf") {
     const path = `${courseId}/${randomUUID()}.${extension}`;
     const result = await trainer.client.storage
@@ -423,7 +415,7 @@ describe("file materials", () => {
       moduleId: catalogue.modules.published,
       storagePath: path,
       originalName: "Diapositivos da sessão 1.PDF",
-      titlePt: "  Diapositivos  ",
+      ...titled("  Diapositivos  "),
       isPublished: true,
     });
     expect(result.ok).toBe(true);
@@ -450,7 +442,7 @@ describe("file materials", () => {
       moduleId: catalogue.modules.published,
       storagePath: path,
       originalName: "repetido.pdf",
-      titlePt: "Repetido",
+      ...titled("Repetido"),
       isPublished: true,
     };
     const first = await createFileMaterial(trainer.client, input);
@@ -492,7 +484,7 @@ describe("file materials", () => {
       moduleId: catalogue.modules.published,
       storagePath: path,
       originalName: "outro.pdf",
-      titlePt: "Outro",
+      ...titled("Outro"),
       isPublished: true,
     });
     expect(result).toEqual({ ok: false, reason: "path" });
@@ -503,7 +495,7 @@ describe("file materials", () => {
     const base = {
       moduleId: catalogue.modules.published,
       originalName: "x.pdf",
-      titlePt: "X",
+      ...titled("X"),
       isPublished: false,
     };
     expect(
@@ -526,7 +518,7 @@ describe("file materials", () => {
       moduleId: catalogue.modules.published,
       storagePath: path,
       originalName: "programa.exe",
-      titlePt: "Programa",
+      ...titled("Programa"),
       isPublished: true,
     });
     expect(result).toEqual({ ok: false, reason: "type" });
@@ -539,7 +531,7 @@ describe("file materials", () => {
       moduleId: catalogue.modules.published,
       storagePath: path,
       originalName: "x.pdf",
-      titlePt: "X",
+      ...titled("X"),
       isPublished: true,
     });
     expect(result.ok).toBe(false);
@@ -552,7 +544,7 @@ describe("file materials", () => {
       moduleId: catalogue.modules.published,
       storagePath: path,
       originalName: "apagar.pdf",
-      titlePt: "Apagar",
+      ...titled("Apagar"),
       isPublished: false,
     });
     expect(created.ok).toBe(true);

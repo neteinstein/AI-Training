@@ -38,15 +38,21 @@ export function pickLocalized(
   return localized(row, field, locale).value;
 }
 
-/** Languages in which a bilingual field has no text. Used for "missing translation" markers. */
-export function missingLocales(
+/**
+ * Languages a text has not been translated into: empty there, written in the other language.
+ * A field that is empty in both languages is not a gap, just an optional text left out.
+ */
+export function translationGaps(
   row: Record<string, unknown> | null | undefined,
   fields: string[],
 ): Locale[] {
+  const has = (field: string, lang: Locale) => {
+    const value = row?.[`${field}_${lang}`];
+    return typeof value === "string" && value.trim() !== "";
+  };
   return locales.filter((lang) =>
-    fields.some((field) => {
-      const value = row?.[`${field}_${lang}`];
-      return typeof value !== "string" || value.trim() === "";
-    }),
+    fields.some(
+      (field) => !has(field, lang) && locales.some((other) => other !== lang && has(field, other)),
+    ),
   );
 }

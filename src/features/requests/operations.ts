@@ -1,5 +1,7 @@
 import type { Locale } from "@/config/site";
-import type { Client } from "@/lib/dal/types";
+import { inviteUsers, type InviteMode, type InviteResult } from "@/features/users/operations";
+import type { Client, RequestStatus } from "@/lib/dal/types";
+import { isUuid } from "@/lib/ids";
 
 /**
  * Stores an information request from the public form.
@@ -68,4 +70,69 @@ export async function submitInfoRequest(
     locale: input.locale,
   });
   return error ? "failed" : "stored";
+}
+
+/**
+ * Marks a request as new, contacted, invited or archived, with the trainer's own client.
+ * Anything but "new" records who handled it and when.
+ */
+export async function setRequestStatus(
+  trainer: Client,
+  id: string,
+  status: RequestStatus,
+  handledBy: string,
+): Promise<boolean> {
+  if (!isUuid(id)) return false;
+  const handled = status !== "new";
+  const { data, error } = await trainer
+    .from("info_requests")
+    .update({
+      status,
+      handled_by: handled ? handledBy : null,
+      handled_at: handled ? new Date().toISOString() : null,
+    })
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+  return !error && Boolean(data);
+}
+
+export async function deleteRequest(trainer: Client, id: string): Promise<boolean> {
+  if (!isUuid(id)) return false;
+  const { data, error } = await trainer.from("info_requests").delete().eq("id", id).select("id");
+  return !error && data.length > 0;
+}
+
+/**
+ * Invites the person who sent a request, using the name, address and language they gave, and
+ * marks the request as invited. Returns null when the request cannot be read (it does not
+ * exist, or the caller is not a trainer).
+ */
+export async function inviteFromRequest(
+  admin: Client,
+  trainer: Client,
+  input: { requestId: string; courseIds: string[]; mode: InviteMode; invitedBy: string },
+): Promise<InviteResult | null> {
+  if (!isUuid(input.requestId)) return null;
+  const { data: request } = await trainer
+    .from("info_requests")
+    .select("id, name, email, locale")
+    .eq("id", input.requestId)
+    .maybeSingle();
+  if (!request) return null;
+
+  const [result] = await inviteUsers(admin, trainer, {
+    emails: [request.email],
+    fullName: request.name,
+    locale: request.locale === "en" ? "en" : "pt",
+    role: "learner",
+    courseIds: input.courseIds,
+    mode: input.mode,
+    invitedBy: input.invitedBy,
+  });
+  if (!result) return null;
+  if (result.outcome !== "failed") {
+    await setRequestStatus(trainer, request.id, "invited", input.invitedBy);
+  }
+  return result;
 }

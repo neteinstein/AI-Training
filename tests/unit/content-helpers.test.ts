@@ -8,7 +8,8 @@ import {
   storageKey,
   uploadMimeType,
 } from "@/lib/files/rules";
-import { localized, missingLocales, pickLocalized } from "@/lib/i18n/localized";
+import { isUuid } from "@/lib/ids";
+import { localized, pickLocalized, translationGaps } from "@/lib/i18n/localized";
 import { isSlug, slugify } from "@/lib/slug";
 
 describe("bilingual fields", () => {
@@ -46,10 +47,29 @@ describe("bilingual fields", () => {
     expect(pickLocalized(null, "title", "en")).toBe("");
   });
 
-  test("lists the languages that still need a translation", () => {
-    expect(missingLocales(row, ["title"])).toEqual([]);
-    expect(missingLocales(row, ["title", "body"])).toEqual(["en"]);
-    expect(missingLocales({}, ["title"])).toEqual(["pt", "en"]);
+  test("lists the languages a text still has to be translated into", () => {
+    expect(translationGaps(row, ["title"])).toEqual([]);
+    expect(translationGaps(row, ["title", "body"])).toEqual(["en"]);
+    expect(translationGaps({ title_pt: null, title_en: "Only English" }, ["title"])).toEqual([
+      "pt",
+    ]);
+  });
+
+  test("a text left out in both languages is not a missing translation", () => {
+    expect(translationGaps(row, ["title", "description"])).toEqual([]);
+    expect(translationGaps({}, ["title"])).toEqual([]);
+    expect(translationGaps(null, ["title"])).toEqual([]);
+  });
+});
+
+describe("ids", () => {
+  test("only well-formed ids are accepted", () => {
+    expect(isUuid("e1000000-0000-4000-8000-000000000001")).toBe(true);
+    expect(isUuid("E1000000-0000-4000-8000-00000000000A")).toBe(true);
+    for (const value of ["", "1", "e1000000-0000-4000-8000-00000000000", "x".repeat(36), null, 7]) {
+      expect(isUuid(value)).toBe(false);
+    }
+    expect(isUuid("e1000000-0000-4000-8000-000000000001' or '1'='1")).toBe(false);
   });
 });
 

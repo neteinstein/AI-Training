@@ -248,3 +248,19 @@ export async function closeSql(): Promise<void> {
   await connection?.end();
   connection = undefined;
 }
+
+const mailpit = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
+
+/** Subjects of the emails the local mail catcher holds for an address, newest first. */
+export async function subjectsSentTo(email: string, atLeast = 1): Promise<string[]> {
+  let subjects: string[] = [];
+  for (let attempt = 0; attempt < 20 && subjects.length < atLeast; attempt += 1) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 250));
+    const response = await fetch(
+      `${mailpit}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`,
+    );
+    const body = (await response.json()) as { messages: { Subject: string }[] };
+    subjects = body.messages.map((message) => message.Subject);
+  }
+  return subjects;
+}

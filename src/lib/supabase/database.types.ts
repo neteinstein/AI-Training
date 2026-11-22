@@ -443,6 +443,7 @@ export type Database = {
     };
     Functions: {
       reorder_areas: { Args: { ordered_ids: string[] }; Returns: undefined };
+      reorder_courses: { Args: { ordered_ids: string[] }; Returns: undefined };
       reorder_levels: { Args: { ordered_ids: string[] }; Returns: undefined };
       reorder_materials: {
         Args: { ordered_ids: string[]; target_module_id: string };

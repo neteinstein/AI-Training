@@ -1,6 +1,8 @@
 import type { Locale } from "@/config/site";
 import { confirmUrl } from "@/lib/auth/links";
+import { PG } from "@/lib/dal/mutations";
 import type { Client, UserRole } from "@/lib/dal/types";
+import { isUuid } from "@/lib/ids";
 
 /**
  * User management that needs the Auth admin API. Every function takes two clients:
@@ -241,4 +243,26 @@ export async function removeUser(
 
   const { error } = await admin.auth.admin.deleteUser(userId);
   return error ? "failed" : "removed";
+}
+
+export type RoleResult = "ok" | "self" | "last_trainer" | "not_found" | "failed";
+
+/**
+ * Makes someone a trainer or a learner. A trainer cannot demote themselves (another trainer
+ * has to do it), and the database refuses to demote the last trainer.
+ */
+export async function setUserRole(
+  trainer: Client,
+  actorId: string,
+  userId: string,
+  role: UserRole,
+): Promise<RoleResult> {
+  if (!isUuid(userId)) return "not_found";
+  if (actorId === userId && role !== "trainer") return "self";
+
+  const { error } = await trainer.rpc("set_user_role", { target: userId, new_role: role });
+  if (!error) return "ok";
+  if (error.code === PG.raised && error.hint === "last_trainer") return "last_trainer";
+  if (error.code === PG.noData) return "not_found";
+  return "failed";
 }

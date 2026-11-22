@@ -1,7 +1,9 @@
 import type { Locale } from "@/config/site";
 import { parseEmbed, parseExternalLink } from "@/lib/embeds/parse";
+import { isUuid } from "@/lib/ids";
 import { localized, pickLocalized } from "@/lib/i18n/localized";
 import { toAreaSummary, toCourseCard, toLevelSummaries } from "./catalog-queries";
+import { bySortOrder } from "./order";
 import type {
   Client,
   CourseCard,
@@ -14,9 +16,6 @@ import type {
 
 type CourseRow = Tables["courses"]["Row"];
 type MaterialRow = Tables["materials"]["Row"];
-
-const bySortOrder = <T extends { sort_order: number; created_at: string }>(a: T, b: T) =>
-  a.sort_order - b.sort_order || a.created_at.localeCompare(b.created_at);
 
 async function toCourseCards(client: Client, rows: CourseRow[], locale: Locale) {
   if (rows.length === 0) return [];
@@ -194,6 +193,7 @@ export async function fetchMaterialFile(
   client: Client,
   materialId: string,
 ): Promise<{ storagePath: string; fileName: string; mimeType: string } | null> {
+  if (!isUuid(materialId)) return null;
   const { data, error } = await client
     .from("materials")
     .select("kind, storage_path, file_name, mime_type")
