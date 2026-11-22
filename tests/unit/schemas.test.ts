@@ -144,7 +144,12 @@ describe("modules and materials", () => {
   };
 
   test("a title in one language is enough, none is not", () => {
-    const section = { title_pt: "", title_en: " Planning ", description_pt: "", description_en: "" };
+    const section = {
+      title_pt: "",
+      title_en: " Planning ",
+      description_pt: "",
+      description_en: "",
+    };
     expect(moduleSchema.parse(section).title).toEqual({ pt: "", en: "Planning" });
     expect(problems(moduleSchema, { ...section, title_en: " " })).toEqual({
       title_pt: "Preencha este campo em pelo menos um dos idiomas.",
