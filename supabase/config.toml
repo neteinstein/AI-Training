@@ -256,10 +256,21 @@ otp_expiry = 86400
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Bilingual emails: the language comes from the user's stored locale, and every link opens the
+# app's click-to-confirm page instead of signing the user in directly (mail scanners that open
+# links would otherwise use up the one-time token). On a hosted project, paste the same
+# subjects and files under Authentication > Email Templates.
+[auth.email.template.invite]
+subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Your invitation to AI Training{{ else }}O seu convite para a AI Training{{ end }}'
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.recovery]
+subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Set a new password for AI Training{{ else }}Defina uma nova palavra-passe na AI Training{{ end }}'
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Your sign-in link for AI Training{{ else }}A sua ligação de acesso à AI Training{{ end }}'
+content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]

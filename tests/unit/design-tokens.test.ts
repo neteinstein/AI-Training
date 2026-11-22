@@ -50,6 +50,7 @@ const textPairs: Array<[string, string]> = [
   ["highlight-foreground", "highlight-tint"],
   ["destructive", "background"],
   ["destructive", "card"],
+  ["destructive", "highlight-tint"],
   ["sidebar-foreground", "sidebar"],
   ["sidebar-accent-foreground", "sidebar-accent"],
   ["sidebar-primary-foreground", "sidebar-primary"],

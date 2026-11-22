@@ -21,5 +21,71 @@
     "title": "Ocorreu um erro",
     "description": "Não foi possível mostrar esta página. Tente novamente dentro de momentos.",
     "retry": "Tentar novamente"
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Entrar",
+      "subtitle": "Aceda aos seus cursos e materiais.",
+      "email": "Email",
+      "password": "Palavra-passe",
+      "submit": "Entrar",
+      "forgot": "Esqueceu-se da palavra-passe?",
+      "noAccessTitle": "Ainda não tem acesso?",
+      "noAccessText": "As contas são criadas por convite da equipa de formação.",
+      "requestInfo": "Pedir informações",
+      "invalid": "O email ou a palavra-passe não estão corretos.",
+      "notConfirmed": "Esta conta ainda não foi ativada. Abra a ligação do email de convite ou peça uma nova.",
+      "tooMany": "Demasiadas tentativas. Aguarde alguns minutos e tente de novo."
+    },
+    "forgot": {
+      "title": "Recuperar acesso",
+      "subtitle": "Indique o seu email e enviamos-lhe uma ligação para definir uma nova palavra-passe.",
+      "submit": "Enviar ligação",
+      "sent": "Se existir uma conta com este email, enviámos uma ligação. Verifique também a pasta de spam.",
+      "back": "Voltar a entrar"
+    },
+    "confirm": {
+      "stepConfirm": "Confirmar",
+      "stepPassword": "Palavra-passe",
+      "steps": "Passos",
+      "inviteTitle": "Recebeu um convite",
+      "inviteText": "A equipa de formação convidou-o(a) para a plataforma {site}. Continue para criar a sua palavra-passe.",
+      "recoveryTitle": "Definir nova palavra-passe",
+      "recoveryText": "Continue para escolher uma nova palavra-passe para a sua conta.",
+      "continue": "Continuar",
+      "validity": "A seguir vai escolher a sua palavra-passe. Esta ligação é válida durante 24 horas e só pode ser usada uma vez.",
+      "unexpected": "Não estava à espera deste email? Pode ignorá-lo com segurança.",
+      "expiredTitle": "Esta ligação já não é válida",
+      "expiredText": "A ligação expirou ou já foi usada. Indique o seu email para receber uma nova."
+    },
+    "setPassword": {
+      "title": "Escolha a sua palavra-passe",
+      "subtitle": "Vai usá-la, com o seu email, para entrar na plataforma.",
+      "password": "Nova palavra-passe",
+      "confirm": "Repetir a palavra-passe",
+      "help": "Pelo menos {min} caracteres.",
+      "submit": "Guardar e continuar",
+      "samePassword": "Escolha uma palavra-passe diferente da anterior.",
+      "weak": "Esta palavra-passe é demasiado fraca. Use pelo menos {min} caracteres.",
+      "sessionMissing": "A sua sessão expirou. Peça uma nova ligação para continuar.",
+      "requestNewLink": "Pedir nova ligação"
+    },
+    "signOut": "Sair",
+    "generic": "Não foi possível concluir o pedido. Tente novamente."
+  },
+  "Validation": {
+    "required": "Preencha este campo.",
+    "email": "Introduza um email válido.",
+    "passwordMin": "Use pelo menos {min} caracteres.",
+    "passwordMismatch": "As palavras-passe não coincidem."
+  },
+  "Learn": {
+    "title": "Os meus cursos",
+    "greeting": "Olá, {name}",
+    "loading": "A carregar…"
+  },
+  "Trainer": {
+    "title": "Back-office",
+    "loading": "A carregar…"
   }
 }

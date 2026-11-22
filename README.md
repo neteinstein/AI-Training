@@ -56,6 +56,25 @@ Emails sent locally (invitations, password resets) are caught at <http://127.0.0
 | `npm run env:local`        | Write the local stack's URL and keys to `.env.local`       |
 | `npm run seed:dev`         | Create the demo accounts, enrolments and sample PDF        |
 
+## Sign-in and invitations
+
+The platform is closed: there is no public sign-up. Accounts are created by trainers.
+
+- A trainer invites a person by email. The email links to `/{language}/auth/confirm`, which
+  shows a "Continue" button; the one-time token is only used when that button is pressed, so
+  mail scanners that open links cannot use it up. The person then chooses a password.
+- "Forgot password" follows the same path. A link that has expired or was already used leads
+  to a screen where the person can ask for a new one.
+- Emails are bilingual (`supabase/templates`), in the language stored for the user.
+
+To create the first trainer (or promote an existing account):
+
+```bash
+npm run bootstrap-trainer -- person@example.org --name "Full Name" --locale pt
+```
+
+It prints a one-time activation link to send to that person.
+
 ## Database and access rules
 
 All access rules live in the database, in `supabase/migrations`:

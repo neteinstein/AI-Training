@@ -21,5 +21,71 @@
     "title": "Something went wrong",
     "description": "This page could not be shown. Please try again in a moment.",
     "retry": "Try again"
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Sign in",
+      "subtitle": "Access your courses and materials.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?",
+      "noAccessTitle": "No access yet?",
+      "noAccessText": "Accounts are created by invitation from the training team.",
+      "requestInfo": "Request information",
+      "invalid": "The email or password is not correct.",
+      "notConfirmed": "This account has not been activated yet. Open the link in your invitation email or ask for a new one.",
+      "tooMany": "Too many attempts. Wait a few minutes and try again."
+    },
+    "forgot": {
+      "title": "Recover access",
+      "subtitle": "Enter your email and we will send you a link to set a new password.",
+      "submit": "Send link",
+      "sent": "If an account exists for this email, we have sent a link. Check your spam folder too.",
+      "back": "Back to sign in"
+    },
+    "confirm": {
+      "stepConfirm": "Confirm",
+      "stepPassword": "Password",
+      "steps": "Steps",
+      "inviteTitle": "You have been invited",
+      "inviteText": "The training team has invited you to {site}. Continue to create your password.",
+      "recoveryTitle": "Set a new password",
+      "recoveryText": "Continue to choose a new password for your account.",
+      "continue": "Continue",
+      "validity": "Next you will choose your password. This link is valid for 24 hours and can be used once.",
+      "unexpected": "Were you not expecting this email? You can safely ignore it.",
+      "expiredTitle": "This link is no longer valid",
+      "expiredText": "The link has expired or has already been used. Enter your email to receive a new one."
+    },
+    "setPassword": {
+      "title": "Choose your password",
+      "subtitle": "You will use it, with your email, to sign in.",
+      "password": "New password",
+      "confirm": "Repeat the password",
+      "help": "At least {min} characters.",
+      "submit": "Save and continue",
+      "samePassword": "Choose a password different from the previous one.",
+      "weak": "This password is too weak. Use at least {min} characters.",
+      "sessionMissing": "Your session has expired. Ask for a new link to continue.",
+      "requestNewLink": "Request a new link"
+    },
+    "signOut": "Sign out",
+    "generic": "The request could not be completed. Please try again."
+  },
+  "Validation": {
+    "required": "Fill in this field.",
+    "email": "Enter a valid email address.",
+    "passwordMin": "Use at least {min} characters.",
+    "passwordMismatch": "The passwords do not match."
+  },
+  "Learn": {
+    "title": "My courses",
+    "greeting": "Hello, {name}",
+    "loading": "Loading…"
+  },
+  "Trainer": {
+    "title": "Back-office",
+    "loading": "Loading…"
   }
 }
