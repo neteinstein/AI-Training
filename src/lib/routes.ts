@@ -18,6 +18,8 @@ export const routes = {
   learnMaterial: (slug: string, materialId: string) =>
     `/learn/courses/${slug}/materials/${materialId}`,
   account: "/learn/account",
+  /** Not under a language: it answers with a file, not a page. `?inline=1` opens it in the browser. */
+  materialDownload: (materialId: string) => `/api/materials/${materialId}/download`,
 
   trainer: "/trainer",
   trainerAreas: "/trainer/areas",

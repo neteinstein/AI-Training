@@ -19,13 +19,49 @@ export function fieldErrors(
   for (const issue of error.issues) {
     const field = String(issue.path[0] ?? "form");
     // Keep the first problem per field: it is the most basic one.
-    if (!(field in result)) result[field] = translate(issue.message as ValidationKey, values);
+    if (field in result) continue;
+    result[field] = translate(issue.message as ValidationKey, { ...values, ...limits(issue) });
   }
   return result;
+}
+
+/** The limit a length or range rule was checked against, for messages like "at most {max}". */
+function limits(issue: ZodError["issues"][number]): Record<string, string | number> {
+  const found: Record<string, string | number> = {};
+  if ("minimum" in issue && typeof issue.minimum === "number") found.min = issue.minimum;
+  if ("maximum" in issue && typeof issue.maximum === "number") found.max = issue.maximum;
+  // Extra details a schema attached itself, e.g. the addresses that are not valid.
+  if ("params" in issue && issue.params && typeof issue.params === "object") {
+    for (const [key, value] of Object.entries(issue.params)) {
+      if (typeof value === "string" || typeof value === "number") found[key] = value;
+    }
+  }
+  return found;
 }
 
 /** Reads a form value as text; missing values and files become an empty string. */
 export function text(formData: FormData, name: string): string {
   const value = formData.get(name);
   return typeof value === "string" ? value : "";
+}
+
+/** Every value sent under one name (checkbox groups, multi-selects), as text. */
+export function textList(formData: FormData, name: string): string[] {
+  return formData.getAll(name).filter((value): value is string => typeof value === "string");
+}
+
+/** Whether a checkbox or switch was on. */
+export function checked(formData: FormData, name: string): boolean {
+  const value = formData.get(name);
+  return value === "on" || value === "true" || value === "1";
+}
+
+/** The named fields of a form as plain text values, ready for a schema. */
+export function fields<const Name extends string>(
+  formData: FormData,
+  names: readonly Name[],
+): Record<Name, string> {
+  const result = {} as Record<Name, string>;
+  for (const name of names) result[name] = text(formData, name);
+  return result;
 }

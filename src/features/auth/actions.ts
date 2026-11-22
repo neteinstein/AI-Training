@@ -54,10 +54,10 @@ export async function signIn(_previous: ActionState, formData: FormData): Promis
     .maybeSingle();
   const role = profile?.role ?? "learner";
 
-  // The language the user just signed in with becomes their preference, so emails match it.
+  // The language the user just signed in with becomes their preference. A database trigger
+  // copies it to the sign-in account, which is where the email templates read it.
   if (profile && profile.locale !== locale) {
     await supabase.from("profiles").update({ locale }).eq("id", data.user.id);
-    await supabase.auth.updateUser({ data: { locale } });
   }
 
   const home = homeForRole(role);

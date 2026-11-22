@@ -77,7 +77,19 @@
     "required": "Preencha este campo.",
     "email": "Introduza um email válido.",
     "passwordMin": "Use pelo menos {min} caracteres.",
-    "passwordMismatch": "As palavras-passe não coincidem."
+    "passwordMismatch": "As palavras-passe não coincidem.",
+    "tooLong": "Use no máximo {max} caracteres.",
+    "slug": "Use apenas letras minúsculas sem acentos, números e hífenes (por exemplo, ia-na-sala-de-aula).",
+    "choose": "Escolha uma opção.",
+    "duration": "Indique as horas com um número entre 0,5 e 999 (por exemplo, 8 ou 7,5).",
+    "url": "Introduza um endereço completo, começando por https://.",
+    "videoUrl": "Cole a ligação de um vídeo do YouTube ou do Vimeo.",
+    "documentUrl": "Cole a ligação de partilha de um ficheiro do Google Slides, Docs, Sheets ou Drive.",
+    "oneLanguage": "Preencha este campo em pelo menos um dos idiomas.",
+    "fileRequired": "Escolha um ficheiro.",
+    "emails": "Verifique {count, plural, one {este endereço} other {estes endereços}}: {invalid}",
+    "tooManyEmails": "Convide no máximo {max} pessoas de cada vez.",
+    "passwordSame": "A nova palavra-passe tem de ser diferente da atual."
   },
   "Learn": {
     "title": "Os meus cursos",

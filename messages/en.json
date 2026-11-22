@@ -77,7 +77,19 @@
     "required": "Fill in this field.",
     "email": "Enter a valid email address.",
     "passwordMin": "Use at least {min} characters.",
-    "passwordMismatch": "The passwords do not match."
+    "passwordMismatch": "The passwords do not match.",
+    "tooLong": "Use at most {max} characters.",
+    "slug": "Use only lower-case letters without accents, numbers and hyphens (for example, ai-in-the-classroom).",
+    "choose": "Choose an option.",
+    "duration": "Give the hours as a number between 0.5 and 999 (for example, 8 or 7.5).",
+    "url": "Enter a full address, starting with https://.",
+    "videoUrl": "Paste the link to a YouTube or Vimeo video.",
+    "documentUrl": "Paste the sharing link of a Google Slides, Docs, Sheets or Drive file.",
+    "oneLanguage": "Fill in this field in at least one of the languages.",
+    "fileRequired": "Choose a file.",
+    "emails": "Check {count, plural, one {this address} other {these addresses}}: {invalid}",
+    "tooManyEmails": "Invite at most {max} people at a time.",
+    "passwordSame": "The new password must be different from the current one."
   },
   "Learn": {
     "title": "My courses",
