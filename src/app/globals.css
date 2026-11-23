@@ -1,0 +1,202 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens: the one place to change the look.
+ * Every text/background pair used in the interface is checked for contrast in
+ * tests/unit/design-tokens.test.ts.
+ */
+:root {
+  /* Surfaces */
+  --background: #fffbf5; /* cream: page */
+  --card: #ffffff; /* cards and the back-office work surface */
+  --popover: #ffffff;
+  --muted: #f7efe2; /* sand: alternate sections, table headers */
+  --secondary: #f7efe2;
+  --accent: #e3efe4; /* green tint: hover and selected surfaces */
+  --sidebar: #f7efe2;
+
+  /* Text */
+  --foreground: #1c1917; /* ink */
+  --card-foreground: #1c1917;
+  --popover-foreground: #1c1917;
+  --secondary-foreground: #1c1917;
+  --muted-foreground: #57534e;
+  --accent-foreground: #166534;
+  --sidebar-foreground: #1c1917;
+
+  /* Brand */
+  --primary: #166534; /* forest green: buttons, links, focus ring */
+  --primary-hover: #14532d;
+  --primary-foreground: #ffffff;
+  --highlight: #c2410c; /* terracotta: highlights, badges, illustrations */
+  --highlight-foreground: #9a3412; /* terracotta dark enough for small text */
+  --highlight-tint: #fbe9dd;
+  --ochre: #d9a441; /* illustrations only */
+  --destructive: #b91c1c;
+
+  /* Level glyph: the bars that are not filled, on white and on a green tint */
+  --glyph-rest: #cfc6b6;
+  --glyph-rest-on-tint: #b9cdbb;
+
+  /* Lines */
+  --border: #e9dfcf; /* card outlines, dividers (decorative) */
+  --input: #8a8178; /* form-field outlines (3.7:1 on cream) */
+  --ring: #166534;
+
+  /* Area palette: a dark tone for icon and text on its own light tint */
+  --area-forest: #166534;
+  --area-forest-tint: #e3efe4;
+  --area-terracotta: #9a3412;
+  --area-terracotta-tint: #fbe9dd;
+  --area-ocean: #155e75;
+  --area-ocean-tint: #ddeff3;
+  --area-plum: #86198f;
+  --area-plum-tint: #f6e3f5;
+  --area-ochre: #854d0e;
+  --area-ochre-tint: #f8ecc9;
+  --area-indigo: #3730a3;
+  --area-indigo-tint: #e4e5f8;
+  --area-rose: #9f1239;
+  --area-rose-tint: #fbe3e8;
+  --area-olive: #3f6212;
+  --area-olive-tint: #eaf1d6;
+
+  /* Sidebar (back-office) */
+  --sidebar-primary: #166534;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #166534;
+  --sidebar-border: #e9dfcf;
+  --sidebar-ring: #166534;
+
+  /* Charts are not used; kept so shadcn components that reference them resolve. */
+  --chart-1: #166534;
+  --chart-2: #c2410c;
+  --chart-3: #155e75;
+  --chart-4: #854d0e;
+  --chart-5: #86198f;
+
+  /* Shape: 12px controls; cards use the 2xl step (about 20px) */
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-highlight-tint: var(--highlight-tint);
+  --color-ochre: var(--ochre);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-glyph-rest: var(--glyph-rest);
+  --color-glyph-rest-on-tint: var(--glyph-rest-on-tint);
+
+  --color-area-forest: var(--area-forest);
+  --color-area-forest-tint: var(--area-forest-tint);
+  --color-area-terracotta: var(--area-terracotta);
+  --color-area-terracotta-tint: var(--area-terracotta-tint);
+  --color-area-ocean: var(--area-ocean);
+  --color-area-ocean-tint: var(--area-ocean-tint);
+  --color-area-plum: var(--area-plum);
+  --color-area-plum-tint: var(--area-plum-tint);
+  --color-area-ochre: var(--area-ochre);
+  --color-area-ochre-tint: var(--area-ochre-tint);
+  --color-area-indigo: var(--area-indigo);
+  --color-area-indigo-tint: var(--area-indigo-tint);
+  --color-area-rose: var(--area-rose);
+  --color-area-rose-tint: var(--area-rose-tint);
+  --color-area-olive: var(--area-olive);
+  --color-area-olive-tint: var(--area-olive-tint);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.7);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --shadow-raised: 0 1px 2px rgb(68 48 20 / 0.06), 0 8px 24px rgb(68 48 20 / 0.06);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    line-height: 1.6;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--foreground);
+  }
+}
+
+/*
+ * A clearly visible focus indicator on every interactive element. Deliberately outside any
+ * cascade layer, so it also wins over component classes that reset the outline.
+ */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{ if eq (printf "%v" .Data.locale) "en" }}en{{ else }}pt{{ end }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body style="margin: 0; padding: 0; background: #fffbf5; color: #1c1917; font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #fffbf5">
+      <tr>
+        <td align="center" style="padding: 32px 16px">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 520px; background: #ffffff; border: 1px solid #e9dfcf; border-radius: 20px">
+            <tr>
+              <td style="padding: 32px">
+                <p style="margin: 0 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: bold">AI Training</p>
+                {{ if eq (printf "%v" .Data.locale) "en" }}
+                <h1 style="margin: 0 0 12px; font-family: Georgia, 'Times New Roman', serif; font-size: 26px; line-height: 1.2">You have been invited</h1>
+                <p style="margin: 0 0 24px">The training team has invited you to AI Training. Press the button to create your password and open your courses.</p>
+                <p style="margin: 0 0 24px">
+                  <a href="{{ .SiteURL }}/en/auth/confirm?token_hash={{ .TokenHash }}&amp;type=invite" style="display: inline-block; padding: 14px 24px; border-radius: 12px; background: #166534; color: #ffffff; font-weight: bold; text-decoration: none">Accept the invitation</a>
+                </p>
+                <p style="margin: 0 0 8px; color: #57534e; font-size: 14px">This link is valid for 24 hours and can be used once. If the button does not work, copy this address into your browser:</p>
+                <p style="margin: 0 0 24px; color: #57534e; font-size: 14px; word-break: break-all">{{ .SiteURL }}/en/auth/confirm?token_hash={{ .TokenHash }}&amp;type=invite</p>
+                <p style="margin: 0; color: #57534e; font-size: 14px">Were you not expecting this email? You can safely ignore it.</p>
+                {{ else }}
+                <h1 style="margin: 0 0 12px; font-family: Georgia, 'Times New Roman', serif; font-size: 26px; line-height: 1.2">Recebeu um convite</h1>
+                <p style="margin: 0 0 24px">A equipa de formação convidou-o(a) para a plataforma AI Training. Carregue no botão para criar a sua palavra-passe e abrir os seus cursos.</p>
+                <p style="margin: 0 0 24px">
+                  <a href="{{ .SiteURL }}/pt/auth/confirm?token_hash={{ .TokenHash }}&amp;type=invite" style="display: inline-block; padding: 14px 24px; border-radius: 12px; background: #166534; color: #ffffff; font-weight: bold; text-decoration: none">Aceitar o convite</a>
+                </p>
+                <p style="margin: 0 0 8px; color: #57534e; font-size: 14px">Esta ligação é válida durante 24 horas e só pode ser usada uma vez. Se o botão não funcionar, copie este endereço para o seu navegador:</p>
+                <p style="margin: 0 0 24px; color: #57534e; font-size: 14px; word-break: break-all">{{ .SiteURL }}/pt/auth/confirm?token_hash={{ .TokenHash }}&amp;type=invite</p>
+                <p style="margin: 0; color: #57534e; font-size: 14px">Não estava à espera deste email? Pode ignorá-lo com segurança.</p>
+                {{ end }}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

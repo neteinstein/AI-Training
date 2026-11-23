@@ -1,0 +1,247 @@
+{
+  "Metadata": {
+    "title": "AI Training — artificial intelligence courses",
+    "description": "Practical artificial intelligence courses, designed for your profession."
+  },
+  "Common": {
+    "skipToContent": "Skip to content",
+    "language": "Language",
+    "backToHome": "Back to the home page",
+    "opensInNewTab": "opens in a new tab"
+  },
+  "Languages": {
+    "pt": "Português",
+    "en": "English"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved."
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "This page could not be shown. Please try again in a moment.",
+    "retry": "Try again"
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Sign in",
+      "subtitle": "Access your courses and materials.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?",
+      "noAccessTitle": "No access yet?",
+      "noAccessText": "Accounts are created by invitation from the training team.",
+      "requestInfo": "Request information",
+      "invalid": "The email or password is not correct.",
+      "notConfirmed": "This account has not been activated yet. Open the link in your invitation email or ask for a new one.",
+      "tooMany": "Too many attempts. Wait a few minutes and try again."
+    },
+    "forgot": {
+      "title": "Recover access",
+      "subtitle": "Enter your email and we will send you a link to set a new password.",
+      "submit": "Send link",
+      "sent": "If an account exists for this email, we have sent a link. Check your spam folder too.",
+      "back": "Back to sign in"
+    },
+    "confirm": {
+      "stepConfirm": "Confirm",
+      "stepPassword": "Password",
+      "steps": "Steps",
+      "inviteTitle": "You have been invited",
+      "inviteText": "The training team has invited you to {site}. Continue to create your password.",
+      "recoveryTitle": "Set a new password",
+      "recoveryText": "Continue to choose a new password for your account.",
+      "continue": "Continue",
+      "validity": "Next you will choose your password. This link is valid for 24 hours and can be used once.",
+      "unexpected": "Were you not expecting this email? You can safely ignore it.",
+      "expiredTitle": "This link is no longer valid",
+      "expiredText": "The link has expired or has already been used. Enter your email to receive a new one."
+    },
+    "setPassword": {
+      "title": "Choose your password",
+      "subtitle": "You will use it, with your email, to sign in.",
+      "password": "New password",
+      "confirm": "Repeat the password",
+      "help": "At least {min} characters.",
+      "submit": "Save and continue",
+      "samePassword": "Choose a password different from the previous one.",
+      "weak": "This password is too weak. Use at least {min} characters.",
+      "sessionMissing": "Your session has expired. Ask for a new link to continue.",
+      "requestNewLink": "Request a new link",
+      "yourCourses": "{count, plural, one {Your course} other {Your courses}}"
+    },
+    "signOut": "Sign out",
+    "generic": "The request could not be completed. Please try again."
+  },
+  "Validation": {
+    "required": "Fill in this field.",
+    "email": "Enter a valid email address.",
+    "passwordMin": "Use at least {min} characters.",
+    "passwordMismatch": "The passwords do not match.",
+    "tooLong": "Use at most {max} characters.",
+    "slug": "Use only lower-case letters without accents, numbers and hyphens (for example, ai-in-the-classroom).",
+    "choose": "Choose an option.",
+    "duration": "Give the hours as a number between 0.5 and 999 (for example, 8 or 7.5).",
+    "url": "Enter a full address, starting with https://.",
+    "videoUrl": "Paste the link to a YouTube or Vimeo video.",
+    "documentUrl": "Paste the sharing link of a Google Slides, Docs, Sheets or Drive file.",
+    "oneLanguage": "Fill in this field in at least one of the languages.",
+    "fileRequired": "Choose a file.",
+    "emails": "Check {count, plural, one {this address} other {these addresses}}: {invalid}",
+    "tooManyEmails": "Invite at most {max} people at a time.",
+    "passwordSame": "The new password must be different from the current one.",
+    "consent": "Tick this box so that we can reply to your request."
+  },
+  "Learn": {
+    "title": "My courses",
+    "greeting": "Hello, {name}",
+    "loading": "Loading…"
+  },
+  "Trainer": {
+    "title": "Back-office",
+    "loading": "Loading…"
+  },
+  "Nav": {
+    "main": "Main",
+    "courses": "Courses",
+    "howItWorks": "How it works",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "footer": "Footer",
+    "privacy": "Privacy",
+    "memberArea": "Members' area",
+    "home": "Home page"
+  },
+  "Home": {
+    "eyebrow": "Training in artificial intelligence",
+    "title": "AI at the service of those who teach and those who care.",
+    "lead": "Practical artificial intelligence courses designed for your profession. No jargon, examples from your daily work, and all the materials in one place.",
+    "seeCourses": "See the courses",
+    "requestInfo": "Request information",
+    "areas": {
+      "title": "For your field",
+      "lead": "Each course starts from the real challenges of a profession.",
+      "courseCount": "{count, plural, =0 {Courses coming soon} one {# course} other {# courses}}",
+      "missingTitle": "Is your field not here?",
+      "missingText": "Tell us what your profession is through the information request."
+    },
+    "levels": {
+      "title": "{count, plural, =2 {Two levels, at your own pace} other {A level for every stage}}",
+      "lead": "Start from scratch or go deeper into what you already do. Each course states the level it is meant for."
+    },
+    "courses": {
+      "title": "Courses",
+      "lead": "Choose by field and by level.",
+      "seeAll": "See all courses"
+    },
+    "how": {
+      "title": "How it works",
+      "step1Title": "Request information",
+      "step1Text": "Use the form below and tell us which course interests you.",
+      "step2Title": "Receive your invitation",
+      "step2Text": "We send you an invitation by email to create your account and choose a password.",
+      "step3Title": "Learn at your own pace",
+      "step3Text": "Open the course materials on your computer or phone, whenever you need them."
+    },
+    "contact": {
+      "title": "Request information",
+      "lead": "Tell us which course interests you and how we can reach you. Enrolment is by invitation."
+    }
+  },
+  "Catalog": {
+    "title": "Courses",
+    "lead": "All the courses on offer, by field and by level.",
+    "description": "Artificial intelligence courses by professional field and by level.",
+    "area": "Field",
+    "level": "Level",
+    "allAreas": "All fields",
+    "allLevels": "All levels",
+    "hours": "{hours, plural, one {# hour} other {# hours}}",
+    "resultCount": "{count, plural, one {# course} other {# courses}}",
+    "empty": "No courses have been published yet. Please come back soon.",
+    "noMatch": "No course matches this combination of field and level.",
+    "clearFilters": "Clear filters"
+  },
+  "Course": {
+    "breadcrumb": "You are here",
+    "joinLabel": "Take part in this course",
+    "joinTitle": "Want to take part?",
+    "joinText": "Enrolment is by invitation. Ask us for information about this course.",
+    "joinAction": "Request information",
+    "haveInvite": "Already have an invitation?",
+    "signIn": "Sign in",
+    "area": "Field",
+    "level": "Level",
+    "duration": "Duration",
+    "related": "Also for {area}",
+    "about": "About the course",
+    "noDescription": "The description of this course will be published soon.",
+    "onlyIn": {
+      "pt": "This text is only available in Portuguese.",
+      "en": "This text is only available in English."
+    }
+  },
+  "Request": {
+    "formLabel": "Information request",
+    "name": "Name",
+    "email": "Email",
+    "organisation": "Organisation",
+    "optional": "(optional)",
+    "course": "Course of interest",
+    "noCourse": "Not sure yet",
+    "message": "Message",
+    "trap": "Do not fill in this field",
+    "consent": "I have read the <link>privacy policy</link> and agree to be contacted about this request.",
+    "submit": "Send request",
+    "sentTitle": "Request sent",
+    "sentText": "Thank you. We will be in touch with you soon.",
+    "another": "Send another request",
+    "tooMany": "We are receiving many requests right now. Please try again later.",
+    "failed": "The request could not be sent. Please try again in a moment.",
+    "checkFields": "Please check the fields marked below."
+  },
+  "Privacy": {
+    "title": "Privacy policy",
+    "description": "How the platform handles personal data.",
+    "draftTitle": "Provisional text",
+    "draftText": "This page describes how the platform works. The final text, approved by the organisation responsible, will be published before the courses begin.",
+    "sections": {
+      "controller": {
+        "title": "Who is responsible",
+        "text": "{name} is run by [NAME OF THE ORGANISATION], which is responsible for the personal data collected on this site. Contact: [CONTACT EMAIL]."
+      },
+      "data": {
+        "title": "What we collect",
+        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language and the courses you are enrolled in. We do not collect browsing data for advertising and we use no third-party analytics."
+      },
+      "purpose": {
+        "title": "What we use it for",
+        "text": "To answer your request, send you an invitation and give you access to the materials of your courses. We do not sell your data or pass it on for other purposes."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "text": "We only use the cookies the site needs to work: to keep you signed in and to remember the language you chose. We use no advertising cookies."
+      },
+      "thirdParties": {
+        "title": "Content from other services",
+        "text": "Some materials are YouTube or Vimeo videos, or Google documents. That content is only loaded when you choose to open it; from then on the privacy policy of that service also applies."
+      },
+      "storage": {
+        "title": "Where it is kept",
+        "text": "The data is kept on servers in the European Union, with access restricted to the trainers. [CONFIRM PROVIDER AND REGION]"
+      },
+      "retention": {
+        "title": "For how long",
+        "text": "We keep information requests for as long as it takes to answer them, and accounts for as long as you take part in the courses. [PERIODS TO BE DEFINED]"
+      },
+      "rights": {
+        "title": "Your rights",
+        "text": "You can ask to see, correct or delete your data, or withdraw your consent, by writing to the contact above. You can also lodge a complaint with your data protection authority (in Portugal, the CNPD)."
+      }
+    }
+  }
+}
