@@ -10,7 +10,7 @@ import { siteConfig } from "@/config/site";
 import { idleState } from "@/lib/actions/state";
 import { confirmLink } from "./actions";
 import { ForgotPasswordForm } from "./forgot-password-form";
-import { isConfirmType } from "./schemas";
+import { isConfirmType } from "./constants";
 
 /**
  * The page an emailed link opens. Nothing happens until the person presses "Continue":

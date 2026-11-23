@@ -6,17 +6,11 @@ import {
   optionalText,
   requiredText,
 } from "@/lib/validation/rules";
+import { MESSAGE_MAX } from "./constants";
 import type { InfoRequestInput } from "./operations";
 
-export const infoRequestFields = ["name", "email", "organisation", "course_id", "message"] as const;
-
-/**
- * Name of the form's hidden trap field. People never see it; programs that fill in every field
- * do, and their submission is quietly dropped.
- */
-export const TRAP_FIELD = "website";
-
-export const MESSAGE_MAX = 4000;
+// Kept here too, so server code has one place to import from.
+export { infoRequestFields, MESSAGE_MAX, TRAP_FIELD } from "./constants";
 
 export const infoRequestSchema = z
   .object({

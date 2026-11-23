@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { PASSWORD_MIN_LENGTH } from "./constants";
 
-/** Must match `minimum_password_length` in supabase/config.toml and the hosted project. */
-export const PASSWORD_MIN_LENGTH = 10;
+// Kept here too, so server code has one place to import from.
+export { confirmTypes, isConfirmType, PASSWORD_MIN_LENGTH, type ConfirmType } from "./constants";
 
 // Messages are keys of the "Validation" translations, resolved by fieldErrors().
 const email = z.string("required").trim().min(1, "required").pipe(z.email("email"));
@@ -22,11 +23,3 @@ export const setPasswordSchema = z
     path: ["confirm"],
     message: "passwordMismatch",
   });
-
-/** Kinds of emailed link the confirm page accepts. */
-export const confirmTypes = ["invite", "recovery", "magiclink", "signup", "email"] as const;
-export type ConfirmType = (typeof confirmTypes)[number];
-
-export function isConfirmType(value: unknown): value is ConfirmType {
-  return typeof value === "string" && (confirmTypes as readonly string[]).includes(value);
-}

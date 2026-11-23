@@ -15,7 +15,7 @@ import { Link } from "@/i18n/navigation";
 import { idleState } from "@/lib/actions/state";
 import { routes } from "@/lib/routes";
 import { sendInfoRequest } from "./actions";
-import { MESSAGE_MAX, TRAP_FIELD } from "./schemas";
+import { MESSAGE_MAX, TRAP_FIELD } from "./constants";
 
 type CourseOption = { id: string; title: string };
 

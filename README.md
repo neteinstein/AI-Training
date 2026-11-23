@@ -14,7 +14,12 @@ Built with Next.js (App Router) and Supabase (Auth, Postgres, Storage).
 | Sign-in, invitations, password reset, bilingual emails           | Done, tested in the browser     |
 | Logic behind every screen (queries, changes, validation, embeds) | Done, tested against a database |
 | File downloads, security headers                                 | Done, tested in the browser     |
-| Screens: public site, learner area, back-office                  | Next, following the design      |
+| Public site: landing page, catalogue, course page, request form  | Done, tested in the browser     |
+| Learner area: my courses, materials, PDF and document viewers    | Not built yet                   |
+| Back-office screens: courses, materials, users, requests         | Not built yet                   |
+
+Signed-in learners and trainers currently land on placeholder pages. The interface text, the
+privacy notice and the demo catalogue are placeholders to be replaced (see "Going live").
 
 Everything was exercised against a local Supabase stack. The go-live steps at the end of this
 file use the Supabase CLI as it documents itself; they have not been rehearsed against a hosted

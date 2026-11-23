@@ -8,7 +8,7 @@ import { SubmitButton } from "@/components/forms/submit-button";
 import { TextField } from "@/components/forms/text-field";
 import { idleState } from "@/lib/actions/state";
 import { setPassword } from "./actions";
-import { PASSWORD_MIN_LENGTH } from "./schemas";
+import { PASSWORD_MIN_LENGTH } from "./constants";
 
 export function SetPasswordForm({ email }: { email: string }) {
   const t = useTranslations("Auth.setPassword");

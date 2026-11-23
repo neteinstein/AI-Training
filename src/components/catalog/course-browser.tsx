@@ -3,7 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { controlClass } from "@/components/forms/field";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -173,13 +173,19 @@ function FilterSelect({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const id = useId();
   return (
-    <label className="text-muted-foreground flex flex-col gap-1.5 text-[0.8125rem] font-semibold max-sm:w-full">
-      {label}
+    // The label stands beside the select rather than around it, so its name is just "Area"
+    // and not "Area, All areas, Teachers, ..." when a screen reader announces the field.
+    <div className="flex flex-col gap-1.5 max-sm:w-full">
+      <label htmlFor={id} className="text-muted-foreground text-[0.8125rem] font-semibold">
+        {label}
+      </label>
       <select
+        id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className={cn(controlClass, "h-11 px-3 text-[0.9375rem] font-normal sm:min-w-[200px]")}
+        className={cn(controlClass, "h-11 px-3 text-[0.9375rem] sm:min-w-[200px]")}
       >
         <option value="">{all}</option>
         {options.map((option) => (
@@ -188,6 +194,6 @@ function FilterSelect({
           </option>
         ))}
       </select>
-    </label>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { demoUsers, signIn } from "./helpers";
+import { demoCourses, demoUsers, signIn } from "./helpers";
 
 /** Collects everything the browser blocks because of the Content Security Policy. */
 async function watchPolicy(page: Page): Promise<string[]> {
@@ -39,8 +39,18 @@ test.describe("security headers", () => {
   test("the policy blocks nothing the pages need", async ({ page }) => {
     const blocked = await watchPolicy(page);
 
-    await page.goto("/pt");
-    await page.goto("/pt/forgot-password");
+    for (const path of [
+      "/pt",
+      "/pt/courses",
+      `/pt/courses/${demoCourses.classroom.slug}`,
+      "/en/privacy",
+      "/pt/auth/confirm?token_hash=abc&type=invite",
+      "/pt/auth/set-password",
+      "/pt/forgot-password",
+    ]) {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+    }
     await signIn(page, demoUsers.ana.email);
     await expect(page).toHaveURL(/\/pt\/learn$/);
     await page.goto("/pt/nao-existe");
