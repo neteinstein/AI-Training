@@ -79,7 +79,8 @@ export default async function TrainerDashboardPage() {
         </div>
       }
     >
-      <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(11rem,100%),1fr))] gap-3">
+      {/* Six figures: beside the menu they go three or six to a row, so no row is left with one. */}
+      <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(11rem,100%),1fr))] gap-3 md:grid-cols-3 2xl:grid-cols-6">
         {figures.map((figure) => (
           <li key={figure.label} className="flex">
             <Link

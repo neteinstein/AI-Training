@@ -69,11 +69,16 @@ export default async function CourseLearnersPage({ params }: Props) {
                     >
                       {name}
                     </Link>
-                    <span className="text-muted-foreground text-[0.8125rem] break-all">
+                    {/* A long email may break wherever it has to; the date stays in one piece. */}
+                    <span className="text-muted-foreground text-[0.8125rem] wrap-anywhere">
                       {person.fullName ? `${person.email} · ` : ""}
-                      {t("learners.since", {
-                        date: format.dateTime(new Date(person.enrolledAt), { dateStyle: "medium" }),
-                      })}
+                      <span className="whitespace-nowrap">
+                        {t("learners.since", {
+                          date: format.dateTime(new Date(person.enrolledAt), {
+                            dateStyle: "medium",
+                          }),
+                        })}
+                      </span>
                     </span>
                   </span>
                   <span className="flex flex-wrap items-center gap-2">

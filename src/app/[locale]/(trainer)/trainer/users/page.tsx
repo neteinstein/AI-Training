@@ -133,11 +133,14 @@ export default async function UsersPage({ searchParams }: Props) {
                 >
                   {user.fullName || user.email}
                 </Link>
-                <span className="text-muted-foreground text-[0.8125rem] break-all">
+                {/* A long email may break wherever it has to; the date stays in one piece. */}
+                <span className="text-muted-foreground text-[0.8125rem] wrap-anywhere">
                   {user.fullName ? `${user.email} · ` : ""}
-                  {t("users.since", {
-                    date: format.dateTime(new Date(user.createdAt), { dateStyle: "medium" }),
-                  })}
+                  <span className="whitespace-nowrap">
+                    {t("users.since", {
+                      date: format.dateTime(new Date(user.createdAt), { dateStyle: "medium" }),
+                    })}
+                  </span>
                 </span>
               </span>
               <span className="text-muted-foreground text-[0.8125rem]">
