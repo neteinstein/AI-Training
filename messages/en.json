@@ -573,6 +573,7 @@
     "footer": "Footer",
     "privacy": "Privacy",
     "memberArea": "Members' area",
+    "poweredBy": "Powered by <link>Mindera</link>",
     "home": "Home page"
   },
   "Home": {
@@ -667,11 +668,11 @@
     "title": "Privacy policy",
     "description": "How the platform handles personal data.",
     "draftTitle": "Provisional text",
-    "draftText": "This page describes how the platform works. The final text, approved by the organisation responsible, will be published before the courses begin.",
+    "draftText": "This page describes how the platform works. The final text, approved by Mindera, will be published before the courses begin.",
     "sections": {
       "controller": {
         "title": "Who is responsible",
-        "text": "{name} is run by [NAME OF THE ORGANISATION], which is responsible for the personal data collected on this site. Contact: [CONTACT EMAIL]."
+        "text": "{name} is run by <link>Mindera</link> (Mindera Group), which is responsible for the personal data collected on this site. For any question about your data, write to the Mindera data protection officer at <email>dpo@mindera.com</email> or by post to Rua Gonçalo Cristóvão, 347, 4.º piso, sala 404, 4000-270 Porto, Portugal."
       },
       "data": {
         "title": "What we collect",
@@ -691,7 +692,7 @@
       },
       "storage": {
         "title": "Where it is kept",
-        "text": "The data is kept on servers in the European Union, with access restricted to the trainers. [CONFIRM PROVIDER AND REGION]"
+        "text": "The data is kept on servers in the European Union, with access restricted to the trainers and to the Mindera team that runs the platform. [CONFIRM PROVIDER AND REGION]"
       },
       "retention": {
         "title": "For how long",

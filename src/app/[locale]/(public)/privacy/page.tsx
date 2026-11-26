@@ -29,6 +29,8 @@ const sections = [
   "rights",
 ] as const;
 
+const inlineLink = "text-primary hover:text-primary-hover underline";
+
 export default async function PrivacyPage() {
   const t = await getTranslations("Privacy");
 
@@ -51,7 +53,21 @@ export default async function PrivacyPage() {
             <h2 className="font-heading text-[1.625rem] leading-[1.3]">
               {t(`sections.${section}.title`)}
             </h2>
-            <p>{t(`sections.${section}.text`, { name: siteConfig.name })}</p>
+            <p>
+              {t.rich(`sections.${section}.text`, {
+                name: siteConfig.name,
+                link: (chunks) => (
+                  <a href={siteConfig.operator.url} className={inlineLink}>
+                    {chunks}
+                  </a>
+                ),
+                email: (chunks) => (
+                  <a href={`mailto:${siteConfig.operator.privacyEmail}`} className={inlineLink}>
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </p>
           </section>
         ))}
       </div>
