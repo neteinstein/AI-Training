@@ -90,7 +90,8 @@ export type CourseContent = {
 
 export type MaterialPage = {
   course: CourseCard;
-  module: { id: string; title: string };
+  /** `number` is the module's position in the course, starting at 1. */
+  module: { id: string; title: string; number: number };
   material: MaterialItem & {
     /** Markdown, for text pages. */
     body: string;

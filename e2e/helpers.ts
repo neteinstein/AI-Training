@@ -90,3 +90,11 @@ export async function expectSignedOut(page: Page, locale: "pt" | "en" = "pt"): P
   await page.goto(`/${locale}/learn`);
   await expect(page).toHaveURL(new RegExp(`/${locale}/login\\?next=`));
 }
+
+/** Signs out through the account menu of the signed-in areas. */
+export async function signOut(page: Page, locale: "pt" | "en" = "pt"): Promise<void> {
+  const labels =
+    locale === "pt" ? { menu: "Conta", out: "Sair" } : { menu: "Account", out: "Sign out" };
+  await page.getByRole("button", { name: labels.menu }).filter({ visible: true }).click();
+  await page.getByRole("button", { name: labels.out }).click();
+}

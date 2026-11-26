@@ -178,7 +178,11 @@ export async function fetchMaterialPage(
 
   return {
     course: content.course,
-    module: { id: module.id, title: module.title },
+    module: {
+      id: module.id,
+      title: module.title,
+      number: content.modules.findIndex((entry) => entry.id === module.id) + 1,
+    },
     material: { ...material, body, bodyLang },
     previous: neighbour(ordered[index - 1]),
     next: neighbour(ordered[index + 1]),

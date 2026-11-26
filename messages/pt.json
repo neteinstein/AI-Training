@@ -96,7 +96,24 @@
   "Learn": {
     "title": "Os meus cursos",
     "greeting": "Olá, {name}",
-    "loading": "A carregar…"
+    "loading": "A carregar…",
+    "emptyTitle": "Ainda não tem cursos",
+    "emptyText": "Quando a equipa de formação o(a) inscrever num curso, ele aparece aqui.",
+    "browse": "Ver os cursos disponíveis",
+    "modules": "Módulos",
+    "materialCount": "{count, plural, =0 {Ainda sem materiais} one {# material} other {# materiais}}",
+    "noModules": "Este curso ainda não tem conteúdos. Volte em breve.",
+    "moduleLabel": "Módulo {number} · {title}",
+    "download": "Descarregar {title}",
+    "hidden": "Oculto",
+    "previewNote": "Está a ver este curso como um formando. Os materiais marcados como ocultos só aparecem aos formadores.",
+    "editCourse": "Editar no back-office",
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "firstMaterial": "Primeiro material",
+    "lastMaterial": "Último material",
+    "materialsNav": "Materiais do curso",
+    "backToCourses": "Os meus cursos"
   },
   "Trainer": {
     "title": "Back-office",
@@ -243,5 +260,88 @@
         "text": "Pode pedir para consultar, corrigir ou apagar os seus dados, ou retirar o seu consentimento, escrevendo para o contacto acima. Pode também apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD)."
       }
     }
+  },
+  "Materials": {
+    "kind": {
+      "file": "Ficheiro",
+      "video": "Vídeo",
+      "embed": "Documento Google",
+      "link": "Ligação externa",
+      "page": "Página"
+    },
+    "provider": {
+      "youtube": "YouTube",
+      "vimeo": "Vimeo",
+      "google-slides": "Google Slides",
+      "google-docs": "Google Docs",
+      "google-sheets": "Google Sheets",
+      "google-drive": "Google Drive"
+    },
+    "host": {
+      "youtube": "YouTube",
+      "vimeo": "Vimeo",
+      "google": "Google"
+    },
+    "newTab": "abre noutro separador",
+    "hosted": "Este conteúdo está alojado no {host}.",
+    "show": {
+      "youtube": "Mostrar vídeo",
+      "vimeo": "Mostrar vídeo",
+      "google-slides": "Mostrar apresentação",
+      "google-docs": "Mostrar documento",
+      "google-sheets": "Mostrar folha de cálculo",
+      "google-drive": "Mostrar ficheiro"
+    },
+    "always": "Mostrar sempre conteúdo do {host} neste dispositivo",
+    "connects": "Ao mostrar este conteúdo, o seu navegador liga-se aos servidores do {host}.",
+    "openAt": "Abrir no {host}",
+    "unavailable": "Não foi possível preparar este conteúdo. Avise a equipa de formação.",
+    "openLink": "Abrir ligação",
+    "linkNote": "Esta ligação leva-o(a) a outro sítio, num novo separador.",
+    "downloadFile": "Descarregar",
+    "openFile": "Abrir num novo separador",
+    "fileNote": "Este ficheiro não pode ser mostrado aqui. Descarregue-o para o abrir.",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "prompt": "Prompt",
+    "onlyIn": {
+      "pt": "Este texto só está disponível em português.",
+      "en": "Este texto só está disponível em inglês."
+    },
+    "pdf": {
+      "toolbar": "Controlos do documento",
+      "zoomOut": "Reduzir",
+      "zoomIn": "Ampliar",
+      "page": "Página {page} de {total}",
+      "pages": "Páginas do documento",
+      "loading": "A carregar o documento…",
+      "failed": "Não foi possível mostrar o documento aqui. Pode descarregá-lo."
+    }
+  },
+  "Account": {
+    "title": "A minha conta",
+    "menu": "Conta",
+    "signedInAs": "Sessão iniciada como",
+    "backOffice": "Back-office",
+    "learnerArea": "Os meus cursos",
+    "profile": "Dados pessoais",
+    "name": "Nome",
+    "email": "Email",
+    "emailHelp": "Para alterar o email, fale com a equipa de formação.",
+    "language": "Idioma",
+    "languageHelp": "É o idioma da plataforma e dos emails que recebe.",
+    "save": "Guardar",
+    "saved": "Alterações guardadas.",
+    "password": "Palavra-passe",
+    "current": "Palavra-passe atual",
+    "new": "Nova palavra-passe",
+    "confirm": "Repetir a nova palavra-passe",
+    "help": "Pelo menos {min} caracteres.",
+    "change": "Alterar palavra-passe",
+    "changed": "Palavra-passe alterada.",
+    "wrong": "A palavra-passe atual não está correta.",
+    "same": "Escolha uma palavra-passe diferente da atual.",
+    "weak": "Esta palavra-passe é demasiado fraca. Use pelo menos {min} caracteres.",
+    "checkFields": "Verifique os campos assinalados."
   }
 }

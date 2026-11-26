@@ -43,6 +43,9 @@
   --glyph-rest: #cfc6b6;
   --glyph-rest-on-tint: #b9cdbb;
 
+  /* Behind the pages of the PDF viewer */
+  --pdf-backdrop: #e8decb;
+
   /* Lines */
   --border: #e9dfcf; /* card outlines, dividers (decorative) */
   --input: #8a8178; /* form-field outlines (3.7:1 on cream) */
@@ -110,6 +113,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-pdf-backdrop: var(--pdf-backdrop);
   --color-glyph-rest: var(--glyph-rest);
   --color-glyph-rest-on-tint: var(--glyph-rest-on-tint);
 
@@ -166,6 +170,8 @@
   html {
     @apply font-sans;
     -webkit-text-size-adjust: 100%;
+    /* Keeps the page from shifting sideways when a scrollbar appears or disappears. */
+    scrollbar-gutter: stable;
   }
   body {
     @apply bg-background text-foreground;

@@ -10,6 +10,7 @@ import {
   field,
   latestEmailTo,
   signIn,
+  signOut,
   uniqueEmail,
 } from "./helpers";
 
@@ -22,7 +23,7 @@ test.describe("signing in", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Os meus cursos" })).toBeVisible();
     await expect(page.getByText(`Olá, ${demoUsers.ana.fullName}`)).toBeVisible();
 
-    await page.getByRole("button", { name: "Sair" }).click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/pt$/);
     await expectSignedOut(page);
   });
@@ -80,7 +81,7 @@ test.describe("signing in", () => {
     await page.goto(`/pt/login?next=${encodeURIComponent("https://evil.example/learn")}`);
     await signIn(page, demoUsers.ana.email);
     await expect(page).toHaveURL(/\/pt\/learn$/);
-    await page.getByRole("button", { name: "Sair" }).click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/pt$/);
 
     await page.goto(`/pt/login?next=${encodeURIComponent("/trainer/users")}`);
@@ -168,7 +169,7 @@ test.describe("invitations", () => {
       await expect(page.getByText("Hello, Marta Convidada")).toBeVisible();
 
       // The same link a second time: no longer valid, with a way to get a new one.
-      await page.getByRole("button", { name: "Sign out" }).click();
+      await signOut(page, "en");
       await expect(page).toHaveURL(/\/en$/);
       await page.goto(message.link);
       await page.getByRole("button", { name: "Continue" }).click();
@@ -236,7 +237,7 @@ test.describe("forgotten password", () => {
       await page.getByRole("button", { name: "Guardar e continuar" }).click();
       await expect(page).toHaveURL(/\/pt\/learn$/);
 
-      await page.getByRole("button", { name: "Sair" }).click();
+      await signOut(page);
       await expect(page).toHaveURL(/\/pt$/);
       await signIn(page, email, DEMO_PASSWORD);
       await expect(alertWith(page, "não estão corretos")).toBeVisible();

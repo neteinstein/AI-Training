@@ -96,7 +96,24 @@
   "Learn": {
     "title": "My courses",
     "greeting": "Hello, {name}",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "emptyTitle": "You have no courses yet",
+    "emptyText": "When the training team enrols you in a course, it appears here.",
+    "browse": "See the courses on offer",
+    "modules": "Modules",
+    "materialCount": "{count, plural, =0 {No materials yet} one {# material} other {# materials}}",
+    "noModules": "This course has no content yet. Please come back soon.",
+    "moduleLabel": "Module {number} · {title}",
+    "download": "Download {title}",
+    "hidden": "Hidden",
+    "previewNote": "You are viewing this course as a learner would. Materials marked as hidden are only shown to trainers.",
+    "editCourse": "Edit in the back-office",
+    "previous": "Previous",
+    "next": "Next",
+    "firstMaterial": "First material",
+    "lastMaterial": "Last material",
+    "materialsNav": "Course materials",
+    "backToCourses": "My courses"
   },
   "Trainer": {
     "title": "Back-office",
@@ -243,5 +260,88 @@
         "text": "You can ask to see, correct or delete your data, or withdraw your consent, by writing to the contact above. You can also lodge a complaint with your data protection authority (in Portugal, the CNPD)."
       }
     }
+  },
+  "Materials": {
+    "kind": {
+      "file": "File",
+      "video": "Video",
+      "embed": "Google document",
+      "link": "External link",
+      "page": "Page"
+    },
+    "provider": {
+      "youtube": "YouTube",
+      "vimeo": "Vimeo",
+      "google-slides": "Google Slides",
+      "google-docs": "Google Docs",
+      "google-sheets": "Google Sheets",
+      "google-drive": "Google Drive"
+    },
+    "host": {
+      "youtube": "YouTube",
+      "vimeo": "Vimeo",
+      "google": "Google"
+    },
+    "newTab": "opens in a new tab",
+    "hosted": "This content is hosted by {host}.",
+    "show": {
+      "youtube": "Show video",
+      "vimeo": "Show video",
+      "google-slides": "Show presentation",
+      "google-docs": "Show document",
+      "google-sheets": "Show spreadsheet",
+      "google-drive": "Show file"
+    },
+    "always": "Always show content from {host} on this device",
+    "connects": "When you show this content, your browser connects to {host}'s servers.",
+    "openAt": "Open in {host}",
+    "unavailable": "This content could not be prepared. Please tell the training team.",
+    "openLink": "Open link",
+    "linkNote": "This link takes you to another site, in a new tab.",
+    "downloadFile": "Download",
+    "openFile": "Open in a new tab",
+    "fileNote": "This file cannot be shown here. Download it to open it.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "prompt": "Prompt",
+    "onlyIn": {
+      "pt": "This text is only available in Portuguese.",
+      "en": "This text is only available in English."
+    },
+    "pdf": {
+      "toolbar": "Document controls",
+      "zoomOut": "Zoom out",
+      "zoomIn": "Zoom in",
+      "page": "Page {page} of {total}",
+      "pages": "Document pages",
+      "loading": "Loading the document…",
+      "failed": "The document could not be shown here. You can download it."
+    }
+  },
+  "Account": {
+    "title": "My account",
+    "menu": "Account",
+    "signedInAs": "Signed in as",
+    "backOffice": "Back-office",
+    "learnerArea": "My courses",
+    "profile": "Personal details",
+    "name": "Name",
+    "email": "Email",
+    "emailHelp": "To change your email, talk to the training team.",
+    "language": "Language",
+    "languageHelp": "It is the language of the platform and of the emails you receive.",
+    "save": "Save",
+    "saved": "Changes saved.",
+    "password": "Password",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Repeat the new password",
+    "help": "At least {min} characters.",
+    "change": "Change password",
+    "changed": "Password changed.",
+    "wrong": "The current password is not correct.",
+    "same": "Choose a password different from the current one.",
+    "weak": "This password is too weak. Use at least {min} characters.",
+    "checkFields": "Please check the fields marked below."
   }
 }

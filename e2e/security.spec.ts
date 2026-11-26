@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { demoCourses, demoUsers, signIn } from "./helpers";
+import { demoCourses, demoMaterials, demoUsers, signIn } from "./helpers";
 
 /** Collects everything the browser blocks because of the Content Security Policy. */
 async function watchPolicy(page: Page): Promise<string[]> {
@@ -53,6 +53,19 @@ test.describe("security headers", () => {
     }
     await signIn(page, demoUsers.ana.email);
     await expect(page).toHaveURL(/\/pt\/learn$/);
+
+    // The learner area: a course, a text page, the PDF viewer (its worker and the file from
+    // storage) and a video frame once it has been asked for.
+    const course = `/pt/learn/courses/${demoCourses.classroom.slug}`;
+    await page.goto(course);
+    await page.goto(`${course}/materials/${demoMaterials.promptGuide}`);
+    await page.goto(`${course}/materials/${demoMaterials.slidesPdf}`);
+    await expect(page.getByLabel("Página 1 de 6")).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
+    await page.goto(`${course}/materials/${demoMaterials.video}`);
+    await page.getByRole("button", { name: "Mostrar vídeo" }).click();
+    await expect(page.locator("iframe")).toHaveCount(1);
+    await page.goto("/pt/learn/account");
     await page.goto("/pt/nao-existe");
     await page.waitForLoadState("networkidle");
 
