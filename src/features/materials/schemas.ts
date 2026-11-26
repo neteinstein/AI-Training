@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { parseDocumentUrl, parseExternalLink, parseVideoUrl } from "@/lib/embeds/parse";
 import { longText, optionalLocale, optionalText } from "@/lib/validation/rules";
+import { BODY_MAX, TITLE_MAX } from "./constants";
 import type { FileMaterialInput, MaterialInput, ModuleInput } from "./operations";
 
 /**
@@ -11,9 +12,6 @@ const inOneLanguage =
   <First extends string, Second extends string>(first: First, second: Second) =>
   (value: Record<First | Second, string>) =>
     value[first].trim() !== "" || value[second].trim() !== "";
-
-export const TITLE_MAX = 200;
-export const BODY_MAX = 100_000;
 
 export const moduleFields = ["title_pt", "title_en", "description_pt", "description_en"] as const;
 

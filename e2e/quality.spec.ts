@@ -1,0 +1,270 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test, type Page } from "@playwright/test";
+import { admin, demoCourses, demoMaterials, demoUsers, signIn, signInAsTrainer } from "./helpers";
+
+/**
+ * Checks that apply to every screen: the automated accessibility rules (WCAG 2.1 A and AA,
+ * plus the 2.2 additions), and no sideways scrolling on the narrowest phones.
+ *
+ * Automated rules find perhaps a third of accessibility problems. The rest is covered by the
+ * tests that use each screen through roles and names, as assistive technology does, and by
+ * the keyboard tests at the end of this file.
+ */
+
+const classroom = demoCourses.classroom;
+const learnCourse = `/pt/learn/courses/${classroom.slug}`;
+const trainerCourse = `/pt/trainer/courses/${classroom.id}`;
+
+const publicPages = [
+  "/pt",
+  "/en",
+  "/pt/courses",
+  `/pt/courses/${classroom.slug}`,
+  "/pt/privacy",
+  "/pt/login",
+  "/pt/forgot-password",
+  "/pt/esta-pagina-nao-existe",
+];
+
+const learnerPages = [
+  "/pt/learn",
+  learnCourse,
+  `${learnCourse}/materials/${demoMaterials.promptGuide}`,
+  `${learnCourse}/materials/${demoMaterials.video}`,
+  `${learnCourse}/materials/${demoMaterials.link}`,
+  `${learnCourse}/materials/${demoMaterials.slidesPdf}`,
+  "/pt/learn/account",
+];
+
+const trainerPages = [
+  "/pt/trainer",
+  "/pt/trainer/courses",
+  "/pt/trainer/courses/new",
+  trainerCourse,
+  `${trainerCourse}/content`,
+  `${trainerCourse}/content/modules/new`,
+  `${trainerCourse}/content/materials/${demoMaterials.promptGuide}`,
+  `${trainerCourse}/content/materials/${demoMaterials.slidesPdf}`,
+  `${trainerCourse}/content/materials/${demoMaterials.video}`,
+  `${trainerCourse}/learners`,
+  "/pt/trainer/areas",
+  "/pt/trainer/areas/new",
+  "/pt/trainer/levels",
+  "/pt/trainer/users",
+  "/pt/trainer/users/invite",
+  `/pt/trainer/users/${demoUsers.ana.id}`,
+  "/pt/trainer/requests",
+  "/en/trainer/courses",
+];
+
+async function settle(page: Page, path: string) {
+  await page.goto(path);
+  await expect(page.locator("main#content, main").first()).toBeVisible();
+  await page.waitForLoadState("networkidle");
+}
+
+/** The accessibility problems the automated rules find on each page, as readable lines. */
+async function accessibilityProblems(page: Page, paths: string[]): Promise<string[]> {
+  const problems: string[] = [];
+  for (const path of paths) {
+    await settle(page, path);
+    // (The cast bridges two copies of Playwright's types; the page object is the same.)
+    const { violations } = await new AxeBuilder({ page: page as never })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    for (const violation of violations) {
+      for (const node of violation.nodes) {
+        problems.push(`${path} · ${violation.id} · ${node.target.join(" ")}`);
+      }
+    }
+  }
+  return problems;
+}
+
+/** Pages that are wider than a 320px screen, with by how much. */
+async function overflowing(page: Page, paths: string[]): Promise<string[]> {
+  const wide: string[] = [];
+  for (const path of paths) {
+    await settle(page, path);
+    const extra = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    if (extra > 1) wide.push(`${path} is ${extra}px too wide`);
+  }
+  return wide;
+}
+
+test.describe("accessibility rules", () => {
+  test("public pages", async ({ page }) => {
+    expect(await accessibilityProblems(page, publicPages)).toEqual([]);
+  });
+
+  test("learner area", async ({ page }) => {
+    await signIn(page, demoUsers.ana.email);
+    await expect(page).toHaveURL(/\/pt\/learn$/);
+    expect(await accessibilityProblems(page, learnerPages)).toEqual([]);
+  });
+
+  test("back-office", async ({ page }) => {
+    test.slow();
+    await signInAsTrainer(page);
+    expect(await accessibilityProblems(page, trainerPages)).toEqual([]);
+  });
+});
+
+test.describe("on the narrowest phones", () => {
+  // One pass is enough: the page's width does not depend on the device being emulated.
+  test.skip(({ isMobile }) => !isMobile, "checked in the phone project");
+  test.use({ viewport: { width: 320, height: 700 } });
+
+  test("public pages do not scroll sideways", async ({ page }) => {
+    expect(await overflowing(page, publicPages)).toEqual([]);
+  });
+
+  test("the learner area does not scroll sideways", async ({ page }) => {
+    await signIn(page, demoUsers.ana.email);
+    await expect(page).toHaveURL(/\/pt\/learn$/);
+    expect(await overflowing(page, learnerPages)).toEqual([]);
+  });
+
+  test("the back-office does not scroll sideways", async ({ page }) => {
+    test.slow();
+    await signInAsTrainer(page);
+    expect(await overflowing(page, trainerPages)).toEqual([]);
+  });
+});
+
+test.describe("with the keyboard alone", () => {
+  test.skip(({ isMobile }) => isMobile, "a physical keyboard goes with the desktop project");
+
+  test("the course builder: fold a module, switch visibility, use a row's menu", async ({
+    page,
+  }) => {
+    await signInAsTrainer(page);
+    // These widgets only answer once the page's scripts have started.
+    await settle(page, `${trainerCourse}/content`);
+
+    // A folded module opens with Enter and says so.
+    const toggle = page.getByRole("button", { name: "Abrir Planificar aulas" });
+    await toggle.focus();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await page.keyboard.press("Enter");
+    const opened = page.getByRole("button", { name: "Fechar Planificar aulas" });
+    await expect(opened).toHaveAttribute("aria-expanded", "true");
+    await expect(opened).toBeFocused();
+    await expect(page.getByRole("link", { name: "Plano de aula modelo" })).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    // The switch is a switch: Space flips it, and it keeps the focus. Each change is waited
+    // for in the database, so the demo material is certain to end hidden, as it began.
+    const visibility = page.getByRole("switch", {
+      name: "Visível para os formandos: Notas do formador (rascunho)",
+    });
+    const saved = async () =>
+      (
+        await admin()
+          .from("materials")
+          .select("is_published")
+          .eq("id", demoMaterials.hiddenNotes)
+          .single()
+      ).data?.is_published;
+    try {
+      await visibility.focus();
+      await expect(visibility).not.toBeChecked();
+      await page.keyboard.press("Space");
+      await expect(visibility).toBeChecked();
+      await expect(visibility).toBeFocused();
+      await expect.poll(saved).toBe(true);
+      await page.keyboard.press("Space");
+      await expect(visibility).not.toBeChecked();
+      await expect.poll(saved).toBe(false);
+    } finally {
+      await admin()
+        .from("materials")
+        .update({ is_published: false })
+        .eq("id", demoMaterials.hiddenNotes);
+    }
+
+    // The menu opens on its first entry, the arrows move through it, Escape gives the focus back.
+    const more = page.getByRole("button", { name: "Mais ações: Guia de prompts" });
+    await more.focus();
+    await page.keyboard.press("Enter");
+    const menu = page.getByRole("menu");
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole("menuitem", { name: "Editar" })).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(menu.getByRole("menuitem", { name: "Ver como formando" })).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(menu.getByRole("menuitem", { name: "Eliminar" })).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveCount(0);
+    await expect(more).toBeFocused();
+
+    // Choosing "delete" asks first; the question keeps the focus inside until it is answered.
+    // Each key waits for what the one before it did: the menu and the dialog take a moment
+    // to place the focus.
+    await page.keyboard.press("Enter");
+    await expect(menu.getByRole("menuitem", { name: "Editar" })).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(menu.getByRole("menuitem", { name: "Eliminar" })).toBeFocused();
+    await page.keyboard.press("Enter");
+    const dialog = page.getByRole("alertdialog");
+    await expect(dialog).toContainText("Eliminar «Guia de prompts»?");
+    const focusInside = () =>
+      dialog.evaluate((element) => element.contains(document.activeElement));
+    await expect.poll(focusInside).toBe(true);
+    for (let presses = 0; presses < 4; presses += 1) {
+      await page.keyboard.press("Tab");
+      expect(await focusInside(), "focus stays in the dialog").toBe(true);
+    }
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Guia de prompts" })).toBeVisible();
+  });
+
+  test("a list: moving keeps the place, and a cancelled deletion returns to its button", async ({
+    page,
+  }) => {
+    await signInAsTrainer(page);
+    await settle(page, "/pt/trainer/levels");
+
+    // An unavailable move stays reachable and says it is unavailable, instead of vanishing
+    // from the tab order.
+    const firstUp = page.getByRole("button", { name: "Mover Iniciação para cima" });
+    await firstUp.focus();
+    await expect(firstUp).toBeFocused();
+    await expect(firstUp).toHaveAttribute("aria-disabled", "true");
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("list", { name: "Níveis" }).locator("> li > span.flex-col > span:first-child"),
+    ).toHaveText(["Iniciação", "Avançado"]);
+
+    const remove = page.getByRole("button", { name: "Eliminar Avançado" });
+    await remove.focus();
+    await page.keyboard.press("Enter");
+    const dialog = page.getByRole("alertdialog");
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(remove).toBeFocused();
+  });
+
+  test("the skip link is the first stop and leads into the page", async ({ page }) => {
+    await signInAsTrainer(page);
+    await settle(page, "/pt/trainer/courses");
+    await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
+    await page.keyboard.press("Tab");
+    const skip = page.getByRole("link", { name: "Saltar para o conteúdo" });
+    await expect(skip).toBeFocused();
+    await expect(skip).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#content$/);
+    // The next stop is inside the page's main part, past the menu.
+    await page.keyboard.press("Tab");
+    const inMain = await page.evaluate(
+      () => document.querySelector("main#content")?.contains(document.activeElement) ?? false,
+    );
+    expect(inMain).toBe(true);
+  });
+});

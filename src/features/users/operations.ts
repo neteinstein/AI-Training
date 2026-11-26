@@ -3,6 +3,7 @@ import { confirmUrl } from "@/lib/auth/links";
 import { PG } from "@/lib/dal/mutations";
 import type { Client, UserRole } from "@/lib/dal/types";
 import { isUuid } from "@/lib/ids";
+import { MAX_INVITES } from "./constants";
 
 /**
  * User management that needs the Auth admin API. Every function takes two clients:
@@ -55,7 +56,7 @@ export type InviteResult = {
   link?: string;
 };
 
-export const MAX_INVITES_PER_REQUEST = 100;
+export const MAX_INVITES_PER_REQUEST = MAX_INVITES;
 
 /** Lower-cases, trims and de-duplicates a list of addresses. */
 export function normaliseEmails(raw: string[]): string[] {

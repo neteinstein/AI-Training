@@ -18,7 +18,7 @@ test.describe("landing page", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "A IA ao serviço de quem ensina e de quem cuida.",
+        name: "A Inteligência Artificial ao seu serviço",
       }),
     ).toBeVisible();
 
@@ -38,8 +38,8 @@ test.describe("landing page", () => {
       await expect(courses.getByRole("heading", { name: title, exact: true })).toBeVisible();
     }
     // Drafts and unlisted courses never reach the public site.
-    await expect(page.getByText("líderes escolares")).toHaveCount(0);
-    await expect(page.getByText("edição privada")).toHaveCount(0);
+    await expect(page.getByText("direções escolares")).toHaveCount(0);
+    await expect(page.getByText("edição interna")).toHaveCount(0);
   });
 
   test("is fully translated", async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe("landing page", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "AI at the service of those who teach and those who care.",
+        name: "Artificial Intelligence at your service",
       }),
     ).toBeVisible();
     await expect(page.getByRole("link", { name: /Teachers[\s\S]*2 courses/ })).toBeVisible();
@@ -155,7 +155,7 @@ test.describe("course page", () => {
       await expect(
         page.getByRole("heading", { level: 1, name: "Página não encontrada" }),
       ).toBeVisible();
-      await expect(page.getByText("líderes escolares")).toHaveCount(0);
+      await expect(page.getByText("direções escolares")).toHaveCount(0);
 
       // The very first visit to an address is streamed, so it cannot carry a 404 status;
       // it is marked "noindex" instead. Every later visit answers 404.

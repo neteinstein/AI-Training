@@ -10,18 +10,22 @@ export function NavLink({
   children,
   className,
   activeClassName = "text-primary font-semibold",
+  exact = false,
   onNavigate,
 }: {
   href: string;
   children: ReactNode;
   className?: string;
   activeClassName?: string;
+  /** Only the page itself counts as current, not the pages under it. */
+  exact?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const target = href.split("#")[0];
   // A link to a section of the home page is never "the current page".
-  const active = !href.includes("#") && (pathname === target || pathname.startsWith(`${target}/`));
+  const active =
+    !href.includes("#") && (pathname === target || (!exact && pathname.startsWith(`${target}/`)));
 
   return (
     <Link

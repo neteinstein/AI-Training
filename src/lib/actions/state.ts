@@ -10,3 +10,11 @@ export type ActionState = {
 };
 
 export const idleState: ActionState = { status: "idle" };
+
+/**
+ * Cookie that carries one message to the next page, for actions that end by sending the
+ * person somewhere else ("Course created"). The page shows it once and deletes it.
+ */
+export const NOTICE_COOKIE = "notice";
+
+export type Notice = { status: "success" | "error"; message: string };

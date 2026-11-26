@@ -3,6 +3,7 @@ import ReactMarkdown, { type Components } from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
+import { CodeBlock } from "./code-block";
 
 /**
  * Renders Markdown written by trainers (course descriptions, text pages).
@@ -87,15 +88,41 @@ const components: Components = {
   ),
 };
 
+export type CopyLabels = { copy: string; copied: string; prompt: string };
+
+/** Code blocks with a "Copy" button; a block written as ```prompt gets the "Prompt" label. */
+function withCopy(labels: CopyLabels): Components {
+  return {
+    pre: ({ node, children }) => {
+      const code = (node as HastNode | undefined)?.children?.[0] as
+        { properties?: { className?: unknown } } | undefined;
+      const classes = code?.properties?.className;
+      const isPrompt = Array.isArray(classes) && classes.includes("language-prompt");
+      return (
+        <CodeBlock
+          label={isPrompt ? labels.prompt : undefined}
+          copyLabel={labels.copy}
+          copiedLabel={labels.copied}
+        >
+          {children}
+        </CodeBlock>
+      );
+    },
+  };
+}
+
 export function Markdown({
   children,
   className,
   size = "base",
+  copyLabels,
 }: {
   children: string;
   className?: string;
   /** "reading" is the larger size used for text pages. */
   size?: "base" | "reading";
+  /** Give these to turn code blocks into panels with a "Copy" button. */
+  copyLabels?: CopyLabels;
 }) {
   return (
     <div
@@ -125,7 +152,7 @@ export function Markdown({
         rehypePlugins={[rehypeSanitize, rehypeHeadingsFromH2]}
         skipHtml
         disallowedElements={["img"]}
-        components={components}
+        components={copyLabels ? { ...components, ...withCopy(copyLabels) } : components}
       >
         {children}
       </ReactMarkdown>

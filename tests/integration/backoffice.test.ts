@@ -32,7 +32,7 @@ import {
   moveMaterialToModule,
   moveModule,
   prepareUpload,
-  publishAllMaterials,
+  publishModuleMaterials,
   removeAbandonedUploads,
   replaceMaterialFile,
   setMaterialPublished,
@@ -567,9 +567,10 @@ describe("modules and materials", () => {
     ).toEqual({ ok: false, reason: "not_found" });
     expect((await materialRow(page.id)).kind).toBe("page");
 
-    // The remaining hidden materials of the course become visible in one go.
-    expect(await publishAllMaterials(learner.client, catalogue.courses.draft)).toBe(0);
-    expect(await publishAllMaterials(trainer.client, catalogue.courses.draft)).toBe(2);
+    // The remaining hidden materials of the module become visible in one go.
+    expect(await publishModuleMaterials(learner.client, moduleId)).toBe(0);
+    expect(await publishModuleMaterials(trainer.client, secondModuleId)).toBe(0);
+    expect(await publishModuleMaterials(trainer.client, moduleId)).toBe(2);
     expect((await materialRow(slides.id)).is_published).toBe(true);
 
     // Moving to another module of the course, but never to another course.
@@ -667,10 +668,32 @@ describe("modules and materials", () => {
       new RegExp(`^${catalogue.courses.draft}/[0-9a-f-]{36}\\.pdf$`),
     );
 
+    // Someone who is not a trainer gets no location and no token, even for a course they follow.
+    expect(
+      await prepareUpload(learner.client, {
+        moduleId: catalogue.modules.published,
+        fileName: "a.pdf",
+        sizeBytes: 10,
+      }),
+    ).toEqual({ ok: false, reason: "not_found" });
+
+    // The token is good for that one location only.
+    const elsewhere = await trainer.client.storage
+      .from(BUCKET)
+      .uploadToSignedUrl(
+        `${catalogue.courses.draft}/${randomUUID()}.pdf`,
+        prepared.uploadToken,
+        pdf,
+        { contentType: prepared.contentType },
+      );
+    expect(elsewhere.error).not.toBeNull();
+
     // The browser uploads to exactly that location; then the material is recorded.
     const first = await trainer.client.storage
       .from(BUCKET)
-      .upload(prepared.storagePath, pdf, { contentType: prepared.contentType });
+      .uploadToSignedUrl(prepared.storagePath, prepared.uploadToken, pdf, {
+        contentType: prepared.contentType,
+      });
     expect(first.error).toBeNull();
     const created = await createFileMaterial(trainer.client, {
       moduleId,

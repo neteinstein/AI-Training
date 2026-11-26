@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { buttonClass } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
 import { LocaleSwitcher } from "./locale-switcher";
@@ -21,7 +22,8 @@ export async function SiteHeader() {
       <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center justify-between gap-x-8 gap-y-3 py-2 pr-2.5 pl-5 md:px-6 md:py-3.5">
         <Link
           href={routes.home}
-          aria-label={t("home")}
+          // Starts with the name on screen, so voice control finds it by what is shown.
+          aria-label={`${siteConfig.name}: ${t("home")}`}
           className="text-foreground flex min-h-11 items-center no-underline"
         >
           <Logo className="max-md:[&>span]:text-xl max-md:[&>svg]:size-[30px]" />

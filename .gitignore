@@ -50,3 +50,6 @@ next-env.d.ts
 # supabase local state
 /supabase/.temp/
 /supabase/.branches/
+
+# PDF viewer assets, copied from node_modules after install
+/public/pdfjs/

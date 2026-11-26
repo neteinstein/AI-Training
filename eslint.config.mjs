@@ -25,6 +25,7 @@ const eslintConfig = defineConfig([
     "playwright-report/**",
     "test-results/**",
     "supabase/**",
+    "public/pdfjs/**",
     "src/lib/supabase/database.types.ts",
   ]),
 ]);

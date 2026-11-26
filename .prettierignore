@@ -9,3 +9,4 @@ supabase/.branches
 src/app/fonts
 AGENTS.md
 supabase/templates
+public/pdfjs

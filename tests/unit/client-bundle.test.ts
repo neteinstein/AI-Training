@@ -33,6 +33,18 @@ describe("browser bundle", () => {
     expect(offenders.map((file) => relative(root, file))).toEqual([]);
   });
 
+  /**
+   * A Server Component that imports a plain value from a "use client" file does not get the
+   * value: it gets a reference to it, which renders as nothing. (That is how a set of class
+   * names once reached the page as `undefined`.) So client files export components, hooks and
+   * types only; shared constants live in a plain module.
+   */
+  test("no Client Component file exports plain data", () => {
+    const dataExport = /^export const [a-z]\w*(?:\s*:[^=\n]+)?\s*=\s*(?:[{["'`\d]|true\b|false\b)/m;
+    const offenders = clientFiles.filter((file) => dataExport.test(readFileSync(file, "utf8")));
+    expect(offenders.map((file) => relative(root, file))).toEqual([]);
+  });
+
   test("constants files stay free of the validation library", () => {
     const constants = sourceFiles(root).filter((file) => file.endsWith("constants.ts"));
     expect(constants.length).toBeGreaterThanOrEqual(2);
