@@ -61,10 +61,21 @@ jobs:
       # The tests run against the production build.
       - run: npm run build
       - run: npx playwright install --with-deps chromium
+      # SCREENS=1 also saves pictures of the main screens and of an email (e2e/screens.spec.ts).
       - run: npm run e2e
+        env:
+          SCREENS: "1"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+      # Kept for a week with every run, so the look of a change can be reviewed from here.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screens
+          path: e2e-screens
+          retention-days: 7
+          if-no-files-found: ignore
