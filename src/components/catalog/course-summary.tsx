@@ -10,9 +10,7 @@ export function CourseSummary({ course, className }: { course: Course; className
       className={cn("border-border bg-card flex flex-col gap-3 rounded-2xl border p-5", className)}
     >
       <AreaChip area={course.area} className="self-start" />
-      <span className="font-heading text-[1.375rem] leading-tight font-semibold">
-        {course.title}
-      </span>
+      <span className="font-heading text-[1.375rem] leading-tight">{course.title}</span>
       <CourseFacts course={course} />
     </div>
   );

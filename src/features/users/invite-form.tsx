@@ -60,7 +60,7 @@ export function InviteForm({
           aria-labelledby="invite-results"
           className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5"
         >
-          <h2 id="invite-results" className="font-heading text-xl leading-tight font-semibold">
+          <h2 id="invite-results" className="font-heading text-xl leading-tight">
             {t("users.resultsTitle")}
           </h2>
           <ul className="flex list-none flex-col gap-4">

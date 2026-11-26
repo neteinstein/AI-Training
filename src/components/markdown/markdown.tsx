@@ -129,8 +129,8 @@ export function Markdown({
       className={cn(
         "prose text-foreground max-w-[68ch]",
         size === "reading" ? "text-lg leading-[1.65]" : "text-[1.0625rem] leading-[1.65]",
-        // Headings: serif, per the style sheet.
-        "prose-headings:font-heading prose-headings:font-semibold prose-headings:text-foreground prose-headings:tracking-[-0.01em]",
+        // Headings: the theme's heading typeface, weight and letter-spacing.
+        "prose-headings:font-heading prose-headings:text-foreground prose-headings:[font-weight:var(--heading-weight)] prose-headings:[letter-spacing:var(--heading-tracking)]",
         "prose-h2:mt-9 prose-h2:mb-3 prose-h2:text-[1.625rem] prose-h2:leading-[1.3]",
         "prose-h3:mt-7 prose-h3:mb-2 prose-h3:text-[1.375rem] prose-h3:leading-[1.3]",
         "prose-h4:mt-6 prose-h4:mb-2 prose-h4:text-lg",

@@ -83,8 +83,8 @@ export default async function LearnMaterialPage({ params }: Props) {
             lang={titleLang}
             className={
               reading
-                ? "font-heading text-3xl leading-[1.2] font-[550] tracking-[-0.01em] sm:text-4xl"
-                : "font-heading text-2xl leading-[1.2] font-[550] tracking-[-0.01em] sm:text-3xl"
+                ? "font-heading text-3xl leading-[1.2] sm:text-4xl"
+                : "font-heading text-2xl leading-[1.2] sm:text-3xl"
             }
           >
             {material.title}

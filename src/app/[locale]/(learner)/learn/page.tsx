@@ -34,9 +34,7 @@ export default async function LearnPage() {
           <p className="text-muted-foreground">
             {t("greeting", { name: user.fullName || user.email })}
           </p>
-          <h1 className="font-heading text-[1.75rem] leading-tight font-[550] tracking-[-0.01em] sm:text-4xl">
-            {t("title")}
-          </h1>
+          <h1 className="font-heading text-[1.75rem] leading-tight sm:text-4xl">{t("title")}</h1>
         </div>
 
         {courses.length > 0 ? (
@@ -54,7 +52,7 @@ export default async function LearnPage() {
           </ul>
         ) : (
           <div className="border-input flex flex-col items-start gap-3 rounded-2xl border-[1.5px] border-dashed p-6 sm:p-8">
-            <h2 className="font-heading text-2xl leading-tight font-semibold">{t("emptyTitle")}</h2>
+            <h2 className="font-heading text-2xl leading-tight">{t("emptyTitle")}</h2>
             <p className="text-muted-foreground max-w-[34em]">{t("emptyText")}</p>
             <Link
               href={user.role === "trainer" ? routes.trainerCourses : routes.courses}

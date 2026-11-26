@@ -29,19 +29,13 @@ export default async function AccountPage() {
         id="content"
         className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-6 px-5 pt-6 pb-10 sm:pt-10"
       >
-        <h1 className="font-heading text-3xl leading-[1.2] font-[550] tracking-[-0.01em] sm:text-4xl">
-          {t("title")}
-        </h1>
+        <h1 className="font-heading text-3xl leading-[1.2] sm:text-4xl">{t("title")}</h1>
         <section className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5 sm:p-7">
-          <h2 className="font-heading text-[1.375rem] leading-tight font-semibold">
-            {t("profile")}
-          </h2>
+          <h2 className="font-heading text-[1.375rem] leading-tight">{t("profile")}</h2>
           <ProfileForm fullName={user.fullName} email={user.email} language={user.locale} />
         </section>
         <section className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5 sm:p-7">
-          <h2 className="font-heading text-[1.375rem] leading-tight font-semibold">
-            {t("password")}
-          </h2>
+          <h2 className="font-heading text-[1.375rem] leading-tight">{t("password")}</h2>
           <PasswordForm email={user.email} />
         </section>
       </main>

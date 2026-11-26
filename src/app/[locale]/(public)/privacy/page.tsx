@@ -34,9 +34,7 @@ export default async function PrivacyPage() {
 
   return (
     <div className={cn(container, "flex flex-col gap-8 pt-8 pb-16 md:pt-14 md:pb-24")}>
-      <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1] font-[550] tracking-[-0.02em]">
-        {t("title")}
-      </h1>
+      <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1]">{t("title")}</h1>
       <div className="bg-highlight-tint flex max-w-[68ch] items-start gap-3 rounded-2xl px-5 py-4">
         <TriangleAlert
           aria-hidden="true"
@@ -50,7 +48,7 @@ export default async function PrivacyPage() {
       <div className="flex max-w-[68ch] flex-col gap-8 text-[1.0625rem] leading-[1.65]">
         {sections.map((section) => (
           <section key={section} className="flex flex-col gap-2.5">
-            <h2 className="font-heading text-[1.625rem] leading-[1.3] font-semibold">
+            <h2 className="font-heading text-[1.625rem] leading-[1.3]">
               {t(`sections.${section}.title`)}
             </h2>
             <p>{t(`sections.${section}.text`, { name: siteConfig.name })}</p>

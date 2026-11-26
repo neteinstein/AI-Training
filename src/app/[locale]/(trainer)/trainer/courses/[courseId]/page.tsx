@@ -44,7 +44,7 @@ export default async function CourseDetailsPage({ params }: Props) {
         aria-labelledby="delete-course"
         className="border-border mt-6 flex flex-col items-start gap-2 border-t pt-6"
       >
-        <h2 id="delete-course" className="font-heading text-xl leading-tight font-semibold">
+        <h2 id="delete-course" className="font-heading text-xl leading-tight">
           {t("courses.deleteHeading")}
         </h2>
         <p className="text-muted-foreground max-w-[44em]">{t("courses.deleteHelp")}</p>

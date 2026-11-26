@@ -67,7 +67,7 @@ function Card({
       className={cn(
         "pointer-events-auto flex max-w-xl items-start gap-2.5 rounded-xl border py-2 pr-1.5 pl-4 text-[0.9375rem] leading-normal font-medium shadow-(--shadow-raised)",
         isError
-          ? "border-destructive bg-highlight-tint text-destructive"
+          ? "border-destructive bg-destructive-tint text-destructive"
           : "border-primary bg-accent text-accent-foreground",
       )}
     >

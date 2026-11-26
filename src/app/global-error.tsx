@@ -1,7 +1,8 @@
 "use client";
 
 // Last-resort error screen, shown when the root layout itself fails. It replaces the whole
-// document, so it cannot use the app's styles or translations.
+// document, so it cannot use the app's styles or translations: its colours are written here
+// and follow the theme in src/app/globals.css by hand.
 export default function GlobalError({ retry }: { error: unknown; retry: () => void }) {
   return (
     <html lang="pt">
@@ -15,8 +16,8 @@ export default function GlobalError({ retry }: { error: unknown; retry: () => vo
           justifyContent: "center",
           gap: 16,
           padding: 24,
-          background: "#fffbf5",
-          color: "#1c1917",
+          background: "#ffffff",
+          color: "#0f172a",
           fontFamily: "system-ui, sans-serif",
           textAlign: "center",
         }}
@@ -30,8 +31,8 @@ export default function GlobalError({ retry }: { error: unknown; retry: () => vo
             minHeight: 48,
             padding: "0 24px",
             border: 0,
-            borderRadius: 12,
-            background: "#166534",
+            borderRadius: 10,
+            background: "#1d4ed8",
             color: "#ffffff",
             font: "inherit",
             fontWeight: 600,

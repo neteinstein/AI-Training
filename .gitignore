@@ -46,6 +46,7 @@ next-env.d.ts
 # test output
 /playwright-report/
 /test-results/
+/e2e-screens/
 
 # supabase local state
 /supabase/.temp/
