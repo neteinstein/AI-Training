@@ -14,8 +14,8 @@
   "workers_dev": false,
   "preview_urls": false,
   // Public values, read by the server at run time. The browser bundle gets the NEXT_PUBLIC_ ones
-  // at build time instead, from the build's environment (see .github/workflows/deploy.yml).
-  // Keep them in step with the deploy workflow. SUPABASE_SECRET_KEY is a Worker secret, never
+  // at build time instead, from the build variables of the Workers Builds trigger (see README).
+  // Keep the two in step. SUPABASE_SECRET_KEY is a Worker secret, never
   // written here: `npx wrangler secret put SUPABASE_SECRET_KEY`.
   "vars": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://wsyxnxtinvhnecmwkhzt.supabase.co",

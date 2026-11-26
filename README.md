@@ -288,10 +288,12 @@ first build.
 #### On Cloudflare (training.pedrovicente.pt)
 
 The repository is set up to run as a Cloudflare Worker through the OpenNext adapter:
-`wrangler.jsonc` (name, domain, public values, cache storage), `open-next.config.ts`, and
-`.github/workflows/deploy.yml`, which builds and deploys every push to `main`. The cache
-storage (a KV namespace and a D1 database) already exists on the Cloudflare account, and the
-domain's DNS record and certificate are created by the first deploy.
+`wrangler.jsonc` (name, domain, public values, cache storage) and `open-next.config.ts`.
+Cloudflare builds and deploys every push to `main` itself (Workers Builds, connected to this
+repository: Cloudflare dashboard, Workers, ai-training, Settings, Build). The build runs
+`npm run cf:build` with the three `NEXT_PUBLIC_` values set as build variables there, then
+`npx opennextjs-cloudflare deploy`. The cache storage (a KV namespace and a D1 database)
+exists on the Cloudflare account.
 
 Public pages read the catalogue from the database on every visit: the app does not use
 Next.js Cache Components, which the Cloudflare adapter does not yet run reliably
@@ -299,15 +301,12 @@ Next.js Cache Components, which the Cloudflare adapter does not yet run reliably
 [#1318](https://github.com/opennextjs/opennextjs-cloudflare/pull/1318)). The build reads nothing
 from the database.
 
-Once, before the first deploy:
+The secret key is a Worker secret, set once (and again whenever the key is rotated) in the
+Cloudflare dashboard (Workers, ai-training, Settings, Variables and Secrets) or with:
 
 ```bash
-npx wrangler login
 npx wrangler secret put SUPABASE_SECRET_KEY     # paste the secret key when asked
 ```
-
-and add a repository secret `CLOUDFLARE_API_TOKEN` (GitHub: Settings, Secrets and variables,
-Actions), made from the "Edit Cloudflare Workers" template plus D1 Edit.
 
 To try the Worker on your own computer against the local stack, put the local values in
 `.dev.vars` (same format as `.env.local`, with `NEXT_PUBLIC_SITE_URL=http://localhost:3000`):
