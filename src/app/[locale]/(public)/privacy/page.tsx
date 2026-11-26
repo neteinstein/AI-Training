@@ -1,4 +1,3 @@
-import { TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { container } from "@/components/layout/container";
@@ -37,16 +36,6 @@ export default async function PrivacyPage() {
   return (
     <div className={cn(container, "flex flex-col gap-8 pt-8 pb-16 md:pt-14 md:pb-24")}>
       <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1]">{t("title")}</h1>
-      <div className="bg-highlight-tint flex max-w-[68ch] items-start gap-3 rounded-2xl px-5 py-4">
-        <TriangleAlert
-          aria-hidden="true"
-          className="text-highlight-foreground mt-0.5 size-5 shrink-0"
-        />
-        <p className="text-[0.9375rem] leading-normal">
-          <strong className="text-highlight-foreground font-semibold">{t("draftTitle")}.</strong>{" "}
-          {t("draftText")}
-        </p>
-      </div>
       <div className="flex max-w-[68ch] flex-col gap-8 text-[1.0625rem] leading-[1.65]">
         {sections.map((section) => (
           <section key={section} className="flex flex-col gap-2.5">

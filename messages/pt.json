@@ -667,8 +667,6 @@
   "Privacy": {
     "title": "Política de privacidade",
     "description": "Como a plataforma trata os dados pessoais.",
-    "draftTitle": "Texto provisório",
-    "draftText": "Esta página descreve como a plataforma funciona. O texto definitivo, validado pela Mindera, será publicado antes do início dos cursos.",
     "sections": {
       "controller": {
         "title": "Quem é responsável",

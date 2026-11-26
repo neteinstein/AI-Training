@@ -667,8 +667,6 @@
   "Privacy": {
     "title": "Privacy policy",
     "description": "How the platform handles personal data.",
-    "draftTitle": "Provisional text",
-    "draftText": "This page describes how the platform works. The final text, approved by Mindera, will be published before the courses begin.",
     "sections": {
       "controller": {
         "title": "Who is responsible",
