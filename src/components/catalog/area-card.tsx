@@ -7,7 +7,7 @@ import { AreaIcon } from "./area-icon";
 import { areaTone } from "./area-style";
 
 /**
- * A large card for an area on the landing page: an arch-shaped badge with the area's icon,
+ * A large card for an area on the landing page: a rounded square badge with the area's icon,
  * its name and description, and a line of action text at the bottom.
  */
 export function AreaCard({
@@ -41,15 +41,11 @@ export function AreaCard({
       <span
         aria-hidden="true"
         className={cn(
-          "flex h-19 w-16 items-center justify-center rounded-t-[2rem] rounded-b-xl",
+          "flex size-16 items-center justify-center rounded-[18px]",
           color ? areaTone[color] : "bg-muted text-muted-foreground",
         )}
       >
-        {typeof icon === "string" ? (
-          <AreaIcon name={icon} className="size-[30px]" strokeWidth={1.75} />
-        ) : (
-          icon
-        )}
+        {typeof icon === "string" ? <AreaIcon name={icon} className="size-9" /> : icon}
       </span>
       <span className="flex flex-col gap-1.5">
         <span className="font-heading text-2xl leading-tight">{title}</span>

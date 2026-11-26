@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { ArchIllustration } from "@/components/illustrations/arch";
+import { BulbIllustration } from "@/components/illustrations/bulb";
 import { LoginForm } from "@/features/auth/login-form";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
@@ -18,7 +18,7 @@ export default async function LoginPage() {
   return (
     <>
       <div className="flex flex-col gap-5">
-        <ArchIllustration />
+        <BulbIllustration />
         <div className="flex flex-col gap-1.5">
           <h1 className="font-heading text-[2.125rem] leading-[1.15]">{t("title")}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
