@@ -1,4 +1,5 @@
-import { ArrowRight, Mail, Plus } from "lucide-react";
+import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr/PlusCircle";
+import { ArrowRight, Mail } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -109,7 +110,7 @@ export default async function HomePage() {
                 href={routes.homeSection("contact")}
                 title={t("areas.missingTitle")}
                 description={t("areas.missingText")}
-                icon={<Plus aria-hidden="true" className="size-[30px]" strokeWidth={1.75} />}
+                icon={<PlusCircleIcon aria-hidden="true" weight="duotone" className="size-9" />}
                 action={t("requestInfo")}
               />
             </li>

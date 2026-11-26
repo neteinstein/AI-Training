@@ -47,7 +47,7 @@ export default async function AreasPage() {
             return (
               <Row key={area.id}>
                 <RowTile className={areaTone[area.color]}>
-                  <AreaIcon name={area.icon} className="size-[18px]" strokeWidth={1.75} />
+                  <AreaIcon name={area.icon} className="size-5" />
                 </RowTile>
                 <span className="flex min-w-0 flex-[1_1_15rem] flex-col">
                   <span className="font-semibold break-words">{name}</span>
