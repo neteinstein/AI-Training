@@ -215,6 +215,16 @@ and Google hosts, and the site can never be shown inside another site.
   - the security policy blocking nothing the pages need, and back-office form handlers
     refusing a visitor and a learner who post to them directly.
 
+CI (`.github/workflows/ci.yml`) runs all of this on every pull request and on `main`, in three
+jobs. Besides the tests:
+
+- the database job regenerates `src/lib/supabase/database.types.ts` and fails when the
+  committed file is out of date; the right file is kept with the run (artifact
+  `database-types`);
+- the browser job saves pictures of the main screens at both sizes (artifact `screens`), so a
+  change of look can be reviewed from the pull request;
+- one job can be started on its own, on any branch: Actions → CI → Run workflow.
+
 ## Going live
 
 You need: a Supabase project, an email-sending provider (SMTP) for your domain, hosting for
