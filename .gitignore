@@ -53,3 +53,9 @@ next-env.d.ts
 
 # PDF viewer assets, copied from node_modules after install
 /public/pdfjs/
+
+# cloudflare (OpenNext build output, wrangler state, local secrets)
+/.open-next/
+/.wrangler/
+.dev.vars*
+!.dev.vars.example
