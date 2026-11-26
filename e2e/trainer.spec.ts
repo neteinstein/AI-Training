@@ -182,8 +182,9 @@ test.describe("course details", () => {
   }) => {
     await signInAsTrainer(page);
     await page.goto("/pt/trainer/courses");
+    // The six demo courses come first; a course another test is working on would follow them.
     const rows = page.getByRole("list", { name: "Cursos" }).locator("> li");
-    await expect(rows).toHaveCount(6);
+    await expect(rows.nth(5)).toBeVisible();
     await expect(rows.nth(0)).toContainText("IA na sala de aula");
     await expect(rows.nth(0)).toContainText("Publicado");
     await expect(rows.nth(0)).toContainText("1 formando");

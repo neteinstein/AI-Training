@@ -3,58 +3,13 @@ import { buildSamplePdf } from "../tests/fixtures/sample-pdf";
 import {
   admin,
   alertWith,
+  BUCKET,
   expectNotice,
   field,
   fillBoth,
+  freshCourse,
   signInAsTrainer,
-  unique,
 } from "./helpers";
-
-const BUCKET = "course-materials";
-
-/** A draft course of its own for each test, so the demo courses stay as they are. */
-async function freshCourse(label: string) {
-  const service = admin();
-  const title = unique(label);
-  const { data: level } = await service.from("levels").select("id").eq("slug", "introductory");
-  const { data: area } = await service.from("areas").select("id").eq("slug", "teachers");
-  const { data, error } = await service
-    .from("courses")
-    .insert({
-      slug: `e2e-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
-      area_id: area![0].id,
-      level_id: level![0].id,
-      title_pt: title,
-      title_en: `${title} EN`,
-      status: "draft",
-      sort_order: 9000,
-    })
-    .select("id, slug")
-    .single();
-  if (error || !data) throw new Error(`Could not create the test course: ${error?.message}`);
-
-  return {
-    ...data,
-    title,
-    content: `/pt/trainer/courses/${data.id}/content`,
-    async addModule(name: string) {
-      const { data: module, error: moduleError } = await service
-        .from("modules")
-        .insert({ course_id: data.id, title_pt: name, sort_order: 10 })
-        .select("id")
-        .single();
-      if (moduleError || !module) throw new Error(moduleError?.message);
-      return module.id;
-    },
-    async remove() {
-      const { data: files } = await service.storage.from(BUCKET).list(data.id);
-      if (files && files.length > 0) {
-        await service.storage.from(BUCKET).remove(files.map((file) => `${data.id}/${file.name}`));
-      }
-      await service.from("courses").delete().eq("id", data.id);
-    },
-  };
-}
 
 const moduleCard = (page: Page, number: number) =>
   page.getByRole("region", { name: new RegExp(`^Módulo ${number}\\. `) });

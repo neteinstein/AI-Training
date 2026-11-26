@@ -2,13 +2,13 @@
 
 import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { LoaderCircle } from "lucide-react";
-import { useOptimistic, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { LocaleField } from "@/components/forms/locale-field";
 import { Button } from "@/components/ui/button";
-import { idleState, type ActionState } from "@/lib/actions/state";
+import type { ActionState } from "@/lib/actions/state";
 import { cn } from "@/lib/utils";
 import { actionLooks, type ButtonLook } from "./looks";
-import { showActionResult } from "./notice-store";
+import { useNoticeAction } from "./use-notice-action";
 
 /** Unavailable buttons stay focusable, so the keyboard never loses its place in a list. */
 const unavailable =
@@ -61,14 +61,7 @@ export function ActionButton({
 }: ActionButtonProps) {
   const form = useRef<HTMLFormElement>(null);
   const [asking, setAsking] = useState(false);
-  const [pending, setPending] = useOptimistic(false);
-
-  // The action is awaited here rather than through useActionState: when it deletes the very
-  // row this button sits in, the button is gone before it could show the answer.
-  async function formAction(formData: FormData) {
-    setPending(true);
-    showActionResult(await action(idleState, formData), { quiet });
-  }
+  const [formAction, pending] = useNoticeAction(action, { quiet });
 
   const hidden = (
     <>

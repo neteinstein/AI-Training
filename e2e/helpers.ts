@@ -150,3 +150,52 @@ export async function fillBoth(page: Page, label: string, pt: string, en: string
   const portuguese = page.getByRole("button", { name: "Português" }).filter({ visible: true });
   if ((await portuguese.count()) > 0) await portuguese.click();
 }
+
+export const BUCKET = "course-materials";
+
+/** A draft course of its own for each test, so the demo courses stay as they are. */
+export async function freshCourse(label: string) {
+  const service = admin();
+  const title = unique(label);
+  const { data: level } = await service.from("levels").select("id").eq("slug", "introductory");
+  const { data: area } = await service.from("areas").select("id").eq("slug", "teachers");
+  const { data, error } = await service
+    .from("courses")
+    .insert({
+      slug: `e2e-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+      area_id: area![0].id,
+      level_id: level![0].id,
+      title_pt: title,
+      title_en: `${title} EN`,
+      status: "draft",
+      sort_order: 9000,
+    })
+    .select("id, slug")
+    .single();
+  if (error || !data) throw new Error(`Could not create the test course: ${error?.message}`);
+
+  return {
+    ...data,
+    title,
+    content: `/pt/trainer/courses/${data.id}/content`,
+    async addModule(name: string) {
+      const { data: module, error: moduleError } = await service
+        .from("modules")
+        .insert({ course_id: data.id, title_pt: name, sort_order: 10 })
+        .select("id")
+        .single();
+      if (moduleError || !module) throw new Error(moduleError?.message);
+      return module.id;
+    },
+    async remove() {
+      const { data: files } = await service.storage.from(BUCKET).list(data.id);
+      if (files && files.length > 0) {
+        await service.storage.from(BUCKET).remove(files.map((file) => `${data.id}/${file.name}`));
+      }
+      // A course with people enrolled is kept by the database, so they go first.
+      await service.from("enrollments").delete().eq("course_id", data.id);
+      const { error: removeError } = await service.from("courses").delete().eq("id", data.id);
+      if (removeError) throw new Error(`Could not remove the test course: ${removeError.message}`);
+    },
+  };
+}

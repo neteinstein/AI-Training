@@ -2,11 +2,10 @@
 
 import { LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useActionState, useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { LocaleField } from "@/components/forms/locale-field";
 import { actionLooks } from "@/components/trainer/looks";
-import { showActionResult } from "@/components/trainer/notice-store";
-import { idleState } from "@/lib/actions/state";
+import { useNoticeAction } from "@/components/trainer/use-notice-action";
 import type { CourseStatus } from "@/lib/dal/types";
 import { cn } from "@/lib/utils";
 import { changeCourseStatus } from "./actions";
@@ -20,13 +19,9 @@ const statuses: CourseStatus[] = ["draft", "published", "unlisted"];
 export function StatusControl({ courseId, status }: { courseId: string; status: CourseStatus }) {
   const t = useTranslations("Trainer.courses");
   const id = useId();
-  const [state, formAction, pending] = useActionState(changeCourseStatus, idleState);
+  const [formAction, pending] = useNoticeAction(changeCourseStatus);
   const [chosen, setChosen] = useState<CourseStatus>(status);
   const unchanged = chosen === status;
-
-  useEffect(() => {
-    showActionResult(state);
-  }, [state]);
 
   return (
     <form action={formAction} className="flex max-w-md flex-col gap-1.5">
