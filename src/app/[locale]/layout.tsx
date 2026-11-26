@@ -15,12 +15,12 @@ const inter = localFont({
   display: "swap",
 });
 
-const fraunces = localFont({
-  src: "../fonts/fraunces-latin-opsz-normal.woff2",
-  weight: "100 900",
-  variable: "--font-fraunces",
+const manrope = localFont({
+  src: "../fonts/manrope-latin-wght-normal.woff2",
+  weight: "200 800",
+  variable: "--font-manrope",
   display: "swap",
-  adjustFontFallback: "Times New Roman",
+  adjustFontFallback: "Arial",
 });
 
 export function generateStaticParams() {
@@ -43,7 +43,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   return (
     <html
       lang={htmlLang[locale]}
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <a

@@ -37,7 +37,7 @@ export default async function NewMaterialPage({ params, searchParams }: Props) {
   return (
     <CourseFrame courseId={courseId} tab="content" trail={[{ label: t(`new.${kind}`) }]} narrow>
       <div className="flex flex-col gap-1">
-        <h2 className="font-heading text-2xl leading-tight font-semibold">{t(`new.${kind}`)}</h2>
+        <h2 className="font-heading text-2xl leading-tight">{t(`new.${kind}`)}</h2>
         <p className="text-muted-foreground">
           {t("inModule", { name: t("numbered", { number: index + 1, title: name }) })}
         </p>

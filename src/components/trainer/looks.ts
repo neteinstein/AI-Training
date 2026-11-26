@@ -9,7 +9,7 @@ export const actionLooks: Record<ButtonLook, string> = {
   icon: "text-foreground hover:bg-muted flex size-11 flex-none items-center justify-center rounded-lg transition-colors",
   text: "text-primary hover:bg-accent inline-flex min-h-11 items-center gap-2 rounded-lg px-3 font-semibold transition-colors",
   danger:
-    "text-destructive hover:bg-highlight-tint inline-flex min-h-11 items-center gap-2 rounded-lg px-3 font-semibold transition-colors",
+    "text-destructive hover:bg-destructive-tint inline-flex min-h-11 items-center gap-2 rounded-lg px-3 font-semibold transition-colors",
   outline:
     "border-primary text-primary hover:bg-accent inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border-[1.5px] px-4 text-[0.9375rem] font-semibold transition-colors",
   neutral:

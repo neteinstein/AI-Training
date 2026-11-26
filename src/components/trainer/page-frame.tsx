@@ -66,9 +66,7 @@ export async function PageFrame({
       <main id="content" className="flex flex-1 flex-col">
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 px-5 pt-6 md:px-8">
           <div className="flex min-w-0 flex-col gap-2.5">
-            <h1 className="font-heading text-[1.875rem] leading-[1.2] font-[550] tracking-[-0.01em] break-words">
-              {title}
-            </h1>
+            <h1 className="font-heading text-[1.875rem] leading-[1.2] break-words">{title}</h1>
             {meta}
           </div>
           {headerAside}

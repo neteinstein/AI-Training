@@ -45,7 +45,7 @@ export function CourseCard({
     >
       <AreaChip area={course.area} className="self-start" />
       <span className="flex flex-col gap-2">
-        <Heading className="font-heading group-hover:text-primary text-[1.375rem] leading-tight font-semibold transition-colors">
+        <Heading className="font-heading group-hover:text-primary text-[1.375rem] leading-tight transition-colors">
           {course.title}
         </Heading>
         {course.summary ? (

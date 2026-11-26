@@ -30,7 +30,7 @@ export default async function CoursesPage() {
     headingLevel: "h2" as const,
     heading: (
       <div className="flex flex-col gap-3">
-        <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1] font-[550] tracking-[-0.02em]">
+        <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1]">
           {t("title")}
         </h1>
         <p className="text-muted-foreground text-lg">{t("lead")}</p>

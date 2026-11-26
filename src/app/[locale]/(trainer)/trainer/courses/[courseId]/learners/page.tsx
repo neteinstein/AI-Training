@@ -51,7 +51,7 @@ export default async function CourseLearnersPage({ params }: Props) {
   return (
     <CourseFrame courseId={courseId} tab="learners">
       <section aria-labelledby="enrolled" className="flex flex-col gap-3">
-        <h2 id="enrolled" className="font-heading text-xl leading-tight font-semibold">
+        <h2 id="enrolled" className="font-heading text-xl leading-tight">
           {t("learners.enrolled")}
         </h2>
         {learners.length === 0 ? (
@@ -107,7 +107,7 @@ export default async function CourseLearnersPage({ params }: Props) {
 
       <section aria-labelledby="add-people" className="mt-4 flex max-w-3xl flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <h2 id="add-people" className="font-heading text-xl leading-tight font-semibold">
+          <h2 id="add-people" className="font-heading text-xl leading-tight">
             {t("learners.add")}
           </h2>
           <p className="text-muted-foreground">

@@ -118,7 +118,7 @@ export function RowMenu({ label, entries }: { label: string; entries: MenuEntry[
           <AlertDialog.Popup className="bg-card fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl p-6 shadow-(--shadow-raised) transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0">
             {asking?.confirm ? (
               <Fragment>
-                <AlertDialog.Title className="font-heading text-[1.375rem] leading-tight font-semibold">
+                <AlertDialog.Title className="font-heading text-[1.375rem] leading-tight">
                   {asking.confirm.title}
                 </AlertDialog.Title>
                 <AlertDialog.Description className="text-muted-foreground">

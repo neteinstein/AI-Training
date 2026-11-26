@@ -91,7 +91,8 @@ src/lib/dal/            what reads data, for the public site, learners and train
 src/lib/embeds/         turns a pasted YouTube, Vimeo or Google link into a safe frame address
 src/lib/security/       security headers, route rules, safe redirects
 src/config/site.ts      the name of the platform, area colours and icons
-src/app/globals.css     colours, fonts and radii: the one place to change the look
+src/app/globals.css     colours, heading weight, radii and shadows: the one place to change the look
+src/app/fonts/          the typefaces (Manrope for headings, Inter for text), served by the site itself
 ```
 
 Two rules hold everywhere:

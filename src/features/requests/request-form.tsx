@@ -49,7 +49,7 @@ function Form({ courses, onAnother }: { courses: CourseOption[]; onAnother: () =
         <span className="bg-accent text-accent-foreground flex size-12 items-center justify-center rounded-full">
           <CircleCheck aria-hidden="true" className="size-6" />
         </span>
-        <h3 className="font-heading text-2xl leading-tight font-semibold">{t("sentTitle")}</h3>
+        <h3 className="font-heading text-2xl leading-tight">{t("sentTitle")}</h3>
         <p className="text-muted-foreground">{t("sentText")}</p>
         <Button type="button" variant="outline" size="sm" onClick={onAnother}>
           {t("another")}

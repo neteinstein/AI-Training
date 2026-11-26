@@ -44,9 +44,7 @@ export function MobileMenu({
         <Dialog.Backdrop className="fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
         <Dialog.Popup className="bg-background fixed inset-x-0 top-0 z-50 flex max-h-dvh flex-col gap-2 overflow-y-auto rounded-b-2xl px-5 pt-2.5 pb-6 shadow-(--shadow-raised) transition-transform duration-200 data-[ending-style]:-translate-y-4 data-[ending-style]:opacity-0 data-[starting-style]:-translate-y-4 data-[starting-style]:opacity-0">
           <div className="flex items-center justify-between">
-            <Dialog.Title className="font-heading text-xl font-semibold">
-              {labels.title}
-            </Dialog.Title>
+            <Dialog.Title className="font-heading text-xl">{labels.title}</Dialog.Title>
             <Dialog.Close
               aria-label={labels.close}
               className="text-foreground hover:bg-muted -mr-2.5 flex size-11 items-center justify-center rounded-lg transition-colors"

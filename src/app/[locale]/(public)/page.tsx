@@ -54,7 +54,7 @@ export default async function HomePage() {
           <p className="bg-accent text-accent-foreground inline-flex min-h-8 items-center rounded-full px-3.5 text-sm font-semibold">
             {t("eyebrow")}
           </p>
-          <h1 className="font-heading text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.08] font-[550] tracking-[-0.02em] text-balance">
+          <h1 className="font-heading text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.08] text-balance">
             {t("title")}
           </h1>
           <p className="text-muted-foreground max-w-[34em] text-[1.0625rem] leading-[1.6] text-pretty md:text-lg">
@@ -142,9 +142,7 @@ export default async function HomePage() {
                     <LevelGlyph step={level.step} size={28} onTint />
                   </span>
                   <div className="flex flex-col gap-0.5">
-                    <h3 className="font-heading text-xl leading-[1.3] font-semibold">
-                      {level.name}
-                    </h3>
+                    <h3 className="font-heading text-xl leading-[1.3]">{level.name}</h3>
                     {level.description ? (
                       <p className="text-muted-foreground text-[0.9375rem] leading-normal">
                         {level.description}
@@ -174,11 +172,11 @@ export default async function HomePage() {
               <li key={step} className="flex flex-col gap-3">
                 <span
                   aria-hidden="true"
-                  className="bg-primary text-primary-foreground font-heading flex size-12 items-center justify-center rounded-full text-[1.375rem] font-semibold"
+                  className="bg-primary text-primary-foreground font-heading flex size-12 items-center justify-center rounded-full text-[1.375rem]"
                 >
                   {step}
                 </span>
-                <h3 className="font-heading text-[1.375rem] leading-tight font-semibold">
+                <h3 className="font-heading text-[1.375rem] leading-tight">
                   {t(`how.step${step}Title`)}
                 </h3>
                 <p className="text-muted-foreground text-[0.9375rem] leading-[1.55]">

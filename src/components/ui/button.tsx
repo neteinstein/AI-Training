@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 /**
- * Buttons follow the style sheet: 12px corners, semibold labels, and a height of at least
+ * Buttons follow the style sheet: the theme's control corners, semibold labels, and a height of at least
  * 44px so they are comfortable to tap. `buttonVariants()` can also style a link as a button.
  */
 const buttonVariants = cva(

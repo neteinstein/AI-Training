@@ -22,9 +22,7 @@ export default async function NotFoundPage() {
         className="mx-auto flex w-full max-w-xl flex-1 flex-col items-start justify-center gap-5 px-5 py-16"
       >
         <p className="text-highlight-foreground font-semibold">404</p>
-        <h1 className="font-heading text-4xl leading-tight font-[550] tracking-[-0.02em]">
-          {t("NotFound.title")}
-        </h1>
+        <h1 className="font-heading text-4xl leading-tight">{t("NotFound.title")}</h1>
         <p className="text-muted-foreground text-lg">{t("NotFound.description")}</p>
         <Link href={routes.home} className={buttonClass()}>
           {t("Common.backToHome")}
