@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { ConfirmText, FormAction } from "./action-button";
 import { actionLooks } from "./looks";
 import { showActionResult } from "./notice-store";
+import { keepTabInside } from "./dialog-focus";
 
 export type MenuEntry =
   | { type: "link"; label: string; href: string; icon?: ReactNode }
@@ -115,7 +116,10 @@ export function RowMenu({ label, entries }: { label: string; entries: MenuEntry[
       >
         <AlertDialog.Portal>
           <AlertDialog.Backdrop className="fixed inset-0 z-40 bg-black/40 transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-          <AlertDialog.Popup className="bg-card fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl p-6 shadow-(--shadow-raised) transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0">
+          <AlertDialog.Popup
+            onKeyDown={keepTabInside}
+            className="bg-card fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-2xl p-6 shadow-(--shadow-raised) transition-opacity duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0"
+          >
             {asking?.confirm ? (
               <Fragment>
                 <AlertDialog.Title className="font-heading text-[1.375rem] leading-tight">
