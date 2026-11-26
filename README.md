@@ -285,6 +285,48 @@ variables there. The two keys are in the Supabase dashboard under Project Settin
 The build reads the public catalogue from the database, so the variables must be set before
 the first build.
 
+#### On Cloudflare (training.pedrovicente.pt)
+
+The repository is set up to run as a Cloudflare Worker through the OpenNext adapter:
+`wrangler.jsonc` (name, domain, public values, cache storage), `open-next.config.ts`, and
+`.github/workflows/deploy.yml`, which builds and deploys every push to `main`. The cache
+storage (a KV namespace and a D1 database) already exists on the Cloudflare account, and the
+domain's DNS record and certificate are created by the first deploy.
+
+> **Not ready for production yet.** With Next.js 16.4 and Cache Components, the adapter
+> has open bugs ([#1464](https://github.com/opennextjs/opennextjs-cloudflare/issues/1464),
+> [#1318](https://github.com/opennextjs/opennextjs-cloudflare/pull/1318)): some page renders
+> hang on Workers. `scripts/patch-open-next.mjs` works around the first; the second has no
+> fix yet. Run the browser tests against the Worker (below) before the first deploy.
+
+Once, before the first deploy:
+
+```bash
+npx wrangler login
+npx wrangler secret put SUPABASE_SECRET_KEY     # paste the secret key when asked
+```
+
+and add a repository secret `CLOUDFLARE_API_TOKEN` (GitHub: Settings, Secrets and variables,
+Actions), made from the "Edit Cloudflare Workers" template plus D1 Edit.
+
+To try the Worker on your own computer against the local stack, put the local values in
+`.dev.vars` (same format as `.env.local`, with `NEXT_PUBLIC_SITE_URL=http://localhost:3000`):
+
+```bash
+npm run cf:build
+npx opennextjs-cloudflare populateCache local
+npx wrangler dev --port 3000
+npm run e2e        # in another terminal; it uses the Worker already listening on port 3000
+```
+
+`npm run cf:deploy` builds and deploys from your own computer.
+
+#### Keeping a Free-plan project awake
+
+Supabase pauses Free-plan projects after a week without activity.
+`.github/workflows/keep-alive.yml` reads from the hosted project on odd days of the month, at
+an hour that changes from day to day. Delete it once the project is on a paid plan.
+
 ### 5. Create the first trainer
 
 On your own computer, put the same four values in `.env.local`, then:
