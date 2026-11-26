@@ -45,6 +45,7 @@ export function UploadField({
   const [phase, setPhase] = useState<Phase>({ step: "idle" });
   // Only the newest upload may report back: an earlier one may have been cancelled.
   const run = useRef(0);
+  // The upload in flight, if any: the only thing that is ever cancelled.
   const running = useRef<RunningUpload | null>(null);
   const max = formatFileSize(MAX_UPLOAD_BYTES, locale);
 
@@ -103,9 +104,13 @@ export function UploadField({
           setPhase({ step: "uploading", name: file.name, percent });
         },
         onError() {
+          if (running.current === upload) running.current = null;
           if (mineStill()) setPhase({ step: "error", message: t("failed") });
         },
         onSuccess() {
+          // Finished: from here on there is nothing to cancel. Leaving the page, or removing
+          // the file from the form, must never ask the storage service to undo this upload.
+          if (running.current === upload) running.current = null;
           if (!mineStill()) return;
           setPhase({
             step: "done",
