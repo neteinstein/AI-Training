@@ -1,7 +1,8 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { siteUrl } from "@/config/site";
+import { defaultLocale, locales, siteUrl, type Locale } from "@/config/site";
 import { requireTrainer } from "@/lib/dal/session";
 import { localeFromForm } from "@/lib/i18n/action-locale";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -16,7 +17,12 @@ import { NOTICE_COOKIE, type ActionState, type Notice } from "./state";
  * protects them, not the fact that the buttons only appear in the back-office.
  */
 export async function trainerAction(formData: FormData) {
-  const locale = localeFromForm(formData);
+  return trainerContext(localeFromForm(formData));
+}
+
+/** The same, for actions that are called with plain values instead of a form. */
+export async function trainerContext(requested: unknown) {
+  const locale: Locale = hasLocale(locales, requested) ? requested : defaultLocale;
   const user = await requireTrainer(locale);
   const [supabase, t, tv] = await Promise.all([
     createSupabaseServerClient(),

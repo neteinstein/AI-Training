@@ -386,17 +386,13 @@ export async function setMaterialPublished(
   return !error && Boolean(data);
 }
 
-/** Makes every hidden material of a course visible. Returns how many changed. */
-export async function publishAllMaterials(client: Client, courseId: string): Promise<number> {
-  if (!isUuid(courseId)) return 0;
-  const { data: modules } = await client.from("modules").select("id").eq("course_id", courseId);
-  const moduleIds = (modules ?? []).map((row) => row.id);
-  if (moduleIds.length === 0) return 0;
-
+/** Makes every hidden material of a module visible. Returns how many changed. */
+export async function publishModuleMaterials(client: Client, moduleId: string): Promise<number> {
+  if (!isUuid(moduleId)) return 0;
   const { data, error } = await client
     .from("materials")
     .update({ is_published: true })
-    .in("module_id", moduleIds)
+    .eq("module_id", moduleId)
     .eq("is_published", false)
     .select("id");
   return error ? 0 : data.length;
@@ -478,12 +474,20 @@ export async function moveMaterialToModule(
 // ---------------------------------------------------------------------------------------------
 
 export type PreparedUpload =
-  | { ok: true; storagePath: string; contentType: string }
+  | {
+      ok: true;
+      storagePath: string;
+      contentType: string;
+      /** Lets the browser upload this one file, and nothing else, for the next two hours. */
+      uploadToken: string;
+    }
   | { ok: false; reason: "not_found" | UploadProblem };
 
 /**
- * Checks a file before it is uploaded and says where to put it. The upload itself goes
- * straight from the browser to Storage, which applies the same rules again.
+ * Checks a file before it is uploaded, says where to put it and hands out a token for exactly
+ * that location. The upload itself goes straight from the browser to Storage, which applies
+ * the type and size rules again. Storage only signs the location for someone who may write
+ * there, so anyone but a trainer gets "not_found".
  */
 export async function prepareUpload(
   client: Client,
@@ -500,10 +504,17 @@ export async function prepareUpload(
     .maybeSingle();
   if (!module) return { ok: false, reason: "not_found" };
 
+  const storagePath = storageKey(module.course_id, input.fileName, crypto.randomUUID());
+  const { data: signed, error } = await client.storage
+    .from(MATERIALS_BUCKET)
+    .createSignedUploadUrl(storagePath);
+  if (error || !signed?.token) return { ok: false, reason: "not_found" };
+
   return {
     ok: true,
-    storagePath: storageKey(module.course_id, input.fileName, crypto.randomUUID()),
+    storagePath,
     contentType: uploadMimeType(input.fileName)!,
+    uploadToken: signed.token,
   };
 }
 

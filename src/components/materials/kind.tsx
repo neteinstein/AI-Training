@@ -69,6 +69,26 @@ export function MaterialIcon({
   );
 }
 
+const kindInk: Record<MaterialKind, string> = {
+  file: "text-area-terracotta",
+  embed: "text-area-ocean",
+  video: "text-area-plum",
+  link: "text-muted-foreground",
+  page: "text-area-forest",
+};
+
+/** The kind's icon alone, in its colour: for buttons such as "add a video". */
+export function KindGlyph({ kind, className }: { kind: MaterialKind; className?: string }) {
+  const Icon = kindIcons[kind];
+  return (
+    <Icon
+      aria-hidden="true"
+      className={cn("size-[18px] flex-none", kindInk[kind], className)}
+      strokeWidth={1.75}
+    />
+  );
+}
+
 /** "PDF" for "Diapositivos.pdf": the type of an uploaded file, as people call it. */
 export function fileTypeLabel(fileName: string): string {
   return fileExtension(fileName).toUpperCase();

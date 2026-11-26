@@ -86,7 +86,12 @@ export async function CourseFrame({
           ) : null}
         </div>
       }
-      headerAside={<StatusControl courseId={course.id} status={course.status} />}
+      // The status belongs to the course's own pages, not to the form of one material.
+      headerAside={
+        trail.length === 0 ? (
+          <StatusControl courseId={course.id} status={course.status} />
+        ) : undefined
+      }
       tabs={
         <TabLinks
           label={t("courses.tabs.label")}

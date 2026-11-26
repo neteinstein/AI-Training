@@ -44,6 +44,9 @@ export const routes = {
   trainerCourseNew: "/trainer/courses/new",
   trainerCourse: (courseId: string) => `/trainer/courses/${courseId}`,
   trainerCourseContent: (courseId: string) => `/trainer/courses/${courseId}/content`,
+  /** The content tab, with one module open and scrolled to. */
+  trainerCourseModule: (courseId: string, moduleId: string) =>
+    `/trainer/courses/${courseId}/content?module=${moduleId}#module-${moduleId}`,
   trainerCourseLearners: (courseId: string) => `/trainer/courses/${courseId}/learners`,
   trainerModuleNew: (courseId: string) => `/trainer/courses/${courseId}/content/modules/new`,
   trainerModule: (courseId: string, moduleId: string) =>

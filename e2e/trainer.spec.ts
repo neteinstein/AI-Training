@@ -1,50 +1,17 @@
 import { expect, test, type Page } from "@playwright/test";
-import { admin, alertWith, demoCourses, demoUsers, field, signIn } from "./helpers";
-
-/** A name no other test or run uses. The slug made from it is unique too. */
-const unique = (label: string) =>
-  `${label} ${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
-
-async function signInAsTrainer(page: Page) {
-  await signIn(page, demoUsers.trainer.email);
-  await expect(page).toHaveURL(/\/pt\/trainer$/);
-}
-
-/** The message shown after an action that worked. */
-const confirmation = (page: Page, text: string) =>
-  page.getByRole("status").filter({ hasText: text });
-
-/**
- * Checks the message that pops up after an action, and closes it: on a phone it sits over the
- * bottom of the page for a few seconds, where the next button to press may be.
- */
-async function expectNotice(page: Page, text: string) {
-  const notice = confirmation(page, text);
-  await expect(notice).toBeVisible();
-  await notice.getByRole("button", { name: "Fechar mensagem" }).click();
-  await expect(notice).toHaveCount(0);
-}
-
-/**
- * Fills a text that exists in both languages. Wide screens show the two side by side; a phone
- * shows one at a time, behind a switch.
- */
-async function fillBoth(page: Page, label: string, pt: string, en: string) {
-  // The form may still be arriving: wait for the field before asking how it is shown.
-  await expect(
-    page.getByRole("group", { name: new RegExp(`^${label}`) }).filter({ visible: true }),
-  ).toBeVisible();
-  for (const [language, value] of [
-    ["Português", pt],
-    ["Inglês", en],
-  ] as const) {
-    const input = field(page, `${label}: ${language}`);
-    if (!(await input.isVisible())) {
-      await page.getByRole("button", { name: language }).filter({ visible: true }).click();
-    }
-    await input.fill(value);
-  }
-}
+import {
+  admin,
+  alertWith,
+  confirmation,
+  demoCourses,
+  demoUsers,
+  expectNotice,
+  field,
+  fillBoth,
+  signIn,
+  signInAsTrainer,
+  unique,
+} from "./helpers";
 
 const rowNames = (page: Page, list: string) =>
   page.getByRole("list", { name: list }).locator("> li > span.flex-col > span:first-child");
@@ -223,6 +190,73 @@ test.describe("course details", () => {
     await expect(rows.nth(4)).toContainText("IA para direções escolares");
     await expect(rows.nth(4)).toContainText("Rascunho");
     await expect(rows.nth(5)).toContainText("Não listado");
+  });
+
+  test("a new course goes from draft to the public site, and off it again", async ({ page }) => {
+    const title = unique("Curso novo");
+    try {
+      await signInAsTrainer(page);
+      await page.goto("/pt/trainer/courses");
+      await page.getByRole("link", { name: "Novo curso" }).click();
+      await expect(page.getByRole("heading", { level: 1, name: "Novo curso" })).toBeVisible();
+
+      // The area and the level are required.
+      await fillBoth(page, "Título", title, `${title} EN`);
+      await page.getByRole("button", { name: "Criar" }).click();
+      await expect(alertWith(page, "Verifique os campos assinalados.")).toBeVisible();
+      await expect(page.getByText("Escolha uma opção.").filter({ visible: true })).toHaveCount(2);
+
+      await field(page, "Área").selectOption({ label: "Médicos" });
+      await field(page, "Nível").selectOption({ label: "Avançado" });
+      await page.getByRole("button", { name: "Criar" }).click();
+      await expect(page).toHaveURL(/\/pt\/trainer\/courses\/[0-9a-f-]{36}\/content$/);
+      await expectNotice(page, "Curso criado. Pode agora adicionar o conteúdo.");
+      await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+      const courseUrl = page.url().replace(/\/content$/, "");
+
+      // A draft is not on the public site, and cannot be published without its summaries.
+      const status = page.getByRole("combobox", { name: "Estado" });
+      await expect(status).toHaveValue("draft");
+      await status.selectOption("published");
+      await page.getByRole("button", { name: "Alterar estado" }).click();
+      await expect(alertWith(page, "preencha primeiro o resumo nos dois idiomas")).toBeVisible();
+      await page.getByRole("button", { name: "Fechar mensagem" }).click();
+
+      await page.getByRole("link", { name: "Detalhes", exact: true }).click();
+      await fillBoth(page, "Resumo", "Resumo para o público.", "Summary for the public.");
+      await page.getByRole("button", { name: "Guardar" }).click();
+      await expect(confirmation(page, "Alterações guardadas.")).toBeVisible();
+
+      await page.getByRole("combobox", { name: "Estado" }).selectOption("published");
+      await page.getByRole("button", { name: "Alterar estado" }).click();
+      await expectNotice(page, "Estado alterado.");
+
+      // The public catalogue shows it at once, in both languages.
+      await page.goto("/pt/courses");
+      await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+      await page.goto("/en/courses");
+      await expect(page.getByRole("heading", { name: `${title} EN`, exact: true })).toBeVisible();
+
+      // Unlisted: off the public site again.
+      await page.goto(courseUrl);
+      await page.getByRole("combobox", { name: "Estado" }).selectOption("unlisted");
+      await page.getByRole("button", { name: "Alterar estado" }).click();
+      await expectNotice(page, "Estado alterado.");
+      await page.goto("/pt/courses");
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(page.getByRole("heading", { name: title, exact: true })).toHaveCount(0);
+
+      // Deleting asks first, then leads back to the list.
+      await page.goto(courseUrl);
+      await page.getByRole("button", { name: "Eliminar curso" }).click();
+      await expect(page.getByRole("alertdialog")).toContainText(`Eliminar o curso «${title}»?`);
+      await page.getByRole("alertdialog").getByRole("button", { name: "Sim, eliminar" }).click();
+      await expect(page).toHaveURL(/\/pt\/trainer\/courses$/);
+      await expectNotice(page, "Curso eliminado.");
+      await expect(page.getByRole("link", { name: title, exact: true })).toHaveCount(0);
+    } finally {
+      await admin().from("courses").delete().like("title_pt", "Curso novo %");
+    }
   });
 
   test("details are edited in both languages and survive a reload", async ({ page }) => {

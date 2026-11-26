@@ -98,3 +98,55 @@ export async function signOut(page: Page, locale: "pt" | "en" = "pt"): Promise<v
   await page.getByRole("button", { name: labels.menu }).filter({ visible: true }).click();
   await page.getByRole("button", { name: labels.out }).click();
 }
+
+// ---------------------------------------------------------------------------------------------
+// Back-office
+// ---------------------------------------------------------------------------------------------
+
+/** A name no other test or run uses. The slug made from it is unique too. */
+export const unique = (label: string) =>
+  `${label} ${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+
+export async function signInAsTrainer(page: Page) {
+  await signIn(page, "formador@example.test");
+  await expect(page).toHaveURL(/\/pt\/trainer$/);
+}
+
+/** The message shown after an action that worked. */
+export const confirmation = (page: Page, text: string) =>
+  page.getByRole("status").filter({ hasText: text });
+
+/**
+ * Checks the message that pops up after an action, and closes it: on a phone it sits over the
+ * bottom of the page for a few seconds, where the next button to press may be.
+ */
+export async function expectNotice(page: Page, text: string) {
+  const notice = confirmation(page, text);
+  await expect(notice).toBeVisible();
+  await notice.getByRole("button", { name: "Fechar mensagem" }).click();
+  await expect(notice).toHaveCount(0);
+}
+
+/**
+ * Fills a text that exists in both languages. Wide screens show the two side by side; a phone
+ * shows one at a time, behind a switch.
+ */
+export async function fillBoth(page: Page, label: string, pt: string, en: string) {
+  // The form may still be arriving: wait for the field before asking how it is shown.
+  await expect(
+    page.getByRole("group", { name: new RegExp(`^${label}`) }).filter({ visible: true }),
+  ).toBeVisible();
+  for (const [language, value] of [
+    ["Português", pt],
+    ["Inglês", en],
+  ] as const) {
+    const input = field(page, `${label}: ${language}`);
+    if (!(await input.isVisible())) {
+      await page.getByRole("button", { name: language }).filter({ visible: true }).click();
+    }
+    await input.fill(value);
+  }
+  // Leave a phone's switch on Portuguese, where the rest of a test expects to find it.
+  const portuguese = page.getByRole("button", { name: "Português" }).filter({ visible: true });
+  if ((await portuguese.count()) > 0) await portuguese.click();
+}
