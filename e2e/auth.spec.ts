@@ -54,7 +54,7 @@ test.describe("signing in", () => {
   test("a trainer lands in the back-office", async ({ page }) => {
     await signIn(page, demoUsers.trainer.email);
     await expect(page).toHaveURL(/\/pt\/trainer$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Back-office" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
   });
 
   test("a learner cannot open the back-office", async ({ page }) => {
@@ -65,7 +65,7 @@ test.describe("signing in", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Página não encontrada" }),
     ).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Back-office" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Painel" })).toHaveCount(0);
   });
 
   test("after signing in the visitor continues to the page they asked for", async ({ page }) => {

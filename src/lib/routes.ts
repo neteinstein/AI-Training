@@ -35,16 +35,29 @@ export const routes = {
 
   trainer: "/trainer",
   trainerAreas: "/trainer/areas",
+  trainerAreaNew: "/trainer/areas/new",
+  trainerArea: (areaId: string) => `/trainer/areas/${areaId}`,
   trainerLevels: "/trainer/levels",
+  trainerLevelNew: "/trainer/levels/new",
+  trainerLevel: (levelId: string) => `/trainer/levels/${levelId}`,
   trainerCourses: "/trainer/courses",
   trainerCourseNew: "/trainer/courses/new",
   trainerCourse: (courseId: string) => `/trainer/courses/${courseId}`,
   trainerCourseContent: (courseId: string) => `/trainer/courses/${courseId}/content`,
   trainerCourseLearners: (courseId: string) => `/trainer/courses/${courseId}/learners`,
+  trainerModuleNew: (courseId: string) => `/trainer/courses/${courseId}/content/modules/new`,
+  trainerModule: (courseId: string, moduleId: string) =>
+    `/trainer/courses/${courseId}/content/modules/${moduleId}`,
+  trainerMaterialNew: (courseId: string, moduleId: string, kind: string) =>
+    `/trainer/courses/${courseId}/content/materials/new?module=${moduleId}&kind=${kind}`,
+  trainerMaterial: (courseId: string, materialId: string) =>
+    `/trainer/courses/${courseId}/content/materials/${materialId}`,
   trainerUsers: "/trainer/users",
   trainerUserInvite: "/trainer/users/invite",
   trainerUser: (userId: string) => `/trainer/users/${userId}`,
   trainerRequests: "/trainer/requests",
+  trainerRequestsIn: (status: string) => `/trainer/requests?status=${status}`,
+  trainerInviteTo: (courseId: string) => `/trainer/users/invite?course=${courseId}`,
 } as const;
 
 /** Where a signed-in user lands, by role. */

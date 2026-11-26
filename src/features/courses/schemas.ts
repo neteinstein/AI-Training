@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { chosenId, longText, optionalText, requiredText, slug } from "@/lib/validation/rules";
+import { DESCRIPTION_MAX, SUMMARY_MAX } from "./constants";
 import type { CourseInput } from "./operations";
 
 export const courseFields = [
@@ -14,9 +15,6 @@ export const courseFields = [
   "description_en",
   "duration_hours",
 ] as const;
-
-export const SUMMARY_MAX = 300;
-export const DESCRIPTION_MAX = 20_000;
 
 /** Hours as people type them: "8", "7.5" or, in Portuguese, "7,5". Empty means not set. */
 const durationHours = z

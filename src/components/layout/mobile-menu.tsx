@@ -6,7 +6,8 @@ import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "./nav-link";
 
-export type MenuItem = { href: string; label: string };
+/** `badge` is a count shown beside the label, with `badgeLabel` saying what it counts. */
+export type MenuItem = { href: string; label: string; badge?: number; badgeLabel?: string };
 
 /**
  * The navigation on phones: a button that opens a sheet with the links, and whatever else the
@@ -16,11 +17,14 @@ export function MobileMenu({
   items,
   labels,
   footer,
+  exactFirst = false,
   className,
 }: {
   items: MenuItem[];
   labels: { open: string; close: string; title: string };
   footer?: ReactNode;
+  /** The first item is a start page: it is only "current" on that exact page. */
+  exactFirst?: boolean;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -51,14 +55,23 @@ export function MobileMenu({
             </Dialog.Close>
           </div>
           <nav aria-label={labels.title} className="flex flex-col">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <NavLink
                 key={item.href}
                 href={item.href}
+                exact={exactFirst && index === 0}
                 onNavigate={() => setOpen(false)}
                 className="border-border text-foreground flex min-h-13 items-center border-b text-lg font-medium no-underline"
               >
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.badge ? (
+                  <span
+                    aria-label={item.badgeLabel}
+                    className="bg-highlight flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[0.8125rem] font-semibold text-white"
+                  >
+                    {item.badge}
+                  </span>
+                ) : null}
               </NavLink>
             ))}
           </nav>
