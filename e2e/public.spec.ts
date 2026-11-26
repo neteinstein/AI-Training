@@ -18,7 +18,7 @@ test.describe("landing page", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "A IA ao serviço de quem ensina e de quem cuida.",
+        name: "A Inteligência Artificial ao seu serviço",
       }),
     ).toBeVisible();
 
@@ -47,7 +47,7 @@ test.describe("landing page", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "AI at the service of those who teach and those who care.",
+        name: "Artificial Intelligence at your service",
       }),
     ).toBeVisible();
     await expect(page.getByRole("link", { name: /Teachers[\s\S]*2 courses/ })).toBeVisible();

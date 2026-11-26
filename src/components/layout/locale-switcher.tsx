@@ -51,7 +51,6 @@ export function LocaleSwitcher({ className }: { className?: string }) {
             hrefLang={locale}
             lang={locale}
             aria-current={active ? "true" : undefined}
-            aria-label={t(`Languages.${locale}`)}
             onClick={(event) => keepQuery(event, locale)}
             className={cn(
               "flex min-h-[38px] items-center rounded-full px-3.5 text-[0.8125rem] font-semibold no-underline transition-colors",
@@ -61,6 +60,8 @@ export function LocaleSwitcher({ className }: { className?: string }) {
             )}
           >
             {locale.toUpperCase()}
+            {/* The name read aloud starts with the letters on screen, then says the language. */}
+            <span className="sr-only"> ({t(`Languages.${locale}`)})</span>
           </Link>
         );
       })}

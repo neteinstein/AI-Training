@@ -15,11 +15,11 @@ Built with Next.js (App Router) and Supabase (Auth, Postgres, Storage).
 | Logic behind every screen (queries, changes, validation, embeds) | Done, tested against a database |
 | File downloads, security headers                                 | Done, tested in the browser     |
 | Public site: landing page, catalogue, course page, request form  | Done, tested in the browser     |
-| Learner area: my courses, materials, PDF and document viewers    | Not built yet                   |
-| Back-office screens: courses, materials, users, requests         | Not built yet                   |
+| Learner area: my courses, materials, PDF and document viewers    | Done, tested in the browser     |
+| Back-office: courses, content, users, invitations, requests      | Done, tested in the browser     |
 
-Signed-in learners and trainers currently land on placeholder pages. The interface text, the
-privacy notice and the demo catalogue are placeholders to be replaced (see "Going live").
+The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
+(see "Going live").
 
 Everything was exercised against a local Supabase stack. The go-live steps at the end of this
 file use the Supabase CLI as it documents itself; they have not been rehearsed against a hosted
@@ -86,6 +86,7 @@ src/features/<area>/    one folder per subject (courses, materials, users, reque
   schemas.ts            what a form may contain, with messages in both languages
   operations.ts         what changes data; takes a Supabase client, returns a plain result
   actions.ts            the form handlers: check who is asking, validate, call an operation
+src/components/trainer/ the pieces every back-office screen shares (frame, rows, menus, messages)
 src/lib/dal/            what reads data, for the public site, learners and trainers
 src/lib/embeds/         turns a pasted YouTube, Vimeo or Google link into a safe frame address
 src/lib/security/       security headers, route rules, safe redirects
@@ -96,11 +97,38 @@ src/app/globals.css     colours, fonts and radii: the one place to change the lo
 Two rules hold everywhere:
 
 - **The database decides access.** Reads and changes run with the visitor's own session, so
-  Row Level Security applies even if a page forgets a check. The secret key is used in one
-  module, only for what needs it (inviting and removing accounts, storing public information
-  requests), and only after the code has confirmed the caller is a trainer.
+  Row Level Security applies even if a page forgets a check. The secret key is created in one
+  module and used for two things only: inviting, re-inviting and removing accounts, after the
+  code has confirmed the caller is a trainer; and storing a request sent through the public
+  form, which visitors cannot write to the database themselves.
 - **Text is bilingual by column.** Catalogue names and titles are required in both languages;
   modules and materials need one, and the interface falls back to the other and says so.
+
+And one more for the back-office:
+
+- **Every form handler checks who is calling.** A Server Action is an address anyone can post
+  to, whatever the pages show them, so each one starts by confirming the caller is a trainer
+  (`src/lib/actions/trainer.ts`). A unit test fails when a handler is added without that check,
+  and a browser test posts to two of them as a visitor, a learner and a trainer.
+
+## The back-office
+
+Trainers sign in at the same address as learners and land on the back-office (`/trainer`):
+
+- **Courses**: create and describe a course in both languages, order the list (it is the order
+  of the public site), and set its status. A course needs both summaries before it can leave
+  draft.
+- **Content**: modules and their materials, with a switch that shows or hides each material
+  for learners, "make everything visible" per module, and a menu to edit, move to another
+  module or delete. A new material is visible unless the trainer unticks that option.
+- **Learners** of a course: add people who have an account, remove them, or invite new ones.
+- **Areas and levels**: the two lists courses are organised by. One in use cannot be deleted.
+- **Users**: everyone with an account or a pending invitation; a person's page holds their
+  details, role, courses, a new access link, and removal.
+- **Invitations**: one or many addresses, by email or as links to pass on by hand. Someone who
+  already has an account just gets the new courses.
+- **Requests** from the public form: mark as contacted, archive, delete, or invite the person
+  with what they wrote (name, address, language, course).
 
 ## Sign-in and invitations
 
@@ -139,9 +167,11 @@ Two things worth knowing:
   be shared as "anyone with the link can view", so anyone who obtains the link can open it.
   Upload confidential material as a PDF instead: uploaded files can only be fetched by
   enrolled learners, through links that expire after a minute.
-- Uploads go straight from the trainer's browser to storage, up to 50 MB per file (the limit of
-  Supabase's Free plan; it can be raised on paid plans in the bucket settings and in
-  `src/lib/files/rules.ts`).
+- Uploads go straight from the trainer's browser to storage, in pieces that are retried when
+  the connection drops, up to 50 MB per file (the limit of Supabase's Free plan; it can be
+  raised on paid plans in the bucket settings and in `src/lib/files/rules.ts`). The browser is
+  given a token that is good for that one file only; the file's type and size are checked
+  before the upload, by the storage service during it, and again when the material is saved.
 
 ## Database and access rules
 
@@ -166,12 +196,21 @@ and Google hosts, and the site can never be shown inside another site.
 ## Tests
 
 - `npm test`: unit tests for the pieces that need no database (address parsing, Markdown
-  safety, form validation in both languages, colour contrast of the theme, security headers).
+  safety, form validation in both languages, colour contrast of the theme, security headers),
+  and checks that read the source: every form handler has its access check, the secret key is
+  used only where decided, the validation library stays out of the browser.
 - `npm run test:integration`: every access rule and every data change, run against the local
   stack as a visitor, an enrolled learner, a learner who is not enrolled, and a trainer.
   They create and delete users, so they refuse to run against anything but a local stack.
 - `npm run e2e`: the journeys in a real browser at desktop and phone sizes, reading emails
-  from the local mail catcher. Run `npm run build` first.
+  from the local mail catcher. Run `npm run build` first. Besides the journeys (building a
+  course, uploading a file, inviting someone who then activates the account and reads the
+  materials, a request becoming an invitation) they include:
+  - the automated accessibility rules (WCAG 2.1 A and AA) on every main screen;
+  - the back-office used with the keyboard alone (menus, dialogs, switches, reordering);
+  - no sideways scrolling at 320 px;
+  - the security policy blocking nothing the pages need, and back-office form handlers
+    refusing a visitor and a learner who post to them directly.
 
 ## Going live
 

@@ -3,7 +3,13 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../src/lib/supabase/database.types";
 import { DEMO_PASSWORD } from "../tests/fixtures/demo-data";
 
-export { DEMO_PASSWORD, demoCourses, demoMaterials, demoUsers } from "../tests/fixtures/demo-data";
+export {
+  DEMO_PASSWORD,
+  demoCourses,
+  demoMaterials,
+  demoModules,
+  demoUsers,
+} from "../tests/fixtures/demo-data";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const secretKey = process.env.SUPABASE_SECRET_KEY ?? "";
