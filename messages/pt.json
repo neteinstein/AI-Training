@@ -690,11 +690,11 @@
       },
       "storage": {
         "title": "Onde ficam guardados",
-        "text": "Os dados ficam guardados em servidores na União Europeia, com acesso restrito aos formadores e à equipa da Mindera que gere a plataforma. [CONFIRMAR FORNECEDOR E REGIÃO]"
+        "text": "Os dados ficam guardados em servidores da Supabase na Irlanda, na União Europeia, com acesso restrito aos formadores e à equipa da Mindera que gere a plataforma."
       },
       "retention": {
         "title": "Durante quanto tempo",
-        "text": "Guardamos os pedidos de informação pelo tempo necessário para lhes responder, e as contas enquanto durar a sua participação nos cursos. [PRAZOS A DEFINIR]"
+        "text": "Guardamos os pedidos de informação e os dados das contas durante um ano."
       },
       "rights": {
         "title": "Os seus direitos",

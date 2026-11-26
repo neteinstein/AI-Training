@@ -690,11 +690,11 @@
       },
       "storage": {
         "title": "Where it is kept",
-        "text": "The data is kept on servers in the European Union, with access restricted to the trainers and to the Mindera team that runs the platform. [CONFIRM PROVIDER AND REGION]"
+        "text": "The data is kept on Supabase servers in Ireland, in the European Union, with access restricted to the trainers and to the Mindera team that runs the platform."
       },
       "retention": {
         "title": "For how long",
-        "text": "We keep information requests for as long as it takes to answer them, and accounts for as long as you take part in the courses. [PERIODS TO BE DEFINED]"
+        "text": "We keep information requests and account data for one year."
       },
       "rights": {
         "title": "Your rights",
