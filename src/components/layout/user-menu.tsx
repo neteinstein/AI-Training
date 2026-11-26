@@ -7,6 +7,7 @@ import { useState } from "react";
 import { SignOutButton } from "@/features/auth/sign-out-button";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
+import { ThemeSwitch } from "./theme-switch";
 
 const itemClass =
   "text-foreground hover:bg-muted flex min-h-11 items-center rounded-lg px-3 font-medium no-underline transition-colors";
@@ -25,6 +26,7 @@ export function UserMenu({
   area: "learner" | "trainer";
 }) {
   const t = useTranslations("Account");
+  const tTheme = useTranslations("Theme");
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -59,6 +61,12 @@ export function UserMenu({
               {t("title")}
             </Link>
             <SignOutButton className="[&>button]:w-full [&>button]:justify-start [&>button]:px-3" />
+            <div className="border-border mt-1 flex flex-col gap-2 border-t px-1 pt-3 pb-1">
+              <span aria-hidden="true" className="text-muted-foreground px-2 text-[0.8125rem]">
+                {tTheme("label")}
+              </span>
+              <ThemeSwitch inline />
+            </div>
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

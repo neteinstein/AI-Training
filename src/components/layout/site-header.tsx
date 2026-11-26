@@ -7,6 +7,7 @@ import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
+import { ThemeSwitch } from "./theme-switch";
 
 /** Header of the public site. Everything in it is the same for every visitor, so it caches. */
 export async function SiteHeader() {
@@ -42,7 +43,10 @@ export async function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <LocaleSwitcher />
+          <span className="flex items-center gap-1">
+            <LocaleSwitcher />
+            <ThemeSwitch />
+          </span>
           <Link href={routes.login} className={buttonClass({ variant: "outline", size: "sm" })}>
             {t("signIn")}
           </Link>
@@ -58,6 +62,7 @@ export async function SiteHeader() {
                 {t("signIn")}
               </Link>
               <LocaleSwitcher className="self-start" />
+              <ThemeSwitch inline className="self-start" />
             </>
           }
         />

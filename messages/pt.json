@@ -13,6 +13,13 @@
     "pt": "Português",
     "en": "English"
   },
+  "Theme": {
+    "label": "Tema",
+    "current": "Tema: {choice}",
+    "light": "Claro",
+    "dark": "Escuro",
+    "auto": "Automático"
+  },
   "NotFound": {
     "title": "Página não encontrada",
     "description": "A página que procura não existe ou foi movida."

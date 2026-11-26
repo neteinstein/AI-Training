@@ -65,7 +65,7 @@ export function MobileMenu({
                 {item.badge ? (
                   <span
                     aria-label={item.badgeLabel}
-                    className="bg-highlight flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[0.8125rem] font-semibold text-white"
+                    className="bg-highlight text-on-highlight flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[0.8125rem] font-semibold"
                   >
                     {item.badge}
                   </span>

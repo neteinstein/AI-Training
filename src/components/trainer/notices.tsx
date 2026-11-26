@@ -81,7 +81,7 @@ function Card({
         type="button"
         aria-label={closeLabel}
         onClick={clearNotice}
-        className="flex size-11 flex-none items-center justify-center rounded-lg transition-colors hover:bg-black/5"
+        className="hover:bg-foreground/10 flex size-11 flex-none items-center justify-center rounded-lg transition-colors"
       >
         <X aria-hidden="true" className="size-[18px]" />
       </button>

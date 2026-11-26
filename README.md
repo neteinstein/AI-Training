@@ -167,6 +167,12 @@ language.
 |   🔗   | **Link**            | Opens the other site in a new tab                                    |
 |   📝   | **Text page**       | Written in Markdown, with copyable prompts and call-out boxes        |
 
+### Light or dark
+
+The site follows the device: dark when the phone or computer is set to dark, light otherwise.
+A switch beside the language toggle lets each person choose light, dark or automatic, and the
+choice is remembered on that device.
+
 ### Invitations, not sign-ups
 
 There is no public sign-up. A trainer invites someone by email, or copies a link to pass on by

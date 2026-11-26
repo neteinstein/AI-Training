@@ -6,9 +6,15 @@ import { cn } from "@/lib/utils";
  * file to change the logo.
  */
 export function LogoMark({ size = 34, inverted = false }: { size?: number; inverted?: boolean }) {
+  // `inverted` is for the footer, which is dark in both themes.
   return (
     <svg aria-hidden="true" width={size} height={size} viewBox="0 0 34 34" fill="none">
-      <circle cx="15" cy="19" r="11" fill={inverted ? "var(--background)" : "var(--primary)"} />
+      <circle
+        cx="15"
+        cy="19"
+        r="11"
+        fill={inverted ? "var(--footer-foreground)" : "var(--primary)"}
+      />
       <path
         d="M19 4a13 13 0 0 1 11 11"
         stroke={inverted ? "var(--art-accent-on-dark)" : "var(--art-accent)"}

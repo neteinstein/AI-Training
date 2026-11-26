@@ -245,7 +245,7 @@ function LazyPage({ number, width, ratio }: { number: number; width: number; rat
       ref={holder}
       data-page={number}
       style={{ width, height: Math.round(width * (ownRatio ?? ratio)) }}
-      className="bg-card flex-none overflow-hidden rounded-sm shadow-(--shadow-page)"
+      className="bg-pdf-page flex-none overflow-hidden rounded-sm shadow-(--shadow-page)"
     >
       {near ? (
         // The page waits for its data inside its own boundary. Without it, React would hide

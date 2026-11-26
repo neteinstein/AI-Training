@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +60,10 @@ export async function PageFrame({
         </nav>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
           {barActions}
-          <LocaleSwitcher />
+          <span className="flex items-center gap-1">
+            <LocaleSwitcher />
+            <ThemeSwitch />
+          </span>
         </div>
       </div>
 

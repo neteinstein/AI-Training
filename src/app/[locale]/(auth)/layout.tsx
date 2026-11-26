@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Logo } from "@/components/layout/logo";
+import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
 
@@ -18,7 +19,10 @@ export default function AuthLayout({ children }: LayoutProps<"/[locale]">) {
           >
             <Logo size={30} className="[&>span]:text-xl" />
           </Link>
-          <LocaleSwitcher />
+          <span className="flex items-center gap-1">
+            <LocaleSwitcher />
+            <ThemeSwitch />
+          </span>
         </div>
       </header>
       <main
