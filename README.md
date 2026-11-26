@@ -202,6 +202,8 @@ and Google hosts, and the site can never be shown inside another site.
 - `npm run test:integration`: every access rule and every data change, run against the local
   stack as a visitor, an enrolled learner, a learner who is not enrolled, and a trainer.
   They create and delete users, so they refuse to run against anything but a local stack.
+  Both this suite and the next first wait until the stack sends the project's own emails: for
+  about ten seconds after it starts, the local sign-in service still uses its built-in ones.
 - `npm run e2e`: the journeys in a real browser at desktop and phone sizes, reading emails
   from the local mail catcher. Run `npm run build` first. Besides the journeys (building a
   course, uploading a file, inviting someone who then activates the account and reads the
