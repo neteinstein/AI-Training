@@ -1,0 +1,51 @@
+name: Keep Supabase awake
+
+# Supabase pauses Free-plan projects after a week without activity. This reads from the hosted
+# project on odd days of the month; scripts/keep-alive.mjs picks which of the four times below
+# runs on a given day (from the date), so the hour changes from day to day. Not needed on a
+# paid plan: delete this file then.
+#
+# GitHub turns scheduled workflows off after 60 days without commits in a public repository;
+# re-enable it under Actions if that happens.
+
+on:
+  schedule:
+    - cron: "23 4 * * *"
+    - cron: "41 10 * * *"
+    - cron: "7 15 * * *"
+    - cron: "52 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SUPABASE_URL: https://wsyxnxtinvhnecmwkhzt.supabase.co
+  SUPABASE_PUBLISHABLE_KEY: sb_publishable_pszwONINzSRgWXkXdOUMFA_MvFvS4kU
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/keep-alive.mjs
+            .nvmrc
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Read
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          case "$SCHEDULE" in
+            "23 4 * * *") slot=0 ;;
+            "41 10 * * *") slot=1 ;;
+            "7 15 * * *") slot=2 ;;
+            "52 20 * * *") slot=3 ;;
+            *) node scripts/keep-alive.mjs --force; exit ;;
+          esac
+          node scripts/keep-alive.mjs "$slot" 4

@@ -1,12 +1,11 @@
 "use server";
 
-import { refresh, updateTag } from "next/cache";
+import { refresh } from "next/cache";
 import { freeSlug } from "@/features/catalog/operations";
 import { redirect } from "@/i18n/navigation";
 import type { ActionState } from "@/lib/actions/state";
 import { failed, leaveNotice, succeeded, trainerAction } from "@/lib/actions/trainer";
 import { fieldErrors, fields, text } from "@/lib/actions/validation";
-import { CATALOG_TAG } from "@/lib/dal/catalog";
 import type { Direction } from "@/lib/dal/mutations";
 import { routes } from "@/lib/routes";
 import { slugify } from "@/lib/slug";
@@ -65,7 +64,6 @@ export async function saveCourse(_previous: ActionState, formData: FormData): Pr
     }
   }
 
-  updateTag(CATALOG_TAG);
   if (!id) {
     await leaveNotice(t("courses.created"));
     return redirect({ href: routes.trainerCourseContent(result.id), locale });
@@ -85,7 +83,6 @@ export async function changeCourseStatus(
   const result = await setCourseStatus(supabase, text(formData, "id"), status.data);
   switch (result) {
     case "ok":
-      updateTag(CATALOG_TAG);
       refresh();
       return succeeded(t("courses.statusChanged"));
     case "needs_summaries":
@@ -105,7 +102,6 @@ export async function removeCourse(
   const result = await deleteCourse(supabase, text(formData, "id"));
   switch (result) {
     case "deleted":
-      updateTag(CATALOG_TAG);
       await leaveNotice(t("courses.deleted"));
       return redirect({ href: routes.trainerCourses, locale });
     case "has_learners":
@@ -126,6 +122,5 @@ export async function reorderCourse(
   const done = await moveCourse(supabase, text(formData, "id"), direction);
   refresh();
   if (!done) return failed(t("common.failed"));
-  updateTag(CATALOG_TAG);
   return succeeded(t("common.moved"));
 }
