@@ -152,6 +152,14 @@ for (const scheme of ["light", "dark"] as const) {
       await expect(page.getByRole("alertdialog")).toBeVisible();
       await shootScreen(page, info.project.name, "office-11-confirm");
       await page.getByRole("alertdialog").getByRole("button", { name: "Cancelar" }).click();
+
+      // On a phone the back-office menu opens over the page; it also holds the theme choice.
+      const menuButton = page.getByRole("button", { name: "Abrir menu" });
+      if (await menuButton.isVisible()) {
+        await menuButton.click();
+        await expect(page.getByRole("group", { name: "Tema" })).toBeVisible();
+        await shootScreen(page, info.project.name, "office-12-menu");
+      }
     });
 
     test("emails", async ({ page }, info) => {

@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 export type Crumb = { label: string; href?: string };
 
 /**
- * The shape every back-office page shares: a bar with where you are and the language switch,
- * then the page's heading, then its content.
+ * The shape every back-office page shares: a bar with where you are, the language switch and
+ * (on wide screens) the theme switch, then the page's heading, then its content.
  */
 export async function PageFrame({
   crumbs,
@@ -62,7 +62,8 @@ export async function PageFrame({
           {barActions}
           <span className="flex items-center gap-1">
             <LocaleSwitcher />
-            <ThemeSwitch />
+            {/* On a phone the bar has no room to spare: there the choice is in the menu. */}
+            <ThemeSwitch className="max-md:hidden" />
           </span>
         </div>
       </div>

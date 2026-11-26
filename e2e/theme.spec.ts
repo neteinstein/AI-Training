@@ -111,12 +111,26 @@ test.describe("light and dark", () => {
     expect(await pageColour(page)).toBe(DARK_PAGE);
   });
 
-  test("a trainer finds it in the back-office bar", async ({ page }) => {
+  test("a trainer finds it in the back-office bar, or in the phone's menu", async ({
+    page,
+    isMobile,
+  }) => {
     await page.emulateMedia({ colorScheme: "light" });
     await signInAsTrainer(page);
     await page.goto("/pt/trainer/courses");
-    await page.getByRole("button", { name: "Tema: Automático" }).click();
-    await page.getByRole("menuitemradio", { name: "Escuro" }).click();
+
+    if (isMobile) {
+      // The bar of a phone keeps to where you are and the language.
+      await expect(page.getByRole("button", { name: "Tema: Automático" })).toHaveCount(0);
+      await page.getByRole("button", { name: "Abrir menu" }).click();
+      await page
+        .getByRole("group", { name: "Tema" })
+        .getByRole("button", { name: "Escuro" })
+        .click();
+    } else {
+      await page.getByRole("button", { name: "Tema: Automático" }).click();
+      await page.getByRole("menuitemradio", { name: "Escuro" }).click();
+    }
     await expect(theme(page)).toHaveAttribute("data-theme", "dark");
     expect(await pageColour(page)).toBe(DARK_PAGE);
   });

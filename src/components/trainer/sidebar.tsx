@@ -12,6 +12,7 @@ import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Logo } from "@/components/layout/logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { NavLink } from "@/components/layout/nav-link";
+import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { SignOutButton } from "@/features/auth/sign-out-button";
 import { Link } from "@/i18n/navigation";
 import { requireTrainer } from "@/lib/dal/session";
@@ -78,6 +79,7 @@ export async function Sidebar() {
               </p>
               {account}
               <LocaleSwitcher className="mx-3 self-start" />
+              <ThemeSwitch inline className="mx-3 self-start" />
             </>
           }
         />
