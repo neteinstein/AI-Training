@@ -235,6 +235,14 @@ and Google hosts, and the site can never be shown inside another site.
   - the security policy blocking nothing the pages need, and back-office form handlers
     refusing a visitor and a learner who post to them directly.
 
+CI (`.github/workflows/ci.yml`) runs all of this on every pull request and on `main`, in three
+jobs. Besides the tests:
+
+- the database job regenerates `src/lib/supabase/database.types.ts` and fails when the
+  committed file is out of date; the right file is kept with the run (artifact
+  `database-types`);
+- one job can be started on its own, on any branch: Actions → CI → Run workflow.
+
 ## Screenshots
 
 The pictures in the [README](README.md) live in `docs/screenshots/`. They are the real screens
