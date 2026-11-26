@@ -282,8 +282,8 @@ variables there. The two keys are in the Supabase dashboard under Project Settin
 | `SUPABASE_SECRET_KEY`                  | The secret key (`sb_secret_...`). Server only.            |
 | `NEXT_PUBLIC_SITE_URL`                 | The public address of the app, e.g. `https://your-domain` |
 
-The build reads the public catalogue from the database, so the variables must be set before
-the first build.
+The public values are written into the browser code at build time, so set them before the
+first build.
 
 #### On Cloudflare (training.pedrovicente.pt)
 
@@ -293,11 +293,11 @@ The repository is set up to run as a Cloudflare Worker through the OpenNext adap
 storage (a KV namespace and a D1 database) already exists on the Cloudflare account, and the
 domain's DNS record and certificate are created by the first deploy.
 
-> **Not ready for production yet.** With Next.js 16.4 and Cache Components, the adapter
-> has open bugs ([#1464](https://github.com/opennextjs/opennextjs-cloudflare/issues/1464),
-> [#1318](https://github.com/opennextjs/opennextjs-cloudflare/pull/1318)): some page renders
-> hang on Workers. `scripts/patch-open-next.mjs` works around the first; the second has no
-> fix yet. Run the browser tests against the Worker (below) before the first deploy.
+Public pages read the catalogue from the database on every visit: the app does not use
+Next.js Cache Components, which the Cloudflare adapter does not yet run reliably
+([opennextjs/opennextjs-cloudflare#1464](https://github.com/opennextjs/opennextjs-cloudflare/issues/1464),
+[#1318](https://github.com/opennextjs/opennextjs-cloudflare/pull/1318)). The build reads nothing
+from the database.
 
 Once, before the first deploy:
 

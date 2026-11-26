@@ -5,9 +5,9 @@ import memoryQueue from "@opennextjs/cloudflare/overrides/queue/memory-queue";
 import d1NextTagCache from "@opennextjs/cloudflare/overrides/tag-cache/d1-next-tag-cache";
 
 export default defineCloudflareConfig({
-  // "use cache" results (the public catalogue) are kept in KV ...
+  // Pages rendered at build time (login, privacy) are served from KV. Cache tags, if the app
+  // starts using them again, are kept in D1, which is consistent at once (KV is not).
   incrementalCache: kvIncrementalCache,
-  // ... and updateTag(CATALOG_TAG) is recorded in D1, which is consistent at once (KV is not).
   tagCache: d1NextTagCache,
   queue: memoryQueue,
 });

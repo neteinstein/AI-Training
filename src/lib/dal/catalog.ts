@@ -1,29 +1,24 @@
 import "server-only";
-import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
+import { cache } from "react";
 import type { Locale } from "@/config/site";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { fetchCatalog, fetchPublishedCourse } from "./catalog-queries";
 
 /**
- * The public catalogue, cached.
+ * The public catalogue, read fresh on every request.
  *
- * Public pages are served from a cache so they load instantly and keep working during a short
- * database outage. The data is read with a client that has no session, so the cache can only
- * ever hold what an anonymous visitor may see. Every back-office action that changes an area,
- * a level or a course clears the tag below, so trainers see their change at once.
+ * The data is read with a client that has no session, so it only ever holds what an anonymous
+ * visitor may see. Waiting for the request (`connection()`) keeps these reads out of the build:
+ * public pages are rendered per visit, so a trainer's change shows at once. `cache` shares one
+ * read between a page and its metadata within the same request.
  */
-export const CATALOG_TAG = "catalog";
-
-export async function getCatalog(locale: Locale) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(CATALOG_TAG);
+export const getCatalog = cache(async (locale: Locale) => {
+  await connection();
   return fetchCatalog(createSupabasePublicClient(), locale);
-}
+});
 
-export async function getPublishedCourse(slug: string, locale: Locale) {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(CATALOG_TAG);
+export const getPublishedCourse = cache(async (slug: string, locale: Locale) => {
+  await connection();
   return fetchPublishedCourse(createSupabasePublicClient(), slug, locale);
-}
+});

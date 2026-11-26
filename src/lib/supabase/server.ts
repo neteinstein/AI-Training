@@ -9,8 +9,7 @@ import type { Database } from "./database.types";
  * Supabase client bound to the visitor's session cookies. Everything it does runs as that
  * user, under Row Level Security.
  *
- * It reads cookies, so with Cache Components any Server Component that calls it must sit
- * behind a <Suspense> boundary (a `loading.tsx` counts).
+ * It reads cookies, so every page that calls it is rendered per request.
  */
 export async function createSupabaseServerClient() {
   // Session checks compare token expiry with the current time, so they must wait for a real

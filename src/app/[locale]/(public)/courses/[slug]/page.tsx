@@ -15,20 +15,6 @@ import { routes } from "@/lib/routes";
 import { localizedAlternates } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-/** Stands in when no course is published yet: the build needs at least one address to check. */
-const NO_COURSE_YET = "-";
-
-/**
- * Published courses are rendered ahead of time. A course published later gets its page on the
- * first visit, and every page is refreshed as soon as a trainer changes the catalogue.
- */
-export async function generateStaticParams({ params }: { params: { locale: string } }) {
-  const { courses } = await getCatalog(params.locale === "en" ? "en" : "pt");
-  return courses.length > 0
-    ? courses.map((course) => ({ slug: course.slug }))
-    : [{ slug: NO_COURSE_YET }];
-}
-
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/courses/[slug]">): Promise<Metadata> {
