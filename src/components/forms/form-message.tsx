@@ -16,7 +16,7 @@ export function FormMessage({ state, className }: { state: ActionState; classNam
         <p
           className={cn(
             "flex items-start gap-2.5 rounded-xl px-4 py-3 text-[0.9375rem] leading-normal font-medium",
-            isError ? "bg-highlight-tint text-destructive" : "bg-accent text-accent-foreground",
+            isError ? "bg-destructive-tint text-destructive" : "bg-accent text-accent-foreground",
             className,
           )}
         >

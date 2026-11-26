@@ -20,9 +20,7 @@ export default async function LoginPage() {
       <div className="flex flex-col gap-5">
         <ArchIllustration />
         <div className="flex flex-col gap-1.5">
-          <h1 className="font-heading text-[2.125rem] leading-[1.15] font-[550] tracking-[-0.02em]">
-            {t("title")}
-          </h1>
+          <h1 className="font-heading text-[2.125rem] leading-[1.15]">{t("title")}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
       </div>

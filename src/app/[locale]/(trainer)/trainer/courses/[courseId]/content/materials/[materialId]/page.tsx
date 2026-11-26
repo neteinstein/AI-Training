@@ -36,9 +36,7 @@ export default async function EditMaterialPage({ params }: Props) {
 
   return (
     <CourseFrame courseId={courseId} tab="content" trail={[{ label: title }]} narrow>
-      <h2 className="font-heading text-2xl leading-tight font-semibold">
-        {t(`edit.${material.kind}`)}
-      </h2>
+      <h2 className="font-heading text-2xl leading-tight">{t(`edit.${material.kind}`)}</h2>
       <MaterialForm
         courseId={courseId}
         kind={material.kind}

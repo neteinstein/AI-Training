@@ -51,7 +51,7 @@ export default async function CourseLearnersPage({ params }: Props) {
   return (
     <CourseFrame courseId={courseId} tab="learners">
       <section aria-labelledby="enrolled" className="flex flex-col gap-3">
-        <h2 id="enrolled" className="font-heading text-xl leading-tight font-semibold">
+        <h2 id="enrolled" className="font-heading text-xl leading-tight">
           {t("learners.enrolled")}
         </h2>
         {learners.length === 0 ? (
@@ -69,11 +69,16 @@ export default async function CourseLearnersPage({ params }: Props) {
                     >
                       {name}
                     </Link>
-                    <span className="text-muted-foreground text-[0.8125rem] break-all">
+                    {/* A long email may break wherever it has to; the date stays in one piece. */}
+                    <span className="text-muted-foreground text-[0.8125rem] wrap-anywhere">
                       {person.fullName ? `${person.email} · ` : ""}
-                      {t("learners.since", {
-                        date: format.dateTime(new Date(person.enrolledAt), { dateStyle: "medium" }),
-                      })}
+                      <span className="whitespace-nowrap">
+                        {t("learners.since", {
+                          date: format.dateTime(new Date(person.enrolledAt), {
+                            dateStyle: "medium",
+                          }),
+                        })}
+                      </span>
                     </span>
                   </span>
                   <span className="flex flex-wrap items-center gap-2">
@@ -107,7 +112,7 @@ export default async function CourseLearnersPage({ params }: Props) {
 
       <section aria-labelledby="add-people" className="mt-4 flex max-w-3xl flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <h2 id="add-people" className="font-heading text-xl leading-tight font-semibold">
+          <h2 id="add-people" className="font-heading text-xl leading-tight">
             {t("learners.add")}
           </h2>
           <p className="text-muted-foreground">

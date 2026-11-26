@@ -81,7 +81,7 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
             </span>
           ) : null}
         </div>
-        <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1] font-[550] tracking-[-0.02em] text-balance">
+        <h1 className="font-heading text-[clamp(2.125rem,3.6vw,3rem)] leading-[1.1] text-balance">
           {course.title}
         </h1>
         {course.summary ? (
@@ -114,7 +114,7 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
           className="border-border bg-card flex flex-[1_1_320px] flex-col gap-5 rounded-2xl border p-7"
         >
           <div className="flex flex-col gap-2">
-            <h2 className="font-heading text-2xl leading-tight font-semibold">{t("joinTitle")}</h2>
+            <h2 className="font-heading text-2xl leading-tight">{t("joinTitle")}</h2>
             <p className="text-muted-foreground text-[0.9375rem] leading-[1.55]">{t("joinText")}</p>
           </div>
           <Link href={routes.requestInfo(course.id)} className={buttonClass()}>
@@ -150,7 +150,7 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
 
       {related.length > 0 ? (
         <section className="mt-8 flex flex-col gap-6 md:mt-12">
-          <h2 className="font-heading text-[1.625rem] leading-[1.3] font-semibold">
+          <h2 className="font-heading text-[1.625rem] leading-[1.3]">
             {t("related", { area: course.area.name })}
           </h2>
           <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(320px,100%),1fr))] gap-6">

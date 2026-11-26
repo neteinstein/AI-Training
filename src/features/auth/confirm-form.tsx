@@ -29,9 +29,7 @@ export function ConfirmForm() {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2.5">
-          <h1 className="font-heading text-[2rem] leading-[1.15] font-[550] tracking-[-0.02em]">
-            {t("expiredTitle")}
-          </h1>
+          <h1 className="font-heading text-[2rem] leading-[1.15]">{t("expiredTitle")}</h1>
           <p className="text-muted-foreground">{t("expiredText")}</p>
         </div>
         <ForgotPasswordForm />
@@ -66,7 +64,7 @@ export function ConfirmForm() {
       </ol>
 
       <div className="flex flex-col gap-2.5">
-        <h1 className="font-heading text-[2rem] leading-[1.15] font-[550] tracking-[-0.02em]">
+        <h1 className="font-heading text-[2rem] leading-[1.15]">
           {isInvite ? t("inviteTitle") : t("recoveryTitle")}
         </h1>
         <p className="text-muted-foreground">

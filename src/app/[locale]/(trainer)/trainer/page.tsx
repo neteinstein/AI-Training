@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const panel = "border-border bg-card flex flex-col rounded-2xl border";
 const panelHead =
   "border-border flex flex-wrap items-center justify-between gap-x-4 border-b py-1.5 pr-3 pl-5";
-const panelTitle = "font-heading text-xl leading-tight font-semibold";
+const panelTitle = "font-heading text-xl leading-tight";
 const panelLink =
   "text-primary hover:text-primary-hover inline-flex min-h-11 items-center px-2 font-semibold no-underline";
 
@@ -79,7 +79,8 @@ export default async function TrainerDashboardPage() {
         </div>
       }
     >
-      <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(11rem,100%),1fr))] gap-3">
+      {/* Six figures: beside the menu they go three or six to a row, so no row is left with one. */}
+      <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(11rem,100%),1fr))] gap-3 md:grid-cols-3 2xl:grid-cols-6">
         {figures.map((figure) => (
           <li key={figure.label} className="flex">
             <Link
@@ -87,7 +88,7 @@ export default async function TrainerDashboardPage() {
               className="border-border bg-card text-foreground hover:border-primary flex w-full flex-col-reverse justify-end gap-1 rounded-2xl border px-5 py-4 no-underline transition-colors"
             >
               <span className="text-muted-foreground text-sm font-medium">{figure.label}</span>
-              <span className="font-heading text-[2rem] leading-none font-semibold tabular-nums">
+              <span className="font-heading text-[2rem] leading-none tabular-nums">
                 {figure.value}
               </span>
             </Link>

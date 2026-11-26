@@ -12,44 +12,55 @@
  */
 :root {
   /* Surfaces */
-  --background: #fffbf5; /* cream: page */
+  --background: #ffffff; /* page */
   --card: #ffffff; /* cards and the back-office work surface */
   --popover: #ffffff;
-  --muted: #f7efe2; /* sand: alternate sections, table headers */
-  --secondary: #f7efe2;
-  --accent: #e3efe4; /* green tint: hover and selected surfaces */
-  --sidebar: #f7efe2;
+  --muted: #f3f6fb; /* cool grey: alternate sections, the back-office menu */
+  --secondary: #f3f6fb;
+  --accent: #e6edfd; /* blue tint: hover and selected surfaces */
+  --sidebar: #f3f6fb;
 
   /* Text */
-  --foreground: #1c1917; /* ink */
-  --card-foreground: #1c1917;
-  --popover-foreground: #1c1917;
-  --secondary-foreground: #1c1917;
-  --muted-foreground: #57534e;
-  --accent-foreground: #166534;
-  --sidebar-foreground: #1c1917;
+  --foreground: #0f172a; /* ink */
+  --card-foreground: #0f172a;
+  --popover-foreground: #0f172a;
+  --secondary-foreground: #0f172a;
+  --muted-foreground: #475569;
+  --accent-foreground: #1d4ed8;
+  --sidebar-foreground: #0f172a;
 
   /* Brand */
-  --primary: #166534; /* forest green: buttons, links, focus ring */
-  --primary-hover: #14532d;
+  --primary: #1d4ed8; /* blue: buttons, links, focus ring */
+  --primary-hover: #1e40af;
   --primary-foreground: #ffffff;
-  --highlight: #c2410c; /* terracotta: highlights, badges, illustrations */
-  --highlight-foreground: #9a3412; /* terracotta dark enough for small text */
-  --highlight-tint: #fbe9dd;
-  --ochre: #d9a441; /* illustrations only */
+  --highlight: #0f766e; /* teal: badges and small labels; dark enough to carry white text */
+  --highlight-foreground: #0f766e;
+  --highlight-tint: #ddf4f1;
   --destructive: #b91c1c;
+  --destructive-tint: #fdecec; /* behind error messages */
 
-  /* Level glyph: the bars that are not filled, on white and on a green tint */
-  --glyph-rest: #cfc6b6;
-  --glyph-rest-on-tint: #b9cdbb;
+  /* Footer of the public site */
+  --footer: #0f172a;
+  --footer-foreground: #f8fafc;
+
+  /* The logo and the illustrations only: brighter than text could be */
+  --art-accent: #0d9488;
+  --art-accent-on-dark: #5eead4;
+  --art-sun: #f59e0b;
+  --art-leaf: #0f766e;
+  --art-leaf-light: #14b8a6;
+
+  /* Level glyph: the bars that are not filled, on white and on a blue tint */
+  --glyph-rest: #cbd5e1;
+  --glyph-rest-on-tint: #b3c3ea;
 
   /* Behind the pages of the PDF viewer */
-  --pdf-backdrop: #e8decb;
+  --pdf-backdrop: #e2e8f0;
 
   /* Lines */
-  --border: #e9dfcf; /* card outlines, dividers (decorative) */
-  --input: #8a8178; /* form-field outlines (3.7:1 on cream) */
-  --ring: #166534;
+  --border: #dde3ec; /* card outlines, dividers (decorative) */
+  --input: #7a8699; /* form-field outlines (3.7:1 on white) */
+  --ring: #1d4ed8;
 
   /* Area palette: a dark tone for icon and text on its own light tint */
   --area-forest: #166534;
@@ -70,22 +81,26 @@
   --area-olive-tint: #eaf1d6;
 
   /* Sidebar (back-office) */
-  --sidebar-primary: #166534;
+  --sidebar-primary: #1d4ed8;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #166534;
-  --sidebar-border: #e9dfcf;
-  --sidebar-ring: #166534;
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: #dde3ec;
+  --sidebar-ring: #1d4ed8;
 
   /* Charts are not used; kept so shadcn components that reference them resolve. */
-  --chart-1: #166534;
-  --chart-2: #c2410c;
+  --chart-1: #1d4ed8;
+  --chart-2: #0d9488;
   --chart-3: #155e75;
   --chart-4: #854d0e;
   --chart-5: #86198f;
 
-  /* Shape: 12px controls; cards use the 2xl step (about 20px) */
-  --radius: 0.75rem;
+  /* Headings: every heading takes its weight and letter-spacing from here */
+  --heading-weight: 700;
+  --heading-tracking: -0.02em;
+
+  /* Shape: 10px controls; cards use the 2xl step (16px) */
+  --radius: 0.625rem;
 }
 
 @theme inline {
@@ -107,8 +122,10 @@
   --color-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
   --color-highlight-tint: var(--highlight-tint);
-  --color-ochre: var(--ochre);
   --color-destructive: var(--destructive);
+  --color-destructive-tint: var(--destructive-tint);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -149,18 +166,20 @@
   --color-chart-5: var(--chart-5);
 
   --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-heading: var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.7);
+  --radius-2xl: calc(var(--radius) * 1.6);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --shadow-raised: 0 1px 2px rgb(68 48 20 / 0.06), 0 8px 24px rgb(68 48 20 / 0.06);
+  --shadow-raised: 0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.08);
+  /* A sheet of paper lying on the PDF viewer's backdrop */
+  --shadow-page: 0 1px 3px rgb(15 23 42 / 0.18);
 }
 
 @layer base {
@@ -176,6 +195,15 @@
   body {
     @apply bg-background text-foreground;
     line-height: 1.6;
+  }
+  /*
+   * Headings name their typeface with `font-heading`; its weight and letter-spacing come
+   * with it, from the tokens above, so a change of typeface is one edit. A heading that
+   * needs another weight can still say so with a utility class, which wins over this.
+   */
+  .font-heading {
+    font-weight: var(--heading-weight);
+    letter-spacing: var(--heading-tracking);
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {

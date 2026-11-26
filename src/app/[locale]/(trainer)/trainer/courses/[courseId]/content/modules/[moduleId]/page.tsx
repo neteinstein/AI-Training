@@ -26,7 +26,7 @@ export default async function EditModulePage({ params }: Props) {
 
   return (
     <CourseFrame courseId={courseId} tab="content" trail={[{ label: name }]} narrow>
-      <h2 className="font-heading text-2xl leading-tight font-semibold">{t("editModule")}</h2>
+      <h2 className="font-heading text-2xl leading-tight">{t("editModule")}</h2>
       <ModuleForm courseId={courseId} module={existing} />
     </CourseFrame>
   );

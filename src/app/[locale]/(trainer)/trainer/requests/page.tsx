@@ -83,9 +83,7 @@ export default async function RequestsPage({ searchParams }: Props) {
             >
               <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
                 <div className="flex min-w-0 flex-col">
-                  <h2 className="font-heading text-xl leading-tight font-semibold break-words">
-                    {request.name}
-                  </h2>
+                  <h2 className="font-heading text-xl leading-tight break-words">{request.name}</h2>
                   <a href={`mailto:${request.email}`} className="font-medium break-all">
                     {request.email}
                   </a>

@@ -52,9 +52,7 @@ export default async function LearnCoursePage({ params }: Props) {
       <div className="bg-muted">
         <div className="mx-auto flex w-full max-w-3xl flex-col items-start gap-3 px-5 py-5 sm:py-8">
           <AreaChip area={course.area} />
-          <h1 className="font-heading text-[1.75rem] leading-[1.2] font-[550] tracking-[-0.01em] sm:text-4xl">
-            {course.title}
-          </h1>
+          <h1 className="font-heading text-[1.75rem] leading-[1.2] sm:text-4xl">{course.title}</h1>
           <CourseFacts course={course} />
         </div>
       </div>
@@ -92,7 +90,7 @@ export default async function LearnCoursePage({ params }: Props) {
           >
             <summary className="hover:bg-muted/60 flex min-h-15 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2 transition-colors [&::-webkit-details-marker]:hidden">
               <span className="flex flex-col">
-                <span className="font-heading text-lg leading-[1.3] font-semibold">
+                <span className="font-heading text-lg leading-[1.3]">
                   {index + 1}. {module.title}
                 </span>
                 <span className="text-muted-foreground text-[0.8125rem]">

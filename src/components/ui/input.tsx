@@ -3,7 +3,7 @@ import { cn } from "cn";
 import * as React from "react";
 import { controlClass } from "@/components/forms/field";
 
-/** Text field per the style sheet: 48px tall, 12px corners, a clearly visible outline. */
+/** Text field per the style sheet: 48px tall, the theme's control corners, a clearly visible outline. */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <InputPrimitive

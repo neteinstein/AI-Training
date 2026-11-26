@@ -111,9 +111,7 @@ export function ModuleCard({
         )}
       >
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-3.5 gap-y-1">
-          <h2 className="font-heading text-xl leading-[1.3] font-semibold break-words">
-            {heading}
-          </h2>
+          <h2 className="font-heading text-xl leading-[1.3] break-words">{heading}</h2>
           <span className="text-muted-foreground text-[0.8125rem]">{summary}</span>
         </div>
         <div className="flex flex-wrap items-center gap-0.5">

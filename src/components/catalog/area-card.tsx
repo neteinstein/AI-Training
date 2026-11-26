@@ -52,7 +52,7 @@ export function AreaCard({
         )}
       </span>
       <span className="flex flex-col gap-1.5">
-        <span className="font-heading text-2xl leading-tight font-semibold">{title}</span>
+        <span className="font-heading text-2xl leading-tight">{title}</span>
         {description ? (
           <span className="text-muted-foreground text-[0.9375rem] leading-[1.55]">
             {description}

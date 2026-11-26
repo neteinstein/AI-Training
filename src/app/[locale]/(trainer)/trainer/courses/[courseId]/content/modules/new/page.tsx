@@ -18,7 +18,7 @@ export default async function NewModulePage({ params }: Props) {
 
   return (
     <CourseFrame courseId={courseId} tab="content" trail={[{ label: t("newModule") }]} narrow>
-      <h2 className="font-heading text-2xl leading-tight font-semibold">{t("newModule")}</h2>
+      <h2 className="font-heading text-2xl leading-tight">{t("newModule")}</h2>
       <ModuleForm courseId={courseId} />
     </CourseFrame>
   );

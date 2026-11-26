@@ -39,7 +39,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
       aria-labelledby={id}
       className="border-border flex flex-col gap-3 border-t pt-6 first:border-t-0 first:pt-0"
     >
-      <h2 id={id} className="font-heading text-xl leading-tight font-semibold">
+      <h2 id={id} className="font-heading text-xl leading-tight">
         {title}
       </h2>
       {children}
