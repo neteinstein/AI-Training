@@ -7,8 +7,6 @@ import { securityHeaders } from "./src/lib/security/headers";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
   poweredByHeader: false,
   async headers() {
     return [

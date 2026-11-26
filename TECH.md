@@ -41,9 +41,10 @@ and how it looks, see the [README](README.md).
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
 
-Everything was exercised against a local Supabase stack. The go-live steps at the end of this
-file use the Supabase CLI as it documents itself; they have not been rehearsed against a hosted
-project yet.
+Everything was exercised against a local Supabase stack, and the browser tests also against the
+app running as a Cloudflare Worker. The hosted project has the migrations (applied and recorded
+under the files' versions) and a first trainer; its sign-in settings and SMTP (step 3) are not
+pushed yet.
 
 ## Requirements
 
@@ -266,7 +267,8 @@ The demo data is in Portuguese, the default language, so that is what the screen
 ## Going live
 
 You need: a Supabase project, an email-sending provider (SMTP) for your domain, hosting for
-the app (Vercel is the natural fit for Next.js), and a domain.
+the app, and a domain. This installation runs on Cloudflare Workers at
+<https://training.pedrovicente.pt> (step 4), with the Supabase project `wsyxnxtinvhnecmwkhzt`.
 
 **Keys never go into the repository or into a chat.** They belong in your hosting provider's
 environment settings and, on your own computer, in `.env.local` (which Git ignores).
@@ -331,8 +333,49 @@ variables there. The two keys are in the Supabase dashboard under Project Settin
 | `SUPABASE_SECRET_KEY`                  | The secret key (`sb_secret_...`). Server only.            |
 | `NEXT_PUBLIC_SITE_URL`                 | The public address of the app, e.g. `https://your-domain` |
 
-The build reads the public catalogue from the database, so the variables must be set before
-the first build.
+The public values are written into the browser code at build time, so set them before the
+first build.
+
+#### On Cloudflare (training.pedrovicente.pt)
+
+The repository is set up to run as a Cloudflare Worker through the OpenNext adapter:
+`wrangler.jsonc` (name, domain, public values, cache storage) and `open-next.config.ts`.
+Cloudflare builds and deploys every push to `main` itself (Workers Builds, connected to this
+repository: Cloudflare dashboard, Workers, ai-training, Settings, Build). The build runs
+`npm run cf:build` with the three `NEXT_PUBLIC_` values set as build variables there, then
+`npx opennextjs-cloudflare deploy`. The cache storage (a KV namespace and a D1 database)
+exists on the Cloudflare account.
+
+Public pages read the catalogue from the database on every visit: the app does not use
+Next.js Cache Components, which the Cloudflare adapter does not yet run reliably
+([opennextjs/opennextjs-cloudflare#1464](https://github.com/opennextjs/opennextjs-cloudflare/issues/1464),
+[#1318](https://github.com/opennextjs/opennextjs-cloudflare/pull/1318)). The build reads nothing
+from the database.
+
+The secret key is a Worker secret, set once (and again whenever the key is rotated) in the
+Cloudflare dashboard (Workers, ai-training, Settings, Variables and Secrets) or with:
+
+```bash
+npx wrangler secret put SUPABASE_SECRET_KEY     # paste the secret key when asked
+```
+
+To try the Worker on your own computer against the local stack, put the local values in
+`.dev.vars` (same format as `.env.local`, with `NEXT_PUBLIC_SITE_URL=http://localhost:3000`):
+
+```bash
+npm run cf:build
+npx opennextjs-cloudflare populateCache local
+npx wrangler dev --port 3000
+npm run e2e        # in another terminal; it uses the Worker already listening on port 3000
+```
+
+`npm run cf:deploy` builds and deploys from your own computer.
+
+#### Keeping a Free-plan project awake
+
+Supabase pauses Free-plan projects after a week without activity.
+`.github/workflows/keep-alive.yml` reads from the hosted project on odd days of the month, at
+an hour that changes from day to day. Delete it once the project is on a paid plan.
 
 ### 5. Create the first trainer
 

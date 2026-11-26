@@ -1,12 +1,11 @@
 "use server";
 
-import { refresh, updateTag } from "next/cache";
+import { refresh } from "next/cache";
 import type { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import type { ActionState } from "@/lib/actions/state";
 import { failed, leaveNotice, succeeded, trainerAction } from "@/lib/actions/trainer";
 import { fieldErrors, fields, text } from "@/lib/actions/validation";
-import { CATALOG_TAG } from "@/lib/dal/catalog";
 import type { Direction } from "@/lib/dal/mutations";
 import type { Client } from "@/lib/dal/types";
 import { routes } from "@/lib/routes";
@@ -85,7 +84,6 @@ async function save<Name extends string, Input>(
     }
   }
 
-  updateTag(CATALOG_TAG);
   await leaveNotice(id ? t("common.saved") : t(`${kind}.created`));
   return redirect({ href: listOf[kind], locale });
 }
@@ -99,7 +97,6 @@ async function remove(
   const result = await run(supabase, text(formData, "id"));
   switch (result) {
     case "deleted":
-      updateTag(CATALOG_TAG);
       refresh();
       return succeeded(t(`${kind}.deleted`));
     case "in_use":
@@ -122,7 +119,6 @@ async function reorder(
   // Either way the list is shown again as it now is.
   refresh();
   if (!done) return failed(t("common.failed"));
-  updateTag(CATALOG_TAG);
   return succeeded(t("common.moved"));
 }
 

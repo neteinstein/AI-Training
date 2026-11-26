@@ -452,25 +452,26 @@ enabled = true
 # the hosted project; whatever it does not mention is taken from the settings above, so the
 # hosted project gets the same sign-in rules and email templates as local development.
 #
-# Uncomment it, fill it in, then preview with `npx supabase config diff` and apply with
-# `npx supabase config push`. The SMTP password is read from the SMTP_PASSWORD environment
+# Fill in the SMTP block when a provider is ready. Preview with `npx supabase config diff` and
+# apply with `npx supabase config push`. The SMTP password is read from the SMTP_PASSWORD environment
 # variable of the shell that runs the command: never write it in this file.
 # ---------------------------------------------------------------------------------------------
-# [remotes.production]
-# project_id = "your-project-ref"   # the 20-letter ref in your project's URL
-#
-# [remotes.production.auth]
-# site_url = "https://your-domain.example"
-# additional_redirect_urls = ["https://your-domain.example/**"]
-#
-# # The local limits above are set high for the automated tests. These suit a whole class
-# # signing in from one school or hospital network at the same time.
-# [remotes.production.auth.rate_limit]
-# email_sent = 100
-# token_refresh = 300
-# sign_in_sign_ups = 150
-# token_verifications = 150
-#
+[remotes.production]
+project_id = "wsyxnxtinvhnecmwkhzt"   # "AI Training", eu-west-1
+
+[remotes.production.auth]
+site_url = "https://training.pedrovicente.pt"
+additional_redirect_urls = ["https://training.pedrovicente.pt/**"]
+
+# The local limits above are set high for the automated tests. These suit a whole class
+# signing in from one school or hospital network at the same time.
+[remotes.production.auth.rate_limit]
+email_sent = 100
+token_refresh = 300
+sign_in_sign_ups = 150
+token_verifications = 150
+
+# Uncomment once an SMTP provider is set up for pedrovicente.pt.
 # [remotes.production.auth.email.smtp]
 # enabled = true
 # host = "smtp.your-provider.example"

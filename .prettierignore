@@ -10,3 +10,5 @@ src/app/fonts
 AGENTS.md
 supabase/templates
 public/pdfjs
+.open-next
+.wrangler

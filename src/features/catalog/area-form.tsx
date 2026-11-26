@@ -136,7 +136,7 @@ export function AreaForm({ area }: { area?: TrainerArea }) {
                 onChange={() => setIcon(option)}
                 className="sr-only"
               />
-              <AreaIcon name={option} className="size-5" strokeWidth={1.75} />
+              <AreaIcon name={option} className="size-6" />
               <span className="sr-only">{t(`areas.icons.${option}`)}</span>
             </label>
           ))}
