@@ -277,7 +277,7 @@ export default async function HomePage() {
                 link: (chunks) => (
                   <Link
                     href={routes.homeSection("contact")}
-                    className="text-primary hover:text-primary-hover font-medium"
+                    className="text-primary hover:text-primary-hover font-medium underline"
                   >
                     {chunks}
                   </Link>
