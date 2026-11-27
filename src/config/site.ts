@@ -7,6 +7,12 @@ export const siteConfig = {
   name: "AI Training",
   /** Public contact address shown on the site. Leave empty to hide it. */
   contactEmail: "",
+  /** The company that runs the platform: credited in the footer and named in the privacy notice. */
+  operator: {
+    name: "Mindera",
+    url: "https://mindera.com",
+    privacyEmail: "dpo@mindera.com",
+  },
 } as const;
 
 export const locales = ["pt", "en"] as const;

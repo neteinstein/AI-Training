@@ -573,6 +573,7 @@
     "footer": "Footer",
     "privacy": "Privacy",
     "memberArea": "Members' area",
+    "poweredBy": "Powered by <link>Mindera</link>",
     "home": "Home page"
   },
   "Home": {
@@ -666,12 +667,10 @@
   "Privacy": {
     "title": "Privacy policy",
     "description": "How the platform handles personal data.",
-    "draftTitle": "Provisional text",
-    "draftText": "This page describes how the platform works. The final text, approved by the organisation responsible, will be published before the courses begin.",
     "sections": {
       "controller": {
         "title": "Who is responsible",
-        "text": "{name} is run by [NAME OF THE ORGANISATION], which is responsible for the personal data collected on this site. Contact: [CONTACT EMAIL]."
+        "text": "{name} is run by <link>Mindera</link> (Mindera Group), which is responsible for the personal data collected on this site. For any question about your data, write to the Mindera data protection officer at <email>dpo@mindera.com</email> or by post to Rua Gonçalo Cristóvão, 347, 4.º piso, sala 404, 4000-270 Porto, Portugal."
       },
       "data": {
         "title": "What we collect",
@@ -691,11 +690,11 @@
       },
       "storage": {
         "title": "Where it is kept",
-        "text": "The data is kept on servers in the European Union, with access restricted to the trainers. [CONFIRM PROVIDER AND REGION]"
+        "text": "The data is kept on Supabase servers in Ireland, in the European Union, with access restricted to the trainers and to the Mindera team that runs the platform."
       },
       "retention": {
         "title": "For how long",
-        "text": "We keep information requests for as long as it takes to answer them, and accounts for as long as you take part in the courses. [PERIODS TO BE DEFINED]"
+        "text": "We keep information requests and account data for one year."
       },
       "rights": {
         "title": "Your rights",
