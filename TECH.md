@@ -7,7 +7,7 @@ and how it looks, see the [README](README.md).
 [Getting started](#getting-started) · [Scripts](#scripts) ·
 [How the code is organised](#how-the-code-is-organised) · [The back-office](#the-back-office) ·
 [Sign-in and invitations](#sign-in-and-invitations) · [Materials](#materials) ·
-[Database and access rules](#database-and-access-rules) · [Tests](#tests) ·
+[Backups](#backups) · [Database and access rules](#database-and-access-rules) · [Tests](#tests) ·
 [Screenshots](#screenshots) · [Going live](#going-live)
 
 ## Stack
@@ -37,6 +37,7 @@ and how it looks, see the [README](README.md).
 | Public site: landing page, catalogue, course page, request form   | Done, tested in the browser     |
 | Learner area: my courses, materials, PDF and document viewers     | Done, tested in the browser     |
 | Back-office: courses, content, users, invitations, requests       | Done, tested in the browser     |
+| Back-office backup: ZIP download of content, files and people     | Done, tested in the browser     |
 | Editions of a course: own learners, own view of the content       | Done, tested in the browser     |
 | Progress: what each learner has opened, for them and for trainers | Done, tested in the browser     |
 
@@ -170,6 +171,7 @@ Trainers sign in at the same address as learners and land on the back-office (`/
   already has an account just gets the new courses.
 - **Requests** from the public form: mark as contacted, archive, delete, or invite the person
   with what they wrote (name, address, language, course).
+- **Backup**: download everything as a ZIP file (see [Backups](#backups)).
 
 ## Sign-in and invitations
 
@@ -213,6 +215,60 @@ Two things worth knowing:
   raised on paid plans in the bucket settings and in `src/lib/files/rules.ts`). The browser is
   given a token that is good for that one file only; the file's type and size are checked
   before the upload, by the storage service during it, and again when the material is saved.
+
+## Backups
+
+The back-office's **Backup** page (`/trainer/backup`) downloads the platform as a ZIP file. Its
+form posts to `src/app/api/trainer/backup/route.ts`, and the archive is laid out by
+`src/features/backup/archive.ts`:
+
+```
+README.txt             what follows, in Portuguese and English
+data/<table>.json      every row of each table, every column, as the database holds it
+files/<course>/<name>  the uploaded files, one folder per course slug, under their original names
+manifest.json          when and by whom, what was included, rows per table, and for each file
+                       its material and storage path (plus any file storage did not have)
+```
+
+- **Always in it:** areas, levels, courses and their editions, modules and materials (so text
+  pages, links and the addresses of videos and Google documents), and what each edition hides.
+- **Ticked by default:** the uploaded files. Untick them for a small, text-only backup.
+- **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`) and what each of
+  them has opened (`material_progress`). It is personal data, and the page says so.
+- **Never in it:** passwords (accounts live in Supabase Auth; after a restore people would be
+  invited again) and the content of videos and Google documents, which stays with those
+  services.
+
+How it works, and what follows from it:
+
+- It reads with the trainer's own session, like every page, so Row Level Security applies; the
+  secret key is not used. The route checks the form's origin and that the caller is a trainer
+  before reading anything (a unit test reads the route and fails if that order changes).
+- The archive is written while it downloads. The rows are read first (page by page, as the API
+  returns at most 1,000 rows per request), then each file is fetched from storage only when the
+  archive reaches it. The server holds a chunk at a time, not the archive, so the size of the
+  backup does not matter to the Worker's memory. Files are stored uncompressed (they mostly are
+  already); the JSON is compressed.
+- The tables are read one after another, not as one snapshot: an edit made by someone else
+  during those few seconds may show in one table and not yet in another.
+- Files are fetched with the trainer's access token, which lasts an hour. A download slower
+  than that fails rather than leaving files out; so does any storage error other than a missing
+  file. A missing file is skipped and listed under `missingFiles` in the manifest.
+- The ZIP format needs its ZIP64 extension past 4 GB, which the library used (fflate) does not
+  write. A backup whose files add up to more than that is refused with a message suggesting a
+  backup without files. On the Free plan, storage holds 1 GB.
+
+There is no restore button. The rows are exactly what the database holds, so a restore inserts
+the tables in the order of `data/` above (areas, levels, courses, editions, modules, materials,
+what each edition hides, then profiles once the accounts exist again, enrolments, requests and
+progress) and uploads each file back to the `course-materials` bucket under its `storagePath`.
+On a paid Supabase plan, the project's own daily database backups cover the database as well;
+they do not cover stored files.
+
+**A new table** goes into one of the two lists in `src/lib/dal/backup.ts`: the content, or the
+people when it holds personal data. A table that should stay out is named there too, with the
+reason. A unit test compares the three with the tables of the database and fails for a table
+nobody has decided about, so a backup cannot go on leaving out something new unnoticed.
 
 ## Database and access rules
 
@@ -262,7 +318,7 @@ and Google hosts, and the site can never be shown inside another site.
 - `npm run e2e`: the journeys in a real browser at desktop and phone sizes, reading emails
   from the local mail catcher. Run `npm run build` first. Besides the journeys (building a
   course, uploading a file, inviting someone who then activates the account and reads the
-  materials, a request becoming an invitation) they include:
+  materials, a request becoming an invitation, a backup downloaded and unpacked) they include:
   - the automated accessibility rules (WCAG 2.1 A and AA) on every main screen, in the light
     and in the dark theme;
   - the back-office used with the keyboard alone (menus, dialogs, switches, reordering);

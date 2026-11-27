@@ -99,6 +99,7 @@ test.describe("security headers", () => {
       "/pt/trainer/areas/new",
       "/pt/trainer/users/invite",
       "/pt/trainer/requests",
+      "/pt/trainer/backup",
     ]) {
       await page.goto(path);
       await page.waitForLoadState("networkidle");

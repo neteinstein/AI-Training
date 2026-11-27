@@ -109,6 +109,22 @@ describe("server actions", () => {
     ]);
   });
 
+  test("the backup route checks the origin and the role before it reads anything", () => {
+    // A route handler, not an action, so the checks above do not see it.
+    const route = read(join(root, "app", "api", "trainer", "backup", "route.ts"));
+    const handler = route.slice(route.indexOf("export async function POST"));
+    const position = (text: string) => {
+      expect(handler, text).toContain(text);
+      return handler.indexOf(text);
+    };
+    expect(position("isSameOrigin(")).toBeLessThan(position("getCurrentUser("));
+    expect(position("getCurrentUser(")).toBeLessThan(position('user.role !== "trainer"'));
+    expect(position('user.role !== "trainer"')).toBeLessThan(
+      position("createSupabaseServerClient("),
+    );
+    expect(position('user.role !== "trainer"')).toBeLessThan(position("collectBackup("));
+  });
+
   test("actions that use the secret key for people create it after the trainer check", () => {
     const source = read(join(root, "features", "users", "actions.ts"));
     for (const fn of functionsOf(source)) {

@@ -201,6 +201,12 @@ opened. Trainers see the same for every learner of a course, with the day each w
 and can open one person's page to see what they opened and when. A material counts once its
 page, its download or its link has been opened; a trainer looking around is never counted.
 
+### A backup in one click
+
+From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue with
+its editions, every module and material, the uploaded files and, when they choose, the people,
+their enrolments and progress, and the requests. A README inside says what is where.
+
 ## 🔐 Built to be trusted
 
 - **The database decides who sees what.** Rules live in Postgres, so a forgotten check in a page

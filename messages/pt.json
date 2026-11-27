@@ -147,7 +147,8 @@
       "newRequests": "{count, plural, one {# pedido novo} other {# pedidos novos}}",
       "role": "Formador",
       "account": "A minha conta",
-      "learnerArea": "Ver como formando"
+      "learnerArea": "Ver como formando",
+      "backup": "Cópia de segurança"
     },
     "breadcrumb": "Localização",
     "common": {
@@ -646,6 +647,22 @@
       "deleted": "Pedido eliminado.",
       "deleteTitle": "Eliminar o pedido de {name}?",
       "deleteText": "O pedido e os dados que a pessoa enviou são apagados. Não pode ser desfeito."
+    },
+    "backup": {
+      "title": "Cópia de segurança",
+      "intro": "Descarregue uma cópia de tudo o que está na plataforma, num ficheiro ZIP, para guardar num lugar seguro.",
+      "contentsTitle": "O que inclui",
+      "catalogue": "{courses, plural, one {# curso} other {# cursos}}, {modules, plural, one {# módulo} other {# módulos}} e {materials, plural, one {# material} other {# materiais}}, com as áreas, os níveis e as edições: títulos, descrições, páginas de texto, ligações e os endereços dos vídeos e dos documentos Google.",
+      "notIncluded": "Nunca inclui as palavras-passe, nem o conteúdo dos vídeos e dos documentos Google, que fica no YouTube, no Vimeo ou no Google. O ficheiro README.txt, dentro do ZIP, explica o que lá está.",
+      "optionsTitle": "Incluir também",
+      "includeFiles": "Ficheiros carregados ({count, plural, one {# ficheiro} other {# ficheiros}}, {size})",
+      "includeFilesHint": "Desmarque para um ficheiro pequeno, só com os textos e a estrutura.",
+      "includePeople": "Pessoas: contas, inscrições, progresso e pedidos de informação ({people, plural, one {# pessoa} other {# pessoas}}, {requests, plural, one {# pedido} other {# pedidos}})",
+      "includePeopleHint": "São dados pessoais. Guarde a cópia num lugar seguro e apague-a quando já não for precisa.",
+      "download": "Descarregar cópia",
+      "preparing": "A preparar a cópia. A transferência começa dentro de momentos e continua no seu navegador.",
+      "failed": "Não foi possível fazer a cópia. Tente novamente.",
+      "tooLarge": "Com os ficheiros carregados, a cópia teria mais de 4 GB. Descarregue-a sem os ficheiros."
     }
   },
   "Nav": {
