@@ -572,6 +572,7 @@
     "main": "Principal",
     "courses": "Cursos",
     "howItWorks": "Como funciona",
+    "faq": "Dúvidas",
     "contact": "Contacto",
     "signIn": "Entrar",
     "menu": "Menu",
@@ -620,6 +621,52 @@
       "step2Text": "A formação começa com sessões dadas por um formador. Nessa altura, enviamos-lhe por email um convite pessoal para criar a sua conta.",
       "step3Title": "Consolide o que aprendeu",
       "step3Text": "Na plataforma tem até um mês de materiais para rever e pôr em prática o que viu nas sessões. O acesso é individual."
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "lead": "Não encontra a resposta que procura? Pergunte-nos através do <link>pedido de informações</link>.",
+      "items": {
+        "experience": {
+          "question": "Preciso de experiência com IA?",
+          "answer": "Para o nível de Iniciação, não: parte do zero. O nível Avançado pressupõe alguma experiência; contacte-nos para saber mais."
+        },
+        "bring": {
+          "question": "O que preciso para participar?",
+          "answer": "Apenas um computador portátil e, idealmente, uma subscrição paga de um assistente de IA: Gemini, Claude, ChatGPT, o que preferir."
+        },
+        "freeTier": {
+          "question": "Posso participar sem uma subscrição paga de IA?",
+          "answer": "Sim, mas não é o ideal: não vai tirar tanto partido das ferramentas. Subscrever durante um mês, como experiência, é mais do que suficiente."
+        },
+        "duration": {
+          "question": "Quanto tempo dura um curso?",
+          "answer": "Depende do nível. Um curso de Iniciação tem normalmente uma sessão de 4 horas, seguida de um mês de materiais para consolidar o que aprendeu."
+        },
+        "where": {
+          "question": "Onde decorrem as sessões?",
+          "answer": "As primeiras sessões decorrem no escritório da Mindera, no Porto. Estamos a avaliar outros locais consoante o interesse, por isso diga-nos onde está quando pedir informações."
+        },
+        "language": {
+          "question": "Em que língua são as sessões?",
+          "answer": "Normalmente em português, mas podem ser em inglês, ou nas duas línguas, se algum participante precisar."
+        },
+        "price": {
+          "question": "Quanto custa?",
+          "answer": "80 € se se inscrever individualmente. Se se inscrever em grupo, o preço desce consoante o número de participantes."
+        },
+        "private": {
+          "question": "Fazem sessões privadas para a minha equipa ou organização?",
+          "answer": "Sim, organizamos sessões privadas. Nesse caso, o preço já não depende do número de participantes, mas dos requisitos e dos resultados pretendidos."
+        },
+        "materials": {
+          "question": "Tenho acesso aos materiais do curso?",
+          "answer": "Sim. Cada formando recebe um acesso individual aos materiais, durante um mês após as sessões."
+        },
+        "certified": {
+          "question": "O formador é certificado?",
+          "answer": "Sim. O Pedro Vicente tem o CCP (Certificado de Competências Pedagógicas), o certificado que habilita formadores em Portugal."
+        }
+      }
     },
     "contact": {
       "title": "Pedir informações",

@@ -13,13 +13,23 @@ export const siteConfig = {
     url: "https://mindera.com",
     privacyEmail: "dpo@mindera.com",
   },
+  /**
+   * The picture link previews show (Slack, WhatsApp, LinkedIn...), in /public. Drawn by
+   * `npm run og:image`; change the address when the picture changes, as the networks keep the
+   * old one for a long time.
+   */
+  ogImage: { path: "/og-image.png", width: 1200, height: 630 },
 } as const;
 
-/** Trainers shown on the landing page. `role` names a translation in Home.trainers.roles. */
+/**
+ * Trainers shown on the landing page. `role` names a translation in Home.trainers.roles.
+ * `photo` lives in public/trainers: a square 192 × 192 WebP, cropped to head and shoulders.
+ */
 export const trainers = [
   {
     name: "Pedro Vicente",
     role: "lead",
+    photo: "/trainers/pedro-vicente.webp",
     linkedin: "https://www.linkedin.com/in/neteinstein/",
     website: "https://www.pedrovicente.pt",
   },
@@ -31,6 +41,9 @@ export const defaultLocale: Locale = "pt";
 
 /** Value for the HTML `lang` attribute: the Portuguese copy is European Portuguese. */
 export const htmlLang: Record<Locale, string> = { pt: "pt-PT", en: "en" };
+
+/** Value for the `og:locale` tag of link previews, which wants a language and a country. */
+export const ogLocale: Record<Locale, string> = { pt: "pt_PT", en: "en_US" };
 
 /** Colours a trainer can give an area. Keys match the `areas.color` check in the database. */
 export const areaColors = [

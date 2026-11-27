@@ -572,6 +572,7 @@
     "main": "Main",
     "courses": "Courses",
     "howItWorks": "How it works",
+    "faq": "FAQ",
     "contact": "Contact",
     "signIn": "Sign in",
     "menu": "Menu",
@@ -620,6 +621,52 @@
       "step2Text": "The course starts with sessions led by a trainer. At that point, we email you a personal invitation to create your account.",
       "step3Title": "Consolidate what you learned",
       "step3Text": "The platform holds up to a month of materials to review and put into practice what you saw in the sessions. Access is for you alone."
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "lead": "Can't find your answer here? Ask us through the <link>information request</link>.",
+      "items": {
+        "experience": {
+          "question": "Do I need any experience with AI?",
+          "answer": "Not for the Introductory level: it starts from scratch. The Advanced level does assume some experience; contact us to find out more."
+        },
+        "bring": {
+          "question": "What do I need to take part?",
+          "answer": "Just a laptop and, ideally, a paid subscription to an AI assistant: Gemini, Claude, ChatGPT, whichever you prefer."
+        },
+        "freeTier": {
+          "question": "Can I take part without a paid AI subscription?",
+          "answer": "Yes, but it is not ideal: you won't get as much out of the tools. Subscribing for one month, as a trial, is more than enough."
+        },
+        "duration": {
+          "question": "How long does a course last?",
+          "answer": "It depends on the level. An Introductory course is usually a 4-hour session, followed by a month of materials to consolidate what you learned."
+        },
+        "where": {
+          "question": "Where are the sessions held?",
+          "answer": "The first sessions take place at Mindera's office in Porto. We are considering other locations depending on interest, so tell us where you are when you request information."
+        },
+        "language": {
+          "question": "What language are the sessions in?",
+          "answer": "Usually Portuguese, but they can be in English, or in both, if any participant needs it."
+        },
+        "price": {
+          "question": "How much does it cost?",
+          "answer": "€80 if you sign up on your own. If you sign up as a group, the price goes down with the number of participants."
+        },
+        "private": {
+          "question": "Can you run a private session for my team or organisation?",
+          "answer": "Yes, we put together private sessions. In that case the price no longer depends on the number of participants, but on your requirements and the outcomes you want."
+        },
+        "materials": {
+          "question": "Do I get access to the course materials?",
+          "answer": "Yes. Each participant gets their own access to the materials, for one month after the sessions."
+        },
+        "certified": {
+          "question": "Is the trainer certified?",
+          "answer": "Yes. Pedro Vicente holds the CCP (Certificado de Competências Pedagógicas), the Portuguese certification for trainers."
+        }
+      }
     },
     "contact": {
       "title": "Request information",

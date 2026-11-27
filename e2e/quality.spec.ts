@@ -144,6 +144,29 @@ test.describe("on the narrowest phones", () => {
   });
 });
 
+test.describe("between a phone and a laptop", () => {
+  // The narrowest screen that gets the full header instead of the phone's menu button.
+  test.skip(({ isMobile }) => isMobile, "checked in the desktop project");
+  test.use({ viewport: { width: 768, height: 800 } });
+
+  test("the public header keeps to one line, in both languages", async ({ page }) => {
+    for (const path of ["/pt", "/en"]) {
+      await settle(page, path);
+      // Every link and button of the header is one line of text in a 44px control. A name
+      // or a menu item that wraps onto a second line makes its control taller.
+      const tallest = await page.evaluate(() =>
+        Math.max(
+          ...[...document.querySelectorAll("header a, header button")]
+            .filter((element) => element.getClientRects().length > 0)
+            .map((element) => element.getBoundingClientRect().height),
+        ),
+      );
+      expect(tallest, path).toBeLessThanOrEqual(48);
+    }
+    expect(await overflowing(page, ["/pt", "/en"])).toEqual([]);
+  });
+});
+
 test.describe("with the keyboard alone", () => {
   test.skip(({ isMobile }) => isMobile, "a physical keyboard goes with the desktop project");
 

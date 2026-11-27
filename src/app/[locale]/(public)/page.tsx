@@ -1,8 +1,9 @@
 import { GlobeIcon } from "@phosphor-icons/react/dist/ssr/Globe";
 import { LinkedinLogoIcon } from "@phosphor-icons/react/dist/ssr/LinkedinLogo";
 import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr/PlusCircle";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight, ChevronDown, Mail } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { AreaCard } from "@/components/catalog/area-card";
@@ -25,12 +26,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const COURSES_ON_HOME = 6;
-
-/** "Pedro Vicente" -> "PV": first and last name. */
-function initials(name: string): string {
-  const words = name.trim().split(/\s+/);
-  return [words[0], words.length > 1 ? words.at(-1) : ""].map((word) => word?.[0] ?? "").join("");
-}
 
 /** "https://www.example.org/" -> "example.org", for showing a website's address. */
 function siteLabel(url: string): string {
@@ -58,6 +53,18 @@ export default async function HomePage() {
     ),
   };
   const steps = [1, 2, 3] as const;
+  const faqs = [
+    "experience",
+    "bring",
+    "freeTier",
+    "duration",
+    "where",
+    "language",
+    "price",
+    "private",
+    "materials",
+    "certified",
+  ] as const;
 
   return (
     <>
@@ -195,12 +202,17 @@ export default async function HomePage() {
                   className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-7"
                 >
                   <div className="flex items-center gap-4.5">
-                    <span
-                      aria-hidden="true"
-                      className="bg-accent text-accent-foreground font-heading flex size-16 flex-none items-center justify-center rounded-full text-2xl"
-                    >
-                      {initials(trainer.name)}
-                    </span>
+                    {/* The name sits right next to it, so the photo needs no description.
+                        The file is already cut to size, and the Cloudflare build has no
+                        image service that would resize it anyway. */}
+                    <Image
+                      src={trainer.photo}
+                      alt=""
+                      width={64}
+                      height={64}
+                      unoptimized
+                      className="bg-accent size-16 flex-none rounded-full object-cover"
+                    />
                     <div className="flex flex-col gap-0.5">
                       <h3 className="font-heading text-2xl leading-tight">{trainer.name}</h3>
                       <p className="text-muted-foreground text-[0.9375rem]">
@@ -209,13 +221,13 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-6">
+                    {/* Names the trainer for screen readers, which may list the links alone.
+                        A label rather than hidden text: browsers treat a visually hidden span
+                        as a separate block and read "LinkedIn , Name". */}
                     <a
                       href={trainer.linkedin}
-                      // Names the trainer for screen readers, which may list the links alone.
-                      // (As a label: text hidden inside the link is read as a block of its
-                      // own, which put a space before the comma.)
-                      aria-label={`LinkedIn, ${trainer.name}`}
                       className={trainerLink}
+                      aria-label={`LinkedIn, ${trainer.name}`}
                     >
                       <LinkedinLogoIcon aria-hidden="true" weight="duotone" className="size-5" />
                       LinkedIn
@@ -256,7 +268,56 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id={homeSections.contact} className="flex flex-1 scroll-mt-4 items-center">
+      <section id={homeSections.faq} className="scroll-mt-4">
+        <div
+          className={cn(
+            container,
+            "grid items-start gap-x-16 gap-y-6 py-12 md:gap-y-8 md:py-18 lg:grid-cols-2",
+          )}
+        >
+          <div className="flex flex-col gap-3 lg:sticky lg:top-8">
+            <h2 className={sectionTitle}>{t("faq.title")}</h2>
+            <p className="text-muted-foreground max-w-[28em]">
+              {t.rich("faq.lead", {
+                link: (chunks) => (
+                  <Link
+                    href={routes.homeSection("contact")}
+                    className="text-primary hover:text-primary-hover font-medium underline"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
+            {faqs.map((key) => (
+              <details
+                key={key}
+                className="group border-border bg-card overflow-hidden rounded-2xl border"
+              >
+                <summary className="hover:bg-muted/60 flex min-h-15 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 transition-colors md:px-6 [&::-webkit-details-marker]:hidden">
+                  <span className="font-heading text-lg leading-[1.3]">
+                    {t(`faq.items.${key}.question`)}
+                  </span>
+                  <ChevronDown
+                    aria-hidden="true"
+                    className="text-muted-foreground size-5 flex-none transition-transform group-open:rotate-180"
+                  />
+                </summary>
+                <p className="text-muted-foreground px-5 pb-5 text-[0.9375rem] leading-[1.6] md:px-6">
+                  {t(`faq.items.${key}.answer`)}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id={homeSections.contact}
+        className="border-border flex flex-1 scroll-mt-4 items-center border-t"
+      >
         <div
           className={cn(
             container,
