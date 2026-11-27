@@ -3,6 +3,7 @@
 import { LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
+import { keepSelected } from "@/components/forms/keep-selected";
 import { LocaleField } from "@/components/forms/locale-field";
 import { actionLooks } from "@/components/trainer/looks";
 import { useNoticeAction } from "@/components/trainer/use-notice-action";
@@ -35,6 +36,7 @@ export function StatusControl({ courseId, status }: { courseId: string; status: 
           id={id}
           name="status"
           value={chosen}
+          ref={keepSelected(chosen)}
           onChange={(event) => setChosen(event.target.value as CourseStatus)}
           aria-describedby={`${id}-help`}
           className="border-input bg-card text-foreground h-11 min-w-42 rounded-lg border px-3 font-semibold"

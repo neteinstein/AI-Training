@@ -256,6 +256,8 @@ test.describe("course details", () => {
       await status.selectOption("published");
       await page.getByRole("button", { name: "Alterar estado" }).click();
       await expect(alertWith(page, "preencha primeiro o resumo nos dois idiomas")).toBeVisible();
+      // The list still shows what was chosen, not the status the course was first shown with.
+      await expect(status).toHaveValue("published");
       await page.getByRole("button", { name: "Fechar mensagem" }).click();
 
       await page.getByRole("link", { name: "Detalhes", exact: true }).click();
@@ -266,6 +268,12 @@ test.describe("course details", () => {
       await page.getByRole("combobox", { name: "Estado" }).selectOption("published");
       await page.getByRole("button", { name: "Alterar estado" }).click();
       await expectNotice(page, "Estado alterado.");
+      // Once saved, the list shows the new status and there is nothing left to change.
+      await expect(page.getByRole("combobox", { name: "Estado" })).toHaveValue("published");
+      await expect(page.getByRole("button", { name: "Alterar estado" })).toHaveAttribute(
+        "aria-disabled",
+        "true",
+      );
 
       // The public catalogue shows it at once, in both languages.
       await page.goto("/pt/courses");
