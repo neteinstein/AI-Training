@@ -6,6 +6,7 @@
 export const homeSections = {
   courses: "courses",
   howItWorks: "how-it-works",
+  faq: "faq",
   contact: "contact",
 } as const;
 

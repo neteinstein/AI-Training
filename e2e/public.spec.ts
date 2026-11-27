@@ -69,6 +69,15 @@ test.describe("landing page", () => {
     await expect(page.getByRole("button", { name: "Send request" })).toBeVisible();
   });
 
+  test("answers the common questions, one at a time", async ({ page }) => {
+    await page.goto("/pt#faq");
+    const faq = page.locator("#faq");
+    await expect(faq.getByRole("heading", { name: "Perguntas frequentes" })).toBeVisible();
+    await expect(faq.getByText(/80 €/)).toBeHidden();
+    await faq.getByText("Quanto custa?").click();
+    await expect(faq.getByText(/80 €/)).toBeVisible();
+  });
+
   test("the menu reaches every section, also on a phone", async ({ page }) => {
     await page.goto("/pt");
     if (isPhone(page)) {

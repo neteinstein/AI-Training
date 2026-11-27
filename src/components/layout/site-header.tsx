@@ -3,6 +3,7 @@ import { buttonClass } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
@@ -14,6 +15,8 @@ export async function SiteHeader() {
   const items = [
     { href: routes.courses, label: t("courses") },
     { href: routes.homeSection("howItWorks"), label: t("howItWorks") },
+    // Only from lg up in the bar: a fourth link makes it wrap on tablets. Always in the phone menu.
+    { href: routes.homeSection("faq"), label: t("faq"), wideOnly: true },
     { href: routes.homeSection("contact"), label: t("contact") },
   ];
 
@@ -34,7 +37,10 @@ export async function SiteHeader() {
             <NavLink
               key={item.href}
               href={item.href}
-              className="text-foreground hover:text-primary flex min-h-11 items-center font-medium no-underline transition-colors"
+              className={cn(
+                "text-foreground hover:text-primary flex min-h-11 items-center font-medium no-underline transition-colors",
+                item.wideOnly && "hidden lg:flex",
+              )}
             >
               {item.label}
             </NavLink>
