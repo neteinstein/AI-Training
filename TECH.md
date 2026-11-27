@@ -38,6 +38,7 @@ and how it looks, see the [README](README.md).
 | Learner area: my courses, materials, PDF and document viewers     | Done, tested in the browser     |
 | Back-office: courses, content, users, invitations, requests       | Done, tested in the browser     |
 | Back-office backup: ZIP download of content, files and people     | Done, tested in the browser     |
+| Restore of a backup: rows, accounts and files, by script          | Done, tested against a database |
 | Editions of a course: own learners, own view of the content       | Done, tested in the browser     |
 | Progress: what each learner has opened, for them and for trainers | Done, tested in the browser     |
 | Quizzes: written by trainers, answered and graded, results kept   | Done, tested in the browser     |
@@ -105,6 +106,7 @@ Emails sent locally (invitations, password resets) are caught at <http://127.0.0
 | `npm run seed:dev`          | Create the demo accounts, enrolments and sample PDF        |
 | `npm run bootstrap-trainer` | Create the first trainer and print their activation link   |
 | `npm run verify-project`    | Check that a Supabase project is set up as the app expects |
+| `npm run restore-backup`    | Put a backup back into an empty project (see Backups)      |
 
 ## How the code is organised
 
@@ -239,7 +241,7 @@ manifest.json          when and by whom, what was included, rows per table, and 
 - **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`), what each of
   them has opened (`material_progress`) and the quizzes they handed in (`quiz_attempts`). It is
   personal data, and the page says so.
-- **Never in it:** passwords (accounts live in Supabase Auth; after a restore people would be
+- **Never in it:** passwords (accounts live in Supabase Auth; after a restore people are
   invited again) and the content of videos and Google documents, which stays with those
   services.
 
@@ -262,13 +264,90 @@ How it works, and what follows from it:
   write. A backup whose files add up to more than that is refused with a message suggesting a
   backup without files. On the Free plan, storage holds 1 GB.
 
-There is no restore button. The rows are exactly what the database holds, so a restore inserts
-the tables in the order of `data/` above (areas, levels, courses, editions, modules, materials,
-what each edition hides, the quizzes' questions, options and keys, then profiles once the
-accounts exist again, enrolments, requests, progress and quiz attempts) and uploads each file
-back to the `course-materials` bucket under its `storagePath`.
 On a paid Supabase plan, the project's own daily database backups cover the database as well;
 they do not cover stored files.
+
+### Restoring
+
+There is no restore button: a restore writes with the secret key, so the operator runs it from
+a terminal, against the project named in `.env.local`. The code is in
+`src/features/backup/restore.ts` (nothing in the app imports it, and a unit test keeps it so),
+the command in `scripts/restore-backup.ts`.
+
+```bash
+npm run restore-backup -- ai-training-backup-2026-11-27-1530.zip --dry-run
+npm run restore-backup -- ai-training-backup-2026-11-27-1530.zip
+```
+
+`--dry-run` opens the archive, checks it and the project, and says what it would write.
+
+**Where it writes.**
+
+- Only into the local stack, unless `--allow-remote` is given. For a hosted project, put its
+  URL and secret key in `.env.local` (as for `bootstrap-trainer`) and add the flag.
+- Only into an empty database: a new project with every migration applied and no account yet,
+  not even a first trainer, since the restore brings the trainers back. The two levels every
+  database starts with do not count: the backup's own take their place (same slugs, the
+  backup's ids), as long as no course uses them.
+- `--allow-existing` lets it write into a database that has content. A row whose primary key
+  is already there is left as it is, never overwritten. It is also how a restore that stopped
+  half-way carries on: run the same command again with it.
+
+**What it does, in order.** Nothing is written until the first step has passed.
+
+1. It opens the archive and checks that it is whole: the manifest's format and version, one
+   data file per table with the number of rows the manifest gives, and every file the manifest
+   lists. A table it does not know (a backup from a newer version) stops it too.
+2. The content, in the order of `data/`: areas, levels, courses, editions, modules, materials,
+   what each edition hides, the quizzes' questions, options and keys. Rows go back exactly as
+   stored, ids and dates included, through the Data API with the secret key. The database
+   gives every new course an edition as the course is written; once the backup's editions are
+   in, that one is removed again, so each course ends with exactly the editions it had, and the
+   same default.
+3. The accounts, when the backup holds people (below).
+4. What belongs to people: enrolments, requests, progress and quiz attempts.
+5. The files, each uploaded to the `course-materials` bucket under its `storagePath`, with its
+   material's type. A file listed under `missingFiles` (storage did not have it when the
+   backup was made) is named in the report: its material comes back without a file, to be
+   uploaded again in the back-office. A backup made without files says how many file
+   materials have none.
+
+**How people come back.** A backup holds no passwords, so nobody can come back exactly as they
+were. The choice made:
+
+- Each account is created again through the Auth admin API with **the same id and email**, so
+  every enrolment, request, progress row and quiz attempt points at it again. It is
+  **unconfirmed and has no password**; it carries the person's name and language. Nothing is
+  emailed.
+- The profile then gets the backup's role, name, language and creation date. Two of its
+  columns do not come back as they were: `email_confirmed_at` is empty (the back-office lists
+  the person as invited, not yet active), and `updated_at` is the time of the restore.
+- For each trainer the command prints a one-time link to choose a password (24 hours), as
+  `bootstrap-trainer` does. Once in, a trainer gives everyone else a new invitation or access
+  link from **Users**, when their courses are ready for them.
+- The database refuses to demote or delete its last trainer. A restore only creates accounts
+  and gives roles, never takes one away, so that rule never stands in its way. With
+  `--allow-existing`, an account already there keeps its role, and becomes a trainer if the
+  backup says it was one.
+- An email that already has an account under another id (only possible with
+  `--allow-existing`, say after `bootstrap-trainer`) keeps that account, password included,
+  and what the backup holds for the person is attached to it.
+- A backup without people brings back no accounts: create the first trainer afterwards with
+  `npm run bootstrap-trainer`.
+
+**A backup is not a snapshot** (see above), so it may hold a row that points at one deleted
+while it was being made. The restore treats that row as the database would have: left out
+where the deletion would have taken it along, or with the reference emptied where it would have
+been set to null, and the report names each one. It follows the foreign keys listed in
+`REFERENCES` in `restore.ts`; an integration test compares that list with the database, so a
+new table or link fails it until it is added there (as well as to `src/lib/dal/backup.ts`).
+
+**Proved by a round trip.** `tests/integration/restore.test.ts` makes a backup of the local
+database as the back-office does (a trainer's session, every file, the people), empties the
+database completely (every table, account and stored file, leaving only the two starter levels,
+as in a new project), restores the backup, and compares every row of every table and every file
+byte for byte. Then it restores again with `--allow-existing` and checks that nothing changes.
+It runs in CI with the other integration tests.
 
 **A new table** goes into one of the two lists in `src/lib/dal/backup.ts`: the content, or the
 people when it holds personal data. A table that should stay out is named there too, with the
@@ -327,6 +406,8 @@ and Google hosts, and the site can never be shown inside another site.
 - `npm run test:integration`: every access rule and every data change, run against the local
   stack as a visitor, an enrolled learner, a learner who is not enrolled, and a trainer.
   They create and delete users, so they refuse to run against anything but a local stack.
+  One of them empties the whole database and restores it from a backup (see
+  [Backups](#backups)); if it fails half-way, `npm run db:reset` gives a clean stack again.
   Both this suite and the next first wait until the stack sends the project's own emails: for
   about ten seconds after it starts, the local sign-in service still uses its built-in ones.
 - `npm run e2e`: the journeys in a real browser at desktop and phone sizes, reading emails

@@ -1,4 +1,6 @@
 // @vitest-environment node
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join, relative } from "node:path";
 import { strToU8, zipSync } from "fflate";
 import { describe, expect, test } from "vitest";
 import { backupEntries, type BackupContext } from "@/features/backup/archive";
@@ -214,5 +216,21 @@ describe("where a restore may write", () => {
     expect(isLocalSupabaseUrl("https://wsyxnxtinvhnecmwkhzt.supabase.co")).toBe(false);
     expect(isLocalSupabaseUrl("https://127.0.0.1.example.com")).toBe(false);
     expect(isLocalSupabaseUrl("not a url")).toBe(false);
+  });
+});
+
+describe("who may restore", () => {
+  test("nothing in the app imports the restore: only the operator's script and the tests do", () => {
+    const root = join(__dirname, "..", "..", "src");
+    const files = (directory: string): string[] =>
+      readdirSync(directory).flatMap((entry) => {
+        const path = join(directory, entry);
+        if (statSync(path).isDirectory()) return files(path);
+        return /\.tsx?$/.test(entry) ? [path] : [];
+      });
+    const importers = files(root).filter((file) =>
+      /from\s+["'][^"']*backup\/restore["']/.test(readFileSync(file, "utf8")),
+    );
+    expect(importers.map((file) => relative(root, file))).toEqual([]);
   });
 });
