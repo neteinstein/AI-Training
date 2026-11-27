@@ -212,6 +212,13 @@ attempt is kept: the quiz's page in the back-office lists each learner's best re
 of attempts and last attempt. What is right is not sent to the browser before a quiz is handed
 in.
 
+### A backup in one click
+
+From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue with
+its editions, every module and material, the quizzes' questions, the uploaded files and, when
+they choose, the people, their enrolments, progress and quiz results, and the requests. A README
+inside says what is where.
+
 ## 🔐 Built to be trusted
 
 - **The database decides who sees what.** Rules live in Postgres, so a forgotten check in a page
