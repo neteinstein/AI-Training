@@ -723,10 +723,15 @@
   },
   "Home": {
     "eyebrow": "Training in artificial intelligence",
-    "title": "Artificial Intelligence at your service",
+    "title": "Artificial Intelligence <accent>at your service</accent>",
     "lead": "Practical artificial intelligence courses designed for your profession. No jargon, examples from your daily work, and all the materials in one place.",
     "seeCourses": "See the courses",
     "requestInfo": "Request information",
+    "orbit": {
+      "assistant": "AI assistant",
+      "prompt": "Turn my lesson notes into a 10-question quiz for 8th grade.",
+      "reply": "Here's your quiz, with the answers and a marking guide."
+    },
     "areas": {
       "title": "For your field",
       "lead": "Each course starts from the real challenges of a profession.",

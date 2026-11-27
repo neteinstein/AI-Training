@@ -5,11 +5,11 @@ import { ArrowRight, ChevronDown, Mail } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Suspense } from "react";
+import { type CSSProperties, Suspense } from "react";
 import { AreaCard } from "@/components/catalog/area-card";
 import { CourseBrowser, CourseBrowserFallback } from "@/components/catalog/course-browser";
 import { LevelGlyph } from "@/components/catalog/level-glyph";
-import { HeroIllustration } from "@/components/illustrations/hero";
+import { HeroOrbit } from "@/components/illustrations/hero-orbit";
 import { container, sectionTitle } from "@/components/layout/container";
 import { buttonClass } from "@/components/ui/button";
 import { siteConfig, trainers } from "@/config/site";
@@ -68,48 +68,111 @@ export default async function HomePage() {
 
   return (
     <>
-      <section
-        className={cn(
-          container,
-          "grid items-center gap-x-14 gap-y-7 pt-9 pb-10 md:pt-22 md:pb-24 lg:grid-cols-2",
-        )}
-      >
-        <div className="flex flex-col items-start gap-5 md:gap-6">
-          <p className="bg-accent text-accent-foreground inline-flex min-h-8 items-center rounded-full px-3.5 text-sm font-semibold">
-            {t("eyebrow")}
-          </p>
-          <h1 className="font-heading text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.08] text-balance">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground max-w-[34em] text-[1.0625rem] leading-[1.6] text-pretty md:text-lg">
-            {t("lead")}
-          </p>
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-2 max-sm:w-full max-sm:flex-col max-sm:items-stretch">
-            <Link
-              href={routes.homeSection("courses")}
-              className={buttonClass({ className: "max-sm:min-h-13" })}
-            >
-              {t("seeCourses")}
-            </Link>
-            <Link
-              href={routes.homeSection("contact")}
-              className="text-primary hover:text-primary-hover group inline-flex min-h-11 items-center justify-center gap-2 font-semibold no-underline"
-            >
-              {t("requestInfo")}
-              <ArrowRight
-                aria-hidden="true"
-                className="size-[18px] transition-transform group-hover:translate-x-0.5"
-              />
-            </Link>
+      <section className="relative isolate overflow-x-clip">
+        {/* The glow, dots and grain fade out before the next section, so it has no edge. */}
+        <div className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]">
+          <div className="aurora">
+            <span />
+            <span />
+            <span />
           </div>
+          <div className="dot-grid" />
+          <div className="grain" />
         </div>
-        <div className="flex justify-center">
-          <HeroIllustration className="h-auto w-full max-w-[264px] lg:max-w-[440px]" />
+        <div
+          className={cn(
+            container,
+            "grid items-center gap-x-10 gap-y-12 pt-10 pb-14 md:pt-20 md:pb-20 lg:grid-cols-[1.1fr_1fr]",
+          )}
+        >
+          <div className="flex flex-col items-start gap-5 md:gap-7">
+            <p className="rise border-border bg-card/60 inline-flex min-h-8 items-center gap-2.5 rounded-full border px-3.5 text-sm font-semibold backdrop-blur">
+              <span
+                aria-hidden="true"
+                className="pulse-dot size-2 rounded-full bg-(--art-accent)"
+              />
+              {t("eyebrow")}
+            </p>
+            <h1
+              className="rise font-heading text-[clamp(2.5rem,5.4vw,4.5rem)] leading-[1.03] font-extrabold tracking-[-0.035em] text-balance"
+              style={{ "--rise-step": 1 } as CSSProperties}
+            >
+              {t.rich("title", {
+                accent: (chunks) => (
+                  <span className="text-gradient relative sm:whitespace-nowrap">
+                    {chunks}
+                    {/* A hand-drawn stroke under the words, drawn in once. */}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 200 14"
+                      preserveAspectRatio="none"
+                      fill="none"
+                      className="absolute -bottom-[0.26em] left-0 h-[0.26em] w-full max-sm:hidden"
+                    >
+                      <path
+                        d="M3 10C52 3 128 1.5 197 6"
+                        pathLength={1}
+                        stroke="var(--art-sun)"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        className="draw-in"
+                      />
+                    </svg>
+                  </span>
+                ),
+              })}
+            </h1>
+            <p
+              className="rise text-muted-foreground max-w-[34em] text-[1.0625rem] leading-[1.6] text-pretty md:text-lg"
+              style={{ "--rise-step": 2 } as CSSProperties}
+            >
+              {t("lead")}
+            </p>
+            <div
+              className="rise flex flex-wrap items-center gap-x-7 gap-y-2 max-sm:w-full max-sm:flex-col max-sm:items-stretch"
+              style={{ "--rise-step": 3 } as CSSProperties}
+            >
+              <Link
+                href={routes.homeSection("courses")}
+                className={buttonClass({
+                  className:
+                    "group shadow-[0_12px_32px_-12px_var(--primary)] transition-[background-color,box-shadow,translate] hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-12px_var(--primary)] max-sm:min-h-13",
+                })}
+              >
+                {t("seeCourses")}
+                <ArrowRight
+                  aria-hidden="true"
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+              <Link
+                href={routes.homeSection("contact")}
+                className="text-primary hover:text-primary-hover group inline-flex min-h-11 items-center justify-center gap-2 font-semibold no-underline"
+              >
+                {t("requestInfo")}
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-[18px] transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
+          </div>
+          <div className="rise flex justify-center" style={{ "--rise-step": 4 } as CSSProperties}>
+            <HeroOrbit
+              areas={areas}
+              labels={{
+                assistant: t("orbit.assistant"),
+                prompt: t("orbit.prompt"),
+                reply: t("orbit.reply"),
+              }}
+              className="max-w-[310px] sm:max-w-[440px] lg:max-w-[500px]"
+            />
+          </div>
         </div>
       </section>
 
-      <section className="border-border border-t">
-        <div className={cn(container, "flex flex-col gap-6 py-12 md:gap-8 md:py-18")}>
+      <section>
+        <div className={cn(container, "flex flex-col gap-6 pt-4 pb-12 md:gap-8 md:pb-18")}>
           <div className="flex flex-col gap-2">
             <h2 className={sectionTitle}>{t("areas.title")}</h2>
             <p className="text-muted-foreground">{t("areas.lead")}</p>
@@ -154,10 +217,12 @@ export default async function HomePage() {
               <p className="text-muted-foreground max-w-[30em]">{t("levels.lead")}</p>
             </div>
             <ul className="flex list-none flex-col gap-3 md:gap-4">
-              {levels.map((level) => (
+              {levels.map((level, index) => (
                 <li
                   key={level.id}
-                  className="border-border bg-card flex items-center gap-4.5 rounded-2xl border px-5 py-5 md:px-6"
+                  // Each level sits a step further in than the one before: a staircase.
+                  style={{ "--stair": index } as CSSProperties}
+                  className="border-border bg-card flex items-center gap-4.5 rounded-2xl border px-5 py-5 transition-[translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-(--shadow-raised) md:px-6 lg:ml-[calc(var(--stair)*3.5rem)]"
                 >
                   <span
                     aria-hidden="true"
@@ -205,14 +270,16 @@ export default async function HomePage() {
                     {/* The name sits right next to it, so the photo needs no description.
                         The file is already cut to size, and the Cloudflare build has no
                         image service that would resize it anyway. */}
-                    <Image
-                      src={trainer.photo}
-                      alt=""
-                      width={64}
-                      height={64}
-                      unoptimized
-                      className="bg-accent size-16 flex-none rounded-full object-cover"
-                    />
+                    <span className="flex-none rounded-full bg-[conic-gradient(from_140deg,var(--primary),var(--art-accent),var(--art-sun),var(--primary))] p-[3px]">
+                      <Image
+                        src={trainer.photo}
+                        alt=""
+                        width={64}
+                        height={64}
+                        unoptimized
+                        className="bg-accent border-card size-16 rounded-full border-[3px] object-cover"
+                      />
+                    </span>
                     <div className="flex flex-col gap-0.5">
                       <h3 className="font-heading text-2xl leading-tight">{trainer.name}</h3>
                       <p className="text-muted-foreground text-[0.9375rem]">
@@ -247,14 +314,20 @@ export default async function HomePage() {
       <section id={homeSections.howItWorks} className="bg-muted scroll-mt-4">
         <div className={cn(container, "flex flex-col gap-7 py-12 md:gap-9 md:py-18")}>
           <h2 className={sectionTitle}>{t("how.title")}</h2>
-          <ol className="grid list-none grid-cols-[repeat(auto-fit,minmax(min(280px,100%),1fr))] gap-x-10 gap-y-7 md:gap-y-8">
+          <ol className="grid list-none grid-cols-[repeat(auto-fit,minmax(min(280px,100%),1fr))] gap-x-10 gap-y-9 md:gap-y-10 lg:grid-cols-3">
             {steps.map((step) => (
-              <li key={step} className="flex flex-col gap-3">
+              <li key={step} className="relative flex flex-col gap-3">
+                {step < steps.length ? (
+                  <span
+                    aria-hidden="true"
+                    className="border-primary/35 absolute top-[2.4rem] right-[-1.75rem] left-[7.25rem] hidden border-t-2 border-dashed lg:block"
+                  />
+                ) : null}
                 <span
                   aria-hidden="true"
-                  className="bg-primary text-primary-foreground font-heading flex size-12 items-center justify-center rounded-full text-[1.375rem]"
+                  className="numeral-outline font-heading text-[5rem] leading-[0.95] font-extrabold tracking-[-0.04em]"
                 >
-                  {step}
+                  {String(step).padStart(2, "0")}
                 </span>
                 <h3 className="font-heading text-[1.375rem] leading-tight">
                   {t(`how.step${step}Title`)}
@@ -316,30 +389,40 @@ export default async function HomePage() {
 
       <section
         id={homeSections.contact}
-        className="border-border flex flex-1 scroll-mt-4 items-center border-t"
+        className="flex flex-1 scroll-mt-4 items-center py-10 md:py-16"
       >
-        <div
-          className={cn(
-            container,
-            "grid items-start gap-x-16 gap-y-6 py-12 md:gap-y-10 md:py-20 lg:grid-cols-2",
-          )}
-        >
-          <div className="flex flex-col gap-4">
-            <h2 className={sectionTitle}>{t("contact.title")}</h2>
-            <p className="text-muted-foreground max-w-[28em]">{t("contact.lead")}</p>
-            {siteConfig.contactEmail ? (
-              <p className="text-muted-foreground mt-2 flex items-center gap-2.5">
-                <Mail aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.75} />
-                <a
-                  href={`mailto:${siteConfig.contactEmail}`}
-                  className="text-primary hover:text-primary-hover font-medium break-all"
-                >
-                  {siteConfig.contactEmail}
-                </a>
-              </p>
-            ) : null}
+        <div className={container}>
+          {/* Dark in both themes, so the page ends on a strong note. data-theme gives this
+              panel the dark tokens; its own text and background colour then pick them up. */}
+          <div
+            data-theme="dark"
+            className="bg-background text-foreground border-border relative isolate overflow-hidden rounded-[2rem] border"
+          >
+            <div className="aurora">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="grain" />
+            <div className="grid items-start gap-x-16 gap-y-8 px-5 py-10 sm:px-8 md:gap-y-10 md:px-12 md:py-14 lg:grid-cols-2">
+              <div className="flex flex-col gap-4">
+                <h2 className={sectionTitle}>{t("contact.title")}</h2>
+                <p className="text-muted-foreground max-w-[28em]">{t("contact.lead")}</p>
+                {siteConfig.contactEmail ? (
+                  <p className="text-muted-foreground mt-2 flex items-center gap-2.5">
+                    <Mail aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.75} />
+                    <a
+                      href={`mailto:${siteConfig.contactEmail}`}
+                      className="text-primary hover:text-primary-hover font-medium break-all"
+                    >
+                      {siteConfig.contactEmail}
+                    </a>
+                  </p>
+                ) : null}
+              </div>
+              <RequestForm courses={courses.map(({ id, title }) => ({ id, title }))} />
+            </div>
           </div>
-          <RequestForm courses={courses.map(({ id, title }) => ({ id, title }))} />
         </div>
       </section>
     </>

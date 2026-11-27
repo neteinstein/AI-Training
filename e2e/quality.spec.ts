@@ -84,6 +84,22 @@ async function settle(page: Page, path: string) {
   await page.goto(path);
   await expect(page.locator("main#content, main").first()).toBeVisible();
   await page.waitForLoadState("networkidle");
+  // Parts of a page fade in as it opens (the landing page's heading and buttons). Checked
+  // half-way, their text is still partly see-through and fails the contrast rule, so wait for
+  // every animation that ends; those that loop (the hero's orbit) never do.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) =>
+          animation.finished.then(
+            () => undefined,
+            () => undefined,
+          ),
+        ),
+    ).then(() => undefined),
+  );
 }
 
 /**
