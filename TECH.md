@@ -37,7 +37,7 @@ and how it looks, see the [README](README.md).
 | Public site: landing page, catalogue, course page, request form  | Done, tested in the browser     |
 | Learner area: my courses, materials, PDF and document viewers    | Done, tested in the browser     |
 | Back-office: courses, content, users, invitations, requests      | Done, tested in the browser     |
-| Back-office backup: ZIP download of content, files and people    | Done, browser tests not run yet |
+| Back-office backup: ZIP download of content, files and people    | Done, tested in the browser     |
 
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
