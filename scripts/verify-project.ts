@@ -23,6 +23,7 @@ const PRIVATE_TABLES = [
   "modules",
   "materials",
   "edition_hidden_materials",
+  "material_progress",
   "info_requests",
   "storage_deletions",
 ] as const;

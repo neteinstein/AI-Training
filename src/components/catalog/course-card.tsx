@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import type { CourseCard as Course } from "@/lib/dal/types";
 import { cn } from "@/lib/utils";
@@ -28,11 +29,14 @@ export function CourseCard({
   course,
   href,
   headingLevel = "h3",
+  footer,
   className,
 }: {
   course: Course;
   href: string;
   headingLevel?: "h2" | "h3";
+  /** Shown under the level and duration, e.g. a learner's progress. Inline content only. */
+  footer?: ReactNode;
   className?: string;
 }) {
   const Heading = headingLevel;
@@ -58,6 +62,7 @@ export function CourseCard({
       <span className="border-border mt-auto flex flex-col gap-2.5 border-t pt-4">
         <CourseWhenWhere course={course} />
         <CourseFacts course={course} />
+        {footer}
       </span>
     </Link>
   );

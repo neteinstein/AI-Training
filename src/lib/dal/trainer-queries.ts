@@ -511,6 +511,70 @@ export async function fetchCourseLearners(
     .sort(byName);
 }
 
+export type LearnerProgress = {
+  /** Materials opened, out of those the learner's edition shows. */
+  done: number;
+  total: number;
+  lastActivityAt: string | null;
+};
+
+/**
+ * How far each learner of a course is, by user id. Worked out in the database, against what
+ * each one's edition shows. Only trainers get an answer: for anyone else the map is empty.
+ */
+export async function fetchCourseProgress(
+  client: Client,
+  courseId: string,
+): Promise<Map<string, LearnerProgress>> {
+  if (!isUuid(courseId)) return new Map();
+  const { data, error } = await client.rpc("course_progress", { target_course_id: courseId });
+  check("progress", error);
+  return new Map(
+    (data ?? []).map((row) => [
+      row.user_id,
+      {
+        done: row.done_materials,
+        total: row.total_materials,
+        lastActivityAt: row.last_activity_at,
+      },
+    ]),
+  );
+}
+
+export type MaterialProgress = {
+  /** The first time the learner opened it; null when they have not. */
+  openedAt: string | null;
+  lastOpenedAt: string | null;
+  isDone: boolean;
+};
+
+/**
+ * One learner of a course, material by material: an entry for every material their edition
+ * shows, opened or not. Only trainers get an answer.
+ */
+export async function fetchLearnerProgress(
+  client: Client,
+  courseId: string,
+  userId: string,
+): Promise<Map<string, MaterialProgress>> {
+  if (!isUuid(courseId) || !isUuid(userId)) return new Map();
+  const { data, error } = await client.rpc("learner_progress", {
+    target_course_id: courseId,
+    target_user_id: userId,
+  });
+  check("progress", error);
+  return new Map(
+    (data ?? []).map((row) => [
+      row.material_id,
+      {
+        openedAt: row.opened_at,
+        lastOpenedAt: row.last_opened_at,
+        isDone: row.completed_at !== null,
+      },
+    ]),
+  );
+}
+
 /** Learners who could be added to a course: everyone with an account who is not in it yet. */
 export async function fetchPeopleNotEnrolled(client: Client, courseId: string): Promise<Person[]> {
   if (!isUuid(courseId)) return [];

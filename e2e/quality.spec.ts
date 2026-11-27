@@ -57,6 +57,7 @@ const trainerPages = [
   `${trainerCourse}/content/materials/${demoMaterials.slidesPdf}`,
   `${trainerCourse}/content/materials/${demoMaterials.video}`,
   `${trainerCourse}/learners`,
+  `${trainerCourse}/learners/${demoUsers.ana.id}`,
   `${trainerCourse}/editions`,
   `${trainerCourse}/editions/new`,
   `${trainerCourse}/editions/${demoEditions.classroomInPerson}`,

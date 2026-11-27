@@ -23,6 +23,8 @@ const PEOPLE_TABLES = [
   { name: "profiles", order: ["created_at", "id"] },
   { name: "enrollments", order: ["course_id", "user_id"] },
   { name: "info_requests", order: ["created_at", "id"] },
+  // What each person has opened: after the profiles and the materials it points at.
+  { name: "material_progress", order: ["user_id", "material_id"] },
 ] as const;
 
 export type BackupTable =

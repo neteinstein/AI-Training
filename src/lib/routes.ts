@@ -39,6 +39,8 @@ export const routes = {
   account: "/learn/account",
   /** Not under a language: it answers with a file, not a page. `?inline=1` opens it in the browser. */
   materialDownload: (materialId: string) => `/api/materials/${materialId}/download`,
+  /** Also not under a language: it sends the browser on to the site a link material points to. */
+  materialOpen: (materialId: string) => `/api/materials/${materialId}/open`,
 
   trainer: "/trainer",
   trainerAreas: "/trainer/areas",
@@ -61,6 +63,9 @@ export const routes = {
   trainerEdition: (courseId: string, editionId: string) =>
     `/trainer/courses/${courseId}/editions/${editionId}`,
   trainerCourseLearners: (courseId: string) => `/trainer/courses/${courseId}/learners`,
+  /** What one learner of the course has opened. */
+  trainerLearnerProgress: (courseId: string, userId: string) =>
+    `/trainer/courses/${courseId}/learners/${userId}`,
   trainerModuleNew: (courseId: string) => `/trainer/courses/${courseId}/content/modules/new`,
   trainerModule: (courseId: string, moduleId: string) =>
     `/trainer/courses/${courseId}/content/modules/${moduleId}`,

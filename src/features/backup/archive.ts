@@ -170,9 +170,10 @@ data/     Uma lista JSON por tabela da base de dados, com todas as colunas, tal 
           de texto em Markdown, as ligações, os endereços dos vídeos e dos documentos Google).
           editions, edition_hidden_materials: as edições de cada curso e os materiais que
           cada edição esconde.
-          profiles, enrollments, info_requests: as pessoas, as inscrições e os pedidos de
-          informação, quando foram incluídos. São dados pessoais: guarde a cópia num lugar
-          seguro e apague-a quando já não for precisa.
+          profiles, enrollments, info_requests, material_progress: as pessoas, as
+          inscrições, os pedidos de informação e o que cada pessoa já abriu, quando foram
+          incluídos. São dados pessoais: guarde a cópia num lugar seguro e apague-a quando
+          já não for precisa.
 files/    Os ficheiros carregados, numa pasta por curso, com o nome original. Em
           manifest.json, "files" diz a que material pertence cada um (storagePath é o
           materials.storage_path), e "missingFiles" os que faltavam no armazenamento.
@@ -192,9 +193,10 @@ data/     One JSON list per database table, with every column, exactly as stored
           pages in Markdown, links, and the addresses of videos and Google documents).
           editions, edition_hidden_materials: the editions of each course and the
           materials each edition hides.
-          profiles, enrollments, info_requests: people, enrolments and information
-          requests, when they were included. This is personal data: keep the backup
-          somewhere safe and delete it once it is no longer needed.
+          profiles, enrollments, info_requests, material_progress: people, enrolments,
+          information requests and what each person has opened, when they were included.
+          This is personal data: keep the backup somewhere safe and delete it once it is
+          no longer needed.
 files/    The uploaded files, one folder per course, under their original names. In
           manifest.json, "files" says which material each one belongs to (storagePath is
           materials.storage_path), and "missingFiles" lists any that storage did not have.

@@ -43,6 +43,7 @@ test.describe("backup", () => {
     expect(names.at(-1)).toBe("manifest.json");
     expect(names).toEqual(expect.arrayContaining(["data/courses.json", "data/materials.json"]));
     expect(names).not.toContain("data/profiles.json");
+    expect(names).not.toContain("data/material_progress.json");
 
     const courses = json<Row[]>(files["data/courses.json"]);
     expect(courses.map((course) => course.slug)).toContain(demoCourses.classroom.slug);
@@ -80,8 +81,13 @@ test.describe("backup", () => {
     const profiles = json<Row[]>(second["data/profiles.json"]);
     expect(profiles.map((profile) => profile.email)).toContain(demoUsers.ana.email);
     expect(Object.keys(second)).toEqual(
-      expect.arrayContaining(["data/enrollments.json", "data/info_requests.json"]),
+      expect.arrayContaining([
+        "data/enrollments.json",
+        "data/info_requests.json",
+        "data/material_progress.json",
+      ]),
     );
+    expect(Array.isArray(json<Row[]>(second["data/material_progress.json"]))).toBe(true);
     // Every enrolment names its edition, and that edition is in the same archive.
     const secondEditions = json<Row[]>(second["data/editions.json"]).map((edition) => edition.id);
     for (const enrolment of json<Row[]>(second["data/enrollments.json"])) {

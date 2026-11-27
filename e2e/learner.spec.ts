@@ -88,8 +88,12 @@ test.describe("a course", () => {
     const link = page.getByRole("link", { name: /Leitura recomendada/ });
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", /noopener/);
-    await expect(link).toHaveAttribute(
-      "href",
+    // It goes through the site, which notes the opening and sends the browser on.
+    const through = `/api/materials/${demoMaterials.link}/open`;
+    await expect(link).toHaveAttribute("href", through);
+    const answer = await page.request.get(through, { maxRedirects: 0 });
+    expect(answer.status()).toBe(302);
+    expect(answer.headers().location).toBe(
       "https://en.wikipedia.org/wiki/Generative_artificial_intelligence",
     );
 
@@ -229,11 +233,12 @@ test.describe("materials", () => {
   }) => {
     await page.goto(material(demoMaterials.link));
     const open = page.getByRole("link", { name: "Abrir ligação" });
-    await expect(open).toHaveAttribute(
-      "href",
-      "https://en.wikipedia.org/wiki/Generative_artificial_intelligence",
-    );
+    await expect(open).toHaveAttribute("href", `/api/materials/${demoMaterials.link}/open`);
     await expect(open).toHaveAttribute("target", "_blank");
+    // The address itself is still shown, so people see where they are going.
+    await expect(
+      page.getByText("https://en.wikipedia.org/wiki/Generative_artificial_intelligence"),
+    ).toBeVisible();
   });
 });
 

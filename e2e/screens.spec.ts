@@ -76,6 +76,35 @@ for (const scheme of ["light", "dark"] as const) {
       await page.screenshot({ path: pictureFile(project, name), ...settings });
     }
 
+    /**
+     * For the pictures, Ana has opened exactly two materials of the demo course, two days ago,
+     * whatever the tests before this one did as her. (Nothing else depends on what she opened.)
+     */
+    async function showSomeProgress() {
+      const service = admin();
+      const { data: modules } = await service
+        .from("modules")
+        .select("materials(id)")
+        .eq("course_id", classroom.id);
+      const all = (modules ?? []).flatMap((module) => module.materials.map(({ id }) => id));
+      await service
+        .from("material_progress")
+        .delete()
+        .eq("user_id", demoUsers.ana.id)
+        .in("material_id", all);
+      const when = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
+      const opened = await service.from("material_progress").insert(
+        [demoMaterials.video, demoMaterials.promptGuide].map((material_id) => ({
+          user_id: demoUsers.ana.id,
+          material_id,
+          opened_at: when,
+          last_opened_at: when,
+          completed_at: when,
+        })),
+      );
+      expect(opened.error).toBeNull();
+    }
+
     async function open(page: Page, path: string) {
       await page.goto(path);
       await expect(page.locator("main").first()).toBeVisible();
@@ -102,6 +131,9 @@ for (const scheme of ["light", "dark"] as const) {
     test("learner area", async ({ page }, info) => {
       await signIn(page, demoUsers.ana.email);
       await expect(page).toHaveURL(/\/pt\/learn$/);
+      // The list of courses and the course itself come first: opening the materials after
+      // them is noted, and would change what these two show.
+      await showSomeProgress();
       const pages = {
         "learner-1-my-courses": "/pt/learn",
         "learner-2-course": learnCourse,
@@ -144,7 +176,10 @@ for (const scheme of ["light", "dark"] as const) {
         "office-15-edition-content": `${trainerCourse}/content?edition=${inPerson}`,
         // What a trainer sees when looking at the course as one edition's learners do.
         "office-16-edition-preview": `${learnCourse}?edition=${inPerson}`,
+        // What one learner has opened.
+        "office-17-learner-progress": `${trainerCourse}/learners/${demoUsers.ana.id}`,
       };
+      await showSomeProgress();
       // For the pictures only, the demo course's second edition gets a learner too, so that
       // the list of learners shows both editions with someone in them.
       const guest = { user_id: demoUsers.john.id, course_id: classroom.id };

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CourseCard } from "@/components/catalog/course-card";
 import { AppHeader } from "@/components/layout/app-header";
+import { ProgressBar } from "@/components/materials/progress-bar";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { fetchMyCourses } from "@/lib/dal/learner-queries";
@@ -46,6 +47,15 @@ export default async function LearnPage() {
                   href={routes.learnCourse(course.slug)}
                   headingLevel="h2"
                   className="w-full"
+                  footer={
+                    course.progress ? (
+                      <ProgressBar
+                        done={course.progress.done}
+                        total={course.progress.total}
+                        label={t("progress", course.progress)}
+                      />
+                    ) : undefined
+                  }
                 />
               </li>
             ))}

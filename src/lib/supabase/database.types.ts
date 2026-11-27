@@ -359,6 +359,46 @@ export type Database = {
         };
         Relationships: [];
       };
+      material_progress: {
+        Row: {
+          completed_at: string | null;
+          last_opened_at: string;
+          material_id: string;
+          opened_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          completed_at?: string | null;
+          last_opened_at?: string;
+          material_id: string;
+          opened_at?: string;
+          user_id: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          last_opened_at?: string;
+          material_id?: string;
+          opened_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "material_progress_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "material_progress_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       materials: {
         Row: {
           body_en: string | null;
@@ -547,9 +587,54 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      my_course_progress: {
+        Row: {
+          course_id: string;
+          done_materials: number | null;
+          edition_id: string;
+          last_activity_at: string | null;
+          total_materials: number | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "enrollments_edition_fkey";
+            columns: ["edition_id", "course_id"];
+            isOneToOne: false;
+            referencedRelation: "editions";
+            referencedColumns: ["id", "course_id"];
+          },
+        ];
+      };
     };
     Functions: {
+      course_progress: {
+        Args: { target_course_id: string };
+        Returns: {
+          done_materials: number;
+          edition_id: string;
+          last_activity_at: string;
+          total_materials: number;
+          user_id: string;
+        }[];
+      };
+      learner_progress: {
+        Args: { target_course_id: string; target_user_id: string };
+        Returns: {
+          completed_at: string;
+          last_opened_at: string;
+          material_id: string;
+          opened_at: string;
+        }[];
+      };
+      record_material_open: { Args: { target_material_id: string }; Returns: boolean };
       reorder_areas: { Args: { ordered_ids: string[] }; Returns: undefined };
       reorder_courses: { Args: { ordered_ids: string[] }; Returns: undefined };
       reorder_levels: { Args: { ordered_ids: string[] }; Returns: undefined };

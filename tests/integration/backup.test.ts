@@ -17,6 +17,8 @@ import {
 let catalogue: Catalogue;
 let trainer: TestUser;
 let learner: TestUser;
+/** Someone else with progress of their own, which the first learner must not be handed. */
+let otherLearner: TestUser;
 let fileMaterialId: string;
 /** The editions the published and the draft course were created with. */
 let publishedEdition: string;
@@ -33,7 +35,20 @@ beforeAll(async () => {
   catalogue = await createCatalogue();
   trainer = await createUser("trainer", "trainer-backup");
   learner = await createUser("learner", "learner-backup");
+  otherLearner = await createUser("learner", "learner-backup-other");
   await enroll(learner.id, [catalogue.courses.published]);
+  await enroll(otherLearner.id, [catalogue.courses.published]);
+  // Each has opened the published page.
+  const { error: progressError } = await admin()
+    .from("material_progress")
+    .insert(
+      [learner, otherLearner].map((user) => ({
+        user_id: user.id,
+        material_id: catalogue.materials.visible,
+        completed_at: new Date().toISOString(),
+      })),
+    );
+  if (progressError) throw new Error(`Progress failed: ${progressError.message}`);
 
   // A file in the draft course, not published: only a trainer's backup should hold it.
   const { data, error } = await admin()
@@ -70,7 +85,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await deleteCatalogue(catalogue);
-  await deleteUsers([trainer, learner]);
+  await deleteUsers([trainer, learner, otherLearner]);
 });
 
 describe("backup data", () => {
@@ -129,7 +144,7 @@ describe("backup data", () => {
     const backup = await collectBackup(trainer.client, { people: true });
 
     expect(Object.keys(backup.tables)).toEqual(
-      expect.arrayContaining(["profiles", "enrollments", "info_requests"]),
+      expect.arrayContaining(["profiles", "enrollments", "info_requests", "material_progress"]),
     );
     expect(ids(backup.tables.profiles)).toEqual(expect.arrayContaining([trainer.id, learner.id]));
     // An enrolment says which edition it is in, and that edition is in the backup too.
@@ -141,6 +156,16 @@ describe("backup data", () => {
       }),
     );
     expect(ids(backup.tables.editions)).toContain(publishedEdition);
+
+    // What each of them has opened.
+    for (const user of [learner, otherLearner]) {
+      expect(backup.tables.material_progress).toContainEqual(
+        expect.objectContaining({ user_id: user.id, material_id: catalogue.materials.visible }),
+      );
+    }
+    expect(new Set(backup.tables.material_progress!.map(keyOf)).size).toBe(
+      backup.tables.material_progress!.length,
+    );
   });
 
   test("the database still decides: a learner's client gets only what a learner may see", async () => {
@@ -156,6 +181,10 @@ describe("backup data", () => {
     expect(ids(backup.tables.editions)).not.toContain(draftEdition);
     expect(backup.tables.edition_hidden_materials).toEqual([]);
     expect(ids(backup.tables.profiles)).toEqual([learner.id]);
+    // Their own progress, and nobody else's.
+    expect(backup.tables.material_progress).toEqual([
+      expect.objectContaining({ user_id: learner.id, material_id: catalogue.materials.visible }),
+    ]);
     expect(backup.tables.info_requests).toEqual([]);
     expect(backup.files.map((entry) => entry.materialId)).not.toContain(fileMaterialId);
   });

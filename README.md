@@ -194,11 +194,18 @@ Every edition shows the course's materials; a trainer can hide some of them in o
 add materials that only that edition gets. Editions marked as public are listed on the course's
 page as upcoming dates.
 
+### Progress at a glance
+
+Learners see how far along they are in each course, and a tick on what they have already
+opened. Trainers see the same for every learner of a course, with the day each was last active,
+and can open one person's page to see what they opened and when. A material counts once its
+page, its download or its link has been opened; a trainer looking around is never counted.
+
 ### A backup in one click
 
 From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue with
 its editions, every module and material, the uploaded files and, when they choose, the people,
-enrolments and requests. A README inside says what is where.
+their enrolments and progress, and the requests. A README inside says what is where.
 
 ## 🔐 Built to be trusted
 

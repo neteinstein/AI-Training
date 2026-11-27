@@ -62,6 +62,12 @@ export type EditionSummary = {
   isPlain: boolean;
 };
 
+/** How far a learner is in a course: materials opened, out of those their edition shows. */
+export type CourseProgress = { done: number; total: number };
+
+/** A course in a learner's own list. Without materials yet there is nothing to count. */
+export type MyCourse = CourseCard & { progress: CourseProgress | null };
+
 export type CourseDetail = CourseCard & {
   /** Markdown. */
   description: string;
@@ -95,6 +101,8 @@ export type MaterialItem = {
   file: { name: string; mimeType: string; sizeBytes: number } | null;
   /** The one edition that shows this material; null when every edition of the course does. */
   editionId: string | null;
+  /** The viewer has opened it. Always false for a trainer: trainers are not recorded. */
+  isDone: boolean;
 };
 
 export type ModuleWithMaterials = {
@@ -114,6 +122,8 @@ export type CourseContent = {
   edition: EditionSummary | null;
   /** For trainers: every edition of the course, to preview each. Empty for learners. */
   editions: EditionSummary[];
+  /** The learner's own progress. Null for a trainer, and while there is nothing to open. */
+  progress: CourseProgress | null;
 };
 
 export type MaterialPage = {

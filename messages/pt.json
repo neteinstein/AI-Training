@@ -129,7 +129,9 @@
     "previewEdition": "Ver o que cada edição vê",
     "wholeCourse": "Todo o curso",
     "previewNoteEdition": "Está a ver este curso como um formando da edição «{name}». Os materiais marcados como ocultos só aparecem aos formadores.",
-    "onlyIn": "Só: {name}"
+    "onlyIn": "Só: {name}",
+    "progress": "{done} de {total, plural, one {# material aberto} other {# materiais abertos}}",
+    "opened": "Aberto"
   },
   "Trainer": {
     "title": "Back-office",
@@ -507,7 +509,18 @@
       "emptyEdition": "Ainda ninguém nesta edição.",
       "editionCount": "{count, plural, =0 {sem formandos} one {# formando} other {# formandos}}",
       "moveTo": "Mover para outra edição",
-      "moved": "Pessoa movida para «{name}»."
+      "moved": "Pessoa movida para «{name}».",
+      "progressShort": "{done} de {total}",
+      "progressNamed": "Progresso de {name}: {done} de {total, plural, one {# material aberto} other {# materiais abertos}}",
+      "lastActivity": "Última atividade: {date}",
+      "noActivity": "Ainda sem atividade",
+      "progressTitle": "Progresso de {name}",
+      "progressLead": "Os materiais que a edição desta pessoa mostra, e o dia em que abriu cada um pela primeira vez.",
+      "progressSummary": "{done} de {total, plural, one {# material aberto} other {# materiais abertos}}",
+      "openedOn": "Aberto a {date}",
+      "notOpened": "Por abrir",
+      "nothingToOpen": "A edição desta pessoa ainda não mostra nenhum material.",
+      "inEdition": "Edição: {name}"
     },
     "users": {
       "title": "Utilizadores",
@@ -644,7 +657,7 @@
       "optionsTitle": "Incluir também",
       "includeFiles": "Ficheiros carregados ({count, plural, one {# ficheiro} other {# ficheiros}}, {size})",
       "includeFilesHint": "Desmarque para um ficheiro pequeno, só com os textos e a estrutura.",
-      "includePeople": "Pessoas: contas, inscrições e pedidos de informação ({people, plural, one {# pessoa} other {# pessoas}}, {requests, plural, one {# pedido} other {# pedidos}})",
+      "includePeople": "Pessoas: contas, inscrições, progresso e pedidos de informação ({people, plural, one {# pessoa} other {# pessoas}}, {requests, plural, one {# pedido} other {# pedidos}})",
       "includePeopleHint": "São dados pessoais. Guarde a cópia num lugar seguro e apague-a quando já não for precisa.",
       "download": "Descarregar cópia",
       "preparing": "A preparar a cópia. A transferência começa dentro de momentos e continua no seu navegador.",
@@ -824,7 +837,7 @@
       },
       "data": {
         "title": "Que dados recolhemos",
-        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido e os cursos em que está inscrito. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
+        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido, os cursos em que está inscrito e que materiais desses cursos abriu, e quando. Os formadores veem essa informação, para acompanharem o curso. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
       },
       "purpose": {
         "title": "Para que os usamos",

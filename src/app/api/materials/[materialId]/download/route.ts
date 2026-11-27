@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { FILE_LINK_SECONDS, signedFileUrl } from "@/lib/dal/files";
-import { fetchMaterialFile } from "@/lib/dal/learner-queries";
+import { fetchMaterialFile, recordMaterialOpen } from "@/lib/dal/learner-queries";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -46,6 +46,8 @@ export async function GET(
     downloadAs: inline ? undefined : file.fileName,
   });
   if (!url) return notFound();
+  // Downloading a file is one way of opening it.
+  await recordMaterialOpen(supabase, materialId);
 
   return NextResponse.redirect(url, {
     status: 302,

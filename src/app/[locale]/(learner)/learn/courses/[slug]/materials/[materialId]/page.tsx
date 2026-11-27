@@ -12,7 +12,11 @@ import { PdfViewer } from "@/components/materials/pdf-viewer-loader";
 import { buttonClass } from "@/components/ui/button";
 import { htmlLang } from "@/config/site";
 import { FILE_LINK_SECONDS, signedFileUrl } from "@/lib/dal/files";
-import { fetchMaterialFile, fetchMaterialPage } from "@/lib/dal/learner-queries";
+import {
+  fetchMaterialFile,
+  fetchMaterialPage,
+  recordMaterialOpen,
+} from "@/lib/dal/learner-queries";
 import { requireUser } from "@/lib/dal/session";
 import type { MaterialItem } from "@/lib/dal/types";
 import { routes } from "@/lib/routes";
@@ -47,6 +51,11 @@ export default async function LearnMaterialPage({ params, searchParams }: Props)
   const { course, module, material, previous, next } = page;
   // A trainer's links keep the edition being previewed; a learner's never name one.
   const previewEdition = user.role === "trainer" ? page.edition?.id : undefined;
+
+  // Opening this page is what counts as having opened the material. It is noted here, where
+  // the page is drawn, and not where it is only described: the title of a page is worked out
+  // on its own, and links that are merely in view never draw the page they lead to.
+  if (user.role !== "trainer") await recordMaterialOpen(supabase, material.id);
 
   const meta = materialMeta(
     material,
@@ -146,7 +155,7 @@ export default async function LearnMaterialPage({ params, searchParams }: Props)
             </div>
             <p className="text-muted-foreground text-sm">{tm("linkNote")}</p>
             <a
-              href={material.url}
+              href={routes.materialOpen(material.id)}
               target="_blank"
               rel="noopener noreferrer"
               className={buttonClass()}

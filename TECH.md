@@ -28,17 +28,18 @@ and how it looks, see the [README](README.md).
 
 ## Status
 
-| Part                                                             | State                           |
-| ---------------------------------------------------------------- | ------------------------------- |
-| Database, access rules, file storage                             | Done, tested                    |
-| Sign-in, invitations, password reset, bilingual emails           | Done, tested in the browser     |
-| Logic behind every screen (queries, changes, validation, embeds) | Done, tested against a database |
-| File downloads, security headers                                 | Done, tested in the browser     |
-| Public site: landing page, catalogue, course page, request form  | Done, tested in the browser     |
-| Learner area: my courses, materials, PDF and document viewers    | Done, tested in the browser     |
-| Back-office: courses, content, users, invitations, requests      | Done, tested in the browser     |
-| Back-office backup: ZIP download of content, files and people    | Done, tested in the browser     |
-| Editions of a course: own learners, own view of the content      | Done, tested in the browser     |
+| Part                                                              | State                           |
+| ----------------------------------------------------------------- | ------------------------------- |
+| Database, access rules, file storage                              | Done, tested                    |
+| Sign-in, invitations, password reset, bilingual emails            | Done, tested in the browser     |
+| Logic behind every screen (queries, changes, validation, embeds)  | Done, tested against a database |
+| File downloads, security headers                                  | Done, tested in the browser     |
+| Public site: landing page, catalogue, course page, request form   | Done, tested in the browser     |
+| Learner area: my courses, materials, PDF and document viewers     | Done, tested in the browser     |
+| Back-office: courses, content, users, invitations, requests       | Done, tested in the browser     |
+| Back-office backup: ZIP download of content, files and people     | Done, tested in the browser     |
+| Editions of a course: own learners, own view of the content       | Done, tested in the browser     |
+| Progress: what each learner has opened, for them and for trainers | Done, tested in the browser     |
 
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
@@ -232,8 +233,8 @@ manifest.json          when and by whom, what was included, rows per table, and 
 - **Always in it:** areas, levels, courses and their editions, modules and materials (so text
   pages, links and the addresses of videos and Google documents), and what each edition hides.
 - **Ticked by default:** the uploaded files. Untick them for a small, text-only backup.
-- **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`). It is personal
-  data, and the page says so.
+- **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`) and what each of
+  them has opened (`material_progress`). It is personal data, and the page says so.
 - **Never in it:** passwords (accounts live in Supabase Auth; after a restore people would be
   invited again) and the content of videos and Google documents, which stays with those
   services.
@@ -259,10 +260,10 @@ How it works, and what follows from it:
 
 There is no restore button. The rows are exactly what the database holds, so a restore inserts
 the tables in the order of `data/` above (areas, levels, courses, editions, modules, materials,
-what each edition hides, then profiles once the accounts exist again, enrolments and requests)
-and uploads each file back to the `course-materials` bucket under its `storagePath`. On a paid
-Supabase plan, the project's own daily database backups cover the database as well; they do not
-cover stored files.
+what each edition hides, then profiles once the accounts exist again, enrolments, requests and
+progress) and uploads each file back to the `course-materials` bucket under its `storagePath`.
+On a paid Supabase plan, the project's own daily database backups cover the database as well;
+they do not cover stored files.
 
 **A new table** goes into one of the two lists in `src/lib/dal/backup.ts`: the content, or the
 people when it holds personal data. A table that should stay out is named there too, with the
@@ -288,6 +289,14 @@ All access rules live in the database, in `supabase/migrations`:
   be deleted, only unlisted.
 - Uploaded files sit in a private bucket; a learner can only fetch files that belong to a
   published material of a course they may open.
+- What a learner has opened is kept in `material_progress`, one row per person and material.
+  Nobody writes it directly: the function `record_material_open` notes an opening, and only
+  for a learner and a material their edition shows. A learner reads their own rows, a trainer
+  everyone's. Progress is counted against what the learner's edition shows now, so hiding a
+  material or moving someone changes the count at once. Opening is noted on the server, where
+  the material's page is drawn, where a file is fetched (`/api/materials/[id]/download`) and
+  where a link is followed (`/api/materials/[id]/open`, which then sends the browser on).
+  Deleting a material deletes what was noted about it.
 - A user's role is never taken from data the user can edit, and the last trainer can be neither
   demoted nor deleted.
 
@@ -411,6 +420,11 @@ what is removed.
 
 The workflow needs two repository secrets (GitHub: Settings, Secrets and variables, Actions).
 The project it writes to is named at the top of the workflow file.
+
+Should a run say "IPv6 is not supported on your current network": the command line finds the
+project's IPv4 address through Supabase's API, and that lookup failed, before anything was
+connected to. The workflow tries such a command again by itself (`scripts/supabase-remote.sh`);
+a migration that fails is never tried twice.
 
 | Secret                  | What it is                                                   |
 | ----------------------- | ------------------------------------------------------------ |

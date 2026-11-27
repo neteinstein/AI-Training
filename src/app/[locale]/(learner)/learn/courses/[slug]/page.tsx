@@ -1,6 +1,7 @@
 import {
   ChevronDown,
   ChevronRight,
+  CircleCheck,
   Download,
   ExternalLink,
   EyeOff,
@@ -15,6 +16,7 @@ import { CourseFacts } from "@/components/catalog/course-card";
 import { CourseWhenWhere } from "@/components/catalog/course-when-where";
 import { AppHeader } from "@/components/layout/app-header";
 import { MaterialIcon } from "@/components/materials/kind";
+import { ProgressBar } from "@/components/materials/progress-bar";
 import { materialMeta } from "@/components/materials/meta";
 import { htmlLang } from "@/config/site";
 import { Link } from "@/i18n/navigation";
@@ -53,7 +55,7 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
   const t = await getTranslations("Learn");
   const tm = await getTranslations("Materials");
   const format = await getFormatter();
-  const { course, modules, edition, editions } = content;
+  const { course, modules, edition, editions, progress } = content;
   const isTrainer = user.role === "trainer";
   // A trainer's links keep the edition being previewed; a learner's never name one.
   const previewEdition = isTrainer ? edition?.id : undefined;
@@ -89,6 +91,14 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
                 </>
               ) : null}
             </p>
+          ) : null}
+          {progress ? (
+            <ProgressBar
+              done={progress.done}
+              total={progress.total}
+              label={t("progress", progress)}
+              className="mt-1 w-full max-w-sm"
+            />
           ) : null}
         </div>
       </div>
@@ -193,6 +203,7 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
                         material.titleLang === locale ? undefined : htmlLang[material.titleLang]
                       }
                       hiddenLabel={t("hidden")}
+                      openedLabel={t("opened")}
                       downloadLabel={t("download", { title: material.title })}
                       newTabLabel={tm("newTab")}
                     />
@@ -215,6 +226,7 @@ function MaterialRow({
   meta,
   lang,
   hiddenLabel,
+  openedLabel,
   downloadLabel,
   newTabLabel,
 }: {
@@ -226,6 +238,7 @@ function MaterialRow({
   meta: string;
   lang?: string;
   hiddenLabel: string;
+  openedLabel: string;
   downloadLabel: string;
   newTabLabel: string;
 }) {
@@ -240,8 +253,8 @@ function MaterialRow({
         </span>
         <span className="text-muted-foreground text-[0.8125rem]">{meta}</span>
       </span>
-      {onlyIn || !material.isPublished ? (
-        <span className="ml-auto flex min-w-0 flex-wrap justify-end gap-1.5">
+      {onlyIn || !material.isPublished || material.isDone ? (
+        <span className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-1.5">
           {onlyIn ? <span className={cn(tag, "min-w-0 break-words")}>{onlyIn}</span> : null}
           {material.isPublished ? null : (
             <span className={cn(tag, "flex-none")}>
@@ -249,6 +262,12 @@ function MaterialRow({
               {hiddenLabel}
             </span>
           )}
+          {material.isDone ? (
+            <span className="text-highlight flex flex-none items-center">
+              <CircleCheck aria-hidden="true" className="size-5" />
+              <span className="sr-only">{openedLabel}</span>
+            </span>
+          ) : null}
         </span>
       ) : null}
     </>
@@ -260,7 +279,13 @@ function MaterialRow({
   // A link goes straight to the other site: there is nothing more to show about it here.
   if (material.kind === "link" && material.url) {
     return (
-      <a href={material.url} target="_blank" rel="noopener noreferrer" className={rowClass}>
+      // Through the site, which notes the opening and sends the browser on.
+      <a
+        href={routes.materialOpen(material.id)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={rowClass}
+      >
         {body}
         <span className="sr-only">({newTabLabel})</span>
         <span aria-hidden="true" className={`${endClass} ml-auto`}>
