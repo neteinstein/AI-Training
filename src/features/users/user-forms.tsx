@@ -4,6 +4,7 @@ import { LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useId, useState } from "react";
 import { FormMessage } from "@/components/forms/form-message";
+import { keepSelected } from "@/components/forms/keep-selected";
 import { LocaleField } from "@/components/forms/locale-field";
 import { SelectField } from "@/components/forms/select-field";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -106,6 +107,7 @@ export function RoleForm({ userId, role }: { userId: string; role: UserRole }) {
           id={id}
           name="role"
           value={chosen}
+          ref={keepSelected(chosen)}
           onChange={(event) => setChosen(event.target.value as UserRole)}
           aria-describedby={`${id}-help`}
           className="border-input bg-card text-foreground h-11 min-w-42 rounded-lg border px-3 font-semibold"
