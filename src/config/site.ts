@@ -15,6 +15,16 @@ export const siteConfig = {
   },
 } as const;
 
+/** Trainers shown on the landing page. `role` names a translation in Home.trainers.roles. */
+export const trainers = [
+  {
+    name: "Pedro Vicente",
+    role: "lead",
+    linkedin: "https://www.linkedin.com/in/neteinstein/",
+    website: "https://www.pedrovicente.pt",
+  },
+] as const;
+
 export const locales = ["pt", "en"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "pt";

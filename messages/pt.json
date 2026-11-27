@@ -598,6 +598,13 @@
       "lead": "Escolha por área e por nível.",
       "seeAll": "Ver todos os cursos"
     },
+    "trainers": {
+      "title": "Formadores",
+      "lead": "Quem prepara e dá os cursos.",
+      "roles": {
+        "lead": "Formador principal"
+      }
+    },
     "how": {
       "title": "Como funciona",
       "step1Title": "Peça informações",
