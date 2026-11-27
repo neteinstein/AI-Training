@@ -25,6 +25,7 @@
     "seed:dev": "tsx --env-file=.env.local scripts/seed-dev.ts",
     "bootstrap-trainer": "tsx --env-file=.env.local scripts/bootstrap-trainer.ts",
     "verify-project": "tsx --env-file=.env.local scripts/verify-project.ts",
+    "restore-backup": "tsx --env-file=.env.local scripts/restore-backup.ts",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "npm run cf:build && opennextjs-cloudflare preview",
     "cf:deploy": "npm run cf:build && opennextjs-cloudflare deploy"
