@@ -3,6 +3,7 @@ import { LinkedinLogoIcon } from "@phosphor-icons/react/dist/ssr/LinkedinLogo";
 import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr/PlusCircle";
 import { ArrowRight, Mail } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { AreaCard } from "@/components/catalog/area-card";
@@ -25,12 +26,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const COURSES_ON_HOME = 6;
-
-/** "Pedro Vicente" -> "PV": first and last name. */
-function initials(name: string): string {
-  const words = name.trim().split(/\s+/);
-  return [words[0], words.length > 1 ? words.at(-1) : ""].map((word) => word?.[0] ?? "").join("");
-}
 
 /** "https://www.example.org/" -> "example.org", for showing a website's address. */
 function siteLabel(url: string): string {
@@ -195,12 +190,17 @@ export default async function HomePage() {
                   className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-7"
                 >
                   <div className="flex items-center gap-4.5">
-                    <span
-                      aria-hidden="true"
-                      className="bg-accent text-accent-foreground font-heading flex size-16 flex-none items-center justify-center rounded-full text-2xl"
-                    >
-                      {initials(trainer.name)}
-                    </span>
+                    {/* The name sits right next to it, so the photo needs no description.
+                        The file is already cut to size, and the Cloudflare build has no
+                        image service that would resize it anyway. */}
+                    <Image
+                      src={trainer.photo}
+                      alt=""
+                      width={64}
+                      height={64}
+                      unoptimized
+                      className="bg-accent size-16 flex-none rounded-full object-cover"
+                    />
                     <div className="flex flex-col gap-0.5">
                       <h3 className="font-heading text-2xl leading-tight">{trainer.name}</h3>
                       <p className="text-muted-foreground text-[0.9375rem]">
