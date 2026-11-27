@@ -1,0 +1,106 @@
+name: Database
+
+# Applies the migrations in supabase/migrations to the hosted Supabase project.
+#
+# Cloudflare rebuilds the site from every push to main, but it knows nothing about the
+# database, and code that needs a new table must not go live before the table exists. So a
+# change to the database goes out in this order:
+#
+#   1. On the pull request's branch, start this workflow by hand (Actions → Database → Run
+#      workflow). Left as it is, it only lists what would be applied.
+#   2. Start it again with "apply" ticked, and wait for it to succeed.
+#   3. Merge. The run that follows on main finds nothing left to do. Had the first two steps
+#      been skipped, that run would apply the change, a little after the site was rebuilt.
+#
+# It needs two repository secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_ACCESS_TOKEN   a token from the Supabase dashboard (Account → Access Tokens)
+#   SUPABASE_DB_PASSWORD    the database password of the project
+#
+# It never runs for pull requests, so code from outside the repository cannot reach them.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - supabase/migrations/**
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply the changes (unticked: only list them)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One at a time, and never cut short: a change to the database is not to be interrupted.
+concurrency:
+  group: database-hosted
+  cancel-in-progress: false
+
+env:
+  SUPABASE_PROJECT_REF: wsyxnxtinvhnecmwkhzt
+  NEXT_TELEMETRY_DISABLED: "1"
+
+defaults:
+  run:
+    # Named so that a failing command in a pipe fails the step.
+    shell: bash
+
+jobs:
+  migrate:
+    name: Database changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check that the two secrets exist
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
+            echo "::error::Add SUPABASE_ACCESS_TOKEN and SUPABASE_DB_PASSWORD under Settings → Secrets and variables → Actions. Nothing was changed."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      # The Supabase command line, at the version the project is built with. The keys are only
+      # handed to the steps below, never to this one.
+      - run: npm ci
+
+      - name: List what would be applied
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          {
+            echo "### Migrations: this branch against the hosted database"
+            echo '```'
+            npx supabase migration list --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+            echo '```'
+            echo "### What would be applied"
+            echo '```'
+            npx supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --skip-vault --dry-run
+            echo '```'
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply
+        if: ${{ github.event_name == 'push' || inputs.apply }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          {
+            echo "### Applied"
+            echo '```'
+            npx supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --skip-vault --yes
+            echo '```'
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Nothing was applied
+        if: ${{ github.event_name != 'push' && !inputs.apply }}
+        run: echo "Listed only. Run the workflow again with \"apply\" ticked to apply the changes." | tee -a "$GITHUB_STEP_SUMMARY"
