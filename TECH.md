@@ -335,6 +335,32 @@ npx supabase db push --remote
 This creates the tables, the access rules and the storage bucket. It does not load the demo
 catalogue: that is only for local development.
 
+#### Later changes to the database
+
+After that first time, GitHub applies new migrations: the workflow **Database**
+(`.github/workflows/database.yml`) runs the same `supabase db push` against the hosted project.
+The host rebuilds the site from every push to `main` but knows nothing about the database, and
+code that needs a new table must not go live before the table exists. So a change to the
+database goes out in this order:
+
+1. On the pull request's branch, start the workflow by hand (Actions, Database, Run workflow).
+   Left as it is, it only lists what would be applied.
+2. Start it again with "apply" ticked, and wait for it to succeed.
+3. Merge. The run that follows on `main` finds nothing left to do. Had the first two steps been
+   skipped, that run would apply the change, a little after the site was rebuilt.
+
+For a short while the code that is live meets the new database, so write migrations that the
+running site can live with: add first, and remove only in a later change, once nothing uses
+what is removed.
+
+The workflow needs two repository secrets (GitHub: Settings, Secrets and variables, Actions).
+The project it writes to is named at the top of the workflow file.
+
+| Secret                  | What it is                                                   |
+| ----------------------- | ------------------------------------------------------------ |
+| `SUPABASE_ACCESS_TOKEN` | A token from the Supabase dashboard (Account, Access Tokens) |
+| `SUPABASE_DB_PASSWORD`  | The database password of the project                         |
+
 ### 3. Sign-in settings and emails
 
 The settings the app relies on are written in `supabase/config.toml`. At the end of that file
