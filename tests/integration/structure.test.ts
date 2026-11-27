@@ -16,18 +16,70 @@ describe("database structure", () => {
     expect(rows.filter((row) => !row.rls).map((row) => row.name)).toEqual([]);
   });
 
-  test("visitors can only read the three catalogue tables", async () => {
+  test("visitors can only read the catalogue tables and the editions", async () => {
     const rows = await sql()<{ grant: string }[]>`
       select table_name || ':' || privilege_type as grant
       from information_schema.role_table_grants
       where table_schema = 'public' and grantee = 'anon'
       order by 1
     `;
+    // Which editions is decided by row level security: the public ones of published courses.
     expect(rows.map((row) => row.grant)).toEqual([
       "areas:SELECT",
       "courses:SELECT",
+      "editions:SELECT",
       "levels:SELECT",
     ]);
+  });
+
+  test("what a learner may see is defined once, where no API role can read it", async () => {
+    // The two views that say which materials an edition shows, and so what each learner
+    // sees. The rule on materials and the rule on stored files both read them.
+    const views = await sql()<{ name: string }[]>`
+      select c.relname as name
+      from pg_class c
+      join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'private' and c.relkind = 'v'
+      order by 1
+    `;
+    expect(views.map((row) => row.name)).toEqual(["edition_materials", "learner_materials"]);
+
+    const readable = await sql()<{ role: string; view: string }[]>`
+      select r.role, v.view
+      from unnest(array['anon', 'authenticated', 'service_role']) as r (role)
+      cross join unnest(array['private.edition_materials', 'private.learner_materials']) as v (view)
+      where has_table_privilege(r.role, v.view, 'SELECT')
+    `;
+    expect(readable).toEqual([]);
+
+    // A view in the exposed schema must run with the caller's rights.
+    const exposed = await sql()<{ name: string; options: string[] | null }[]>`
+      select c.relname as name, c.reloptions as options
+      from pg_class c
+      join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'public' and c.relkind = 'v'
+    `;
+    expect(
+      exposed
+        .filter((view) => !(view.options ?? []).includes("security_invoker=true"))
+        .map((view) => view.name),
+    ).toEqual([]);
+  });
+
+  test("an edition never changes course, and only trainers' rules write what it hides", async () => {
+    const [row] = await sql()`
+      select
+        has_column_privilege('authenticated', 'public.editions', 'course_id', 'UPDATE') as move_edition,
+        has_column_privilege('authenticated', 'public.editions', 'name_pt', 'UPDATE') as rename_edition,
+        has_table_privilege('anon', 'public.edition_hidden_materials', 'SELECT') as visitor_reads_hidden,
+        has_table_privilege('authenticated', 'public.edition_hidden_materials', 'UPDATE') as change_hidden
+    `;
+    expect(row).toEqual({
+      move_edition: false,
+      rename_edition: true,
+      visitor_reads_hidden: false,
+      change_hidden: false,
+    });
   });
 
   test("signed-in users cannot write the role column, nor insert or delete profiles", async () => {

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { CourseFrame } from "@/components/trainer/course-frame";
+import { editionLabel } from "@/features/editions/label";
 import { MaterialForm } from "@/features/materials/material-form";
 import { requireTrainer } from "@/lib/dal/session";
-import { fetchCourseBuilder } from "@/lib/dal/trainer-queries";
+import { fetchCourseBuilder, fetchCourseEditions } from "@/lib/dal/trainer-queries";
 import type { MaterialKind } from "@/lib/dal/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -28,11 +29,19 @@ export default async function NewMaterialPage({ params, searchParams }: Props) {
   const t = await getTranslations("Trainer.content");
 
   const kind = toKind(asked.kind);
-  const modules = await fetchCourseBuilder(await createSupabaseServerClient(), courseId);
+  const supabase = await createSupabaseServerClient();
+  const [format, modules, editions] = await Promise.all([
+    getFormatter(),
+    fetchCourseBuilder(supabase, courseId),
+    fetchCourseEditions(supabase, courseId),
+  ]);
   const index = modules.findIndex((candidate) => candidate.id === asked.module);
   if (!kind || index < 0) notFound();
   const target = modules[index];
-  const name = target.title[locale] || target.title[locale === "pt" ? "en" : "pt"];
+  const other = locale === "pt" ? "en" : "pt";
+  const name = target.title[locale] || target.title[other];
+  // Added from one edition's view of the content: the material is for that edition.
+  const edition = editions.find((candidate) => candidate.id === asked.edition) ?? null;
 
   return (
     <CourseFrame courseId={courseId} tab="content" trail={[{ label: t(`new.${kind}`) }]} narrow>
@@ -42,7 +51,17 @@ export default async function NewMaterialPage({ params, searchParams }: Props) {
           {t("inModule", { name: t("numbered", { number: index + 1, title: name }) })}
         </p>
       </div>
-      <MaterialForm courseId={courseId} kind={kind} moduleId={target.id} />
+      <MaterialForm
+        courseId={courseId}
+        kind={kind}
+        moduleId={target.id}
+        editions={editions.map((entry) => ({
+          id: entry.id,
+          label: editionLabel({ ...entry, name: entry.name[locale] || entry.name[other] }, format),
+        }))}
+        editionId={edition?.id}
+        viewEdition={edition?.id}
+      />
     </CourseFrame>
   );
 }

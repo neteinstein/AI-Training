@@ -99,7 +99,10 @@
     "emails": "Check {count, plural, one {this address} other {these addresses}}: {invalid}",
     "tooManyEmails": "Invite at most {max} people at a time.",
     "passwordSame": "The new password must be different from the current one.",
-    "consent": "Tick this box so that we can reply to your request."
+    "consent": "Tick this box so that we can reply to your request.",
+    "startNeeded": "Give the first day, or clear the last one.",
+    "startToList": "Give the first day to show the edition on the public site.",
+    "endBeforeStart": "The last day cannot be before the first."
   },
   "Learn": {
     "title": "My courses",
@@ -121,7 +124,12 @@
     "firstMaterial": "First material",
     "lastMaterial": "Last material",
     "materialsNav": "Course materials",
-    "backToCourses": "My courses"
+    "backToCourses": "My courses",
+    "edition": "Edition",
+    "previewEdition": "See what each edition sees",
+    "wholeCourse": "Whole course",
+    "previewNoteEdition": "You are viewing this course as a learner of the edition “{name}”. Materials marked as hidden are only shown to trainers.",
+    "onlyIn": "Only: {name}"
   },
   "Trainer": {
     "title": "Back-office",
@@ -281,6 +289,7 @@
         "label": "Course sections",
         "details": "Details",
         "content": "Content",
+        "editions": "Editions",
         "learners": "Learners ({count})"
       },
       "viewAsLearner": "View as a learner",
@@ -424,7 +433,52 @@
         "missing": "The uploaded file is no longer available. Please upload it again."
       },
       "addMaterialTo": "Add material to {name}",
-      "viewAsLearner": "View as learner"
+      "viewAsLearner": "View as learner",
+      "editionView": "Show",
+      "wholeCourse": "Whole course",
+      "editionNote": "You are looking at what the edition “{name}” shows. Use the switch to hide one of the course's materials in this edition only, and add the materials only it should see. Order and modules are changed under “Whole course”.",
+      "shownIn": "Visible in this edition: {name}",
+      "onlyThisEdition": "This edition only",
+      "onlyIn": "Only: {name}",
+      "hiddenInCount": "{count, plural, one {Hidden in # edition} other {Hidden in # editions}}",
+      "hiddenForAll": "Hidden for everyone",
+      "addToEdition": "Add to this edition only",
+      "editionSummary": "{total, plural, one {# material} other {# materials}} · {visible, plural, =0 {none visible in this edition} one {# visible in this edition} other {# visible in this edition}}",
+      "shownTo": "Who sees this material",
+      "allEditions": "Every edition of the course",
+      "shownToHelp": "A material for one edition is not shown to the learners of the others."
+    },
+    "editions": {
+      "title": "Editions",
+      "lead": "An edition is one run of the course, with its own learners and, if you like, dates. Every edition shows the course's materials; in each one you can hide some and add materials only it shows.",
+      "leadDefault": "People added to the course without choosing an edition join the default one.",
+      "listLabel": "Editions of the course",
+      "new": "New edition",
+      "edit": "Edit edition",
+      "name": "Name of the edition",
+      "nameHelp": "For example, “January 2027 class”. Needed in both languages, because an edition can appear on the public site.",
+      "startsOn": "First day",
+      "endsOn": "Last day",
+      "datesHelp": "Dates are information for people only: they do not open or close access to the materials.",
+      "listed": "Show on the course's public page",
+      "listedHelp": "The edition appears under “Upcoming editions” while the course is published and it has not started yet. It needs a first day.",
+      "default": "Default",
+      "public": "On the public site",
+      "noDates": "No dates",
+      "learners": "{count, plural, =0 {No learners} one {# learner} other {# learners}}",
+      "own": "{count, plural, one {# material only for this edition} other {# materials only for this edition}}",
+      "hidden": "{count, plural, one {# course material hidden} other {# course materials hidden}}",
+      "makeDefault": "Make default",
+      "madeDefault": "Default edition changed.",
+      "viewContent": "See this edition's content",
+      "viewLearners": "See the learners",
+      "delete": "Delete edition",
+      "deleteTitle": "Delete the edition “{name}”?",
+      "deleteText": "The materials only this edition shows, and the files uploaded for them, are deleted too. This cannot be undone.",
+      "created": "Edition created.",
+      "deleted": "Edition deleted.",
+      "hasLearners": "This edition has learners. Move them to another edition, or remove them from the course, before deleting it.",
+      "lastOne": "A course always keeps at least one edition."
     },
     "learners": {
       "empty": "Nobody is enrolled in this course yet.",
@@ -446,7 +500,13 @@
       "removeTitle": "Remove {name} from this course?",
       "removeText": "The person loses access to the course materials. Their account stays.",
       "confirmRemove": "Yes, remove",
-      "removed": "Person removed from the course."
+      "removed": "Person removed from the course.",
+      "edition": "Edition",
+      "editionHelp": "The people you choose join this edition.",
+      "emptyEdition": "Nobody in this edition yet.",
+      "editionCount": "{count, plural, =0 {no learners} one {# learner} other {# learners}}",
+      "moveTo": "Move to another edition",
+      "moved": "Person moved to “{name}”."
     },
     "users": {
       "title": "Users",
@@ -533,7 +593,9 @@
       "removeText": "The person loses access at once. To come back, they will have to be invited again.",
       "removed": "Account deleted.",
       "removeSelf": "You cannot delete your own account.",
-      "you": "This is your account."
+      "you": "This is your account.",
+      "edition": "Edition",
+      "editionOf": "Edition of the course {course}"
     },
     "requests": {
       "title": "Information requests",
@@ -713,7 +775,8 @@
     "onlyIn": {
       "pt": "This text is only available in Portuguese.",
       "en": "This text is only available in English."
-    }
+    },
+    "upcoming": "Upcoming editions"
   },
   "Request": {
     "formLabel": "Information request",

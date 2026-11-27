@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { updateProfile } from "@/features/account/operations";
+import { chosenEditions, editionField } from "@/features/enrollments/fields";
 import { inviteFromRequest } from "@/features/requests/operations";
 import { redirect } from "@/i18n/navigation";
 import type { ActionState } from "@/lib/actions/state";
@@ -40,6 +41,8 @@ export async function invitePeople(
 ): Promise<InviteState> {
   const { user, supabase, t, tv } = await trainerAction(formData);
   const courseIds = textList(formData, "course_ids");
+  // Which edition of each course, where the form offered a choice.
+  const editionIds = chosenEditions(formData, courseIds);
   const mode = text(formData, "mode") === "link" ? "link" : "email";
   const values: Record<string, string> = {
     emails: text(formData, "emails"),
@@ -48,6 +51,12 @@ export async function invitePeople(
     role: text(formData, "role"),
     mode,
     course_ids: courseIds.join(","),
+    ...Object.fromEntries(
+      Object.entries(editionIds).map(([courseId, editionId]) => [
+        editionField(courseId),
+        editionId,
+      ]),
+    ),
   };
 
   // From a request: the name, address and language are the ones the person gave.
@@ -56,6 +65,7 @@ export async function invitePeople(
     const result = await inviteFromRequest(createSupabaseAdminClient(), supabase, {
       requestId,
       courseIds: courseIds.filter(isUuid),
+      editionIds,
       mode,
       invitedBy: user.id,
     });
@@ -89,6 +99,7 @@ export async function invitePeople(
 
   const results = await inviteUsers(createSupabaseAdminClient(), supabase, {
     ...parsed.data,
+    editionIds,
     invitedBy: user.id,
   });
   refresh();

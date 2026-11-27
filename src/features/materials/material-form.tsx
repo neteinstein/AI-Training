@@ -28,6 +28,9 @@ export function MaterialForm({
   moduleId,
   material,
   currentFile,
+  editions = [],
+  editionId = null,
+  viewEdition = null,
 }: {
   courseId: string;
   kind: MaterialKind;
@@ -36,6 +39,12 @@ export function MaterialForm({
   /** For editing. */
   material?: EditableMaterial;
   currentFile?: { name: string; details: string; downloadHref: string };
+  /** The course's editions, each already written out as one line. */
+  editions?: Array<{ id: string; label: string }>;
+  /** For a new material: the edition it is meant for, when it is not for all of them. */
+  editionId?: string | null;
+  /** The edition whose view of the content the form was opened from, to go back to it. */
+  viewEdition?: string | null;
 }) {
   const t = useTranslations("Trainer");
   const locale = useLocale();
@@ -45,10 +54,13 @@ export function MaterialForm({
   const errors = state.fieldErrors;
   const languages = { pt: t("common.portuguese"), en: t("common.english") };
   const backHref = material
-    ? routes.trainerCourseModule(courseId, material.moduleId)
+    ? routes.trainerCourseModule(courseId, material.moduleId, viewEdition)
     : moduleId
-      ? routes.trainerCourseModule(courseId, moduleId)
-      : routes.trainerCourseContent(courseId);
+      ? routes.trainerCourseModule(courseId, moduleId, viewEdition)
+      : routes.trainerCourseContent(courseId, viewEdition);
+  const shownTo = material ? material.editionId : editionId;
+  // Only worth asking when there is a choice, or when the material already belongs to one.
+  const asksEdition = editions.length > 1 || Boolean(shownTo);
 
   /** A file's name, without its extension, is a fair first title. */
   function proposeTitle(fileName: string) {
@@ -71,6 +83,7 @@ export function MaterialForm({
       ) : (
         <input type="hidden" name="module_id" value={moduleId ?? ""} />
       )}
+      {viewEdition ? <input type="hidden" name="view" value={viewEdition} /> : null}
       <FormMessage state={state} />
 
       {kind === "file" ? (
@@ -163,6 +176,26 @@ export function MaterialForm({
           <option value="pt">{languages.pt}</option>
           <option value="en">{languages.en}</option>
         </SelectField>
+      )}
+
+      {asksEdition ? (
+        <SelectField
+          label={t("content.shownTo")}
+          name="edition_id"
+          help={t("content.shownToHelp")}
+          defaultValue={values?.edition_id ?? shownTo ?? ""}
+          error={errors?.edition_id}
+          fieldClassName="max-w-md"
+        >
+          <option value="">{t("content.allEditions")}</option>
+          {editions.map((edition) => (
+            <option key={edition.id} value={edition.id}>
+              {edition.label}
+            </option>
+          ))}
+        </SelectField>
+      ) : (
+        <input type="hidden" name="edition_id" value="" />
       )}
 
       <div className="flex flex-col">

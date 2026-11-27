@@ -1,6 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { admin, demoCourses, demoMaterials, demoUsers, signIn, signInAsTrainer } from "./helpers";
+import {
+  admin,
+  demoCourses,
+  demoEditions,
+  demoMaterials,
+  demoModules,
+  demoUsers,
+  signIn,
+  signInAsTrainer,
+} from "./helpers";
 
 /**
  * Checks that apply to every screen: the automated accessibility rules (WCAG 2.1 A and AA,
@@ -48,6 +57,13 @@ const trainerPages = [
   `${trainerCourse}/content/materials/${demoMaterials.slidesPdf}`,
   `${trainerCourse}/content/materials/${demoMaterials.video}`,
   `${trainerCourse}/learners`,
+  `${trainerCourse}/editions`,
+  `${trainerCourse}/editions/new`,
+  `${trainerCourse}/editions/${demoEditions.classroomInPerson}`,
+  // One edition's view of the content, and a trainer's preview of what it gets.
+  `${trainerCourse}/content?edition=${demoEditions.classroomInPerson}`,
+  `${trainerCourse}/content/materials/new?module=${demoModules.classroomIntro}&kind=page&edition=${demoEditions.classroomInPerson}`,
+  `${learnCourse}?edition=${demoEditions.classroomInPerson}`,
   "/pt/trainer/areas",
   "/pt/trainer/areas/new",
   "/pt/trainer/levels",

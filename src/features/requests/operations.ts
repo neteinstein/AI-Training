@@ -111,7 +111,14 @@ export async function deleteRequest(trainer: Client, id: string): Promise<boolea
 export async function inviteFromRequest(
   admin: Client,
   trainer: Client,
-  input: { requestId: string; courseIds: string[]; mode: InviteMode; invitedBy: string },
+  input: {
+    requestId: string;
+    courseIds: string[];
+    /** The edition to join, per course. A course without one here means its default edition. */
+    editionIds?: Record<string, string>;
+    mode: InviteMode;
+    invitedBy: string;
+  },
 ): Promise<InviteResult | null> {
   if (!isUuid(input.requestId)) return null;
   const { data: request } = await trainer
@@ -127,6 +134,7 @@ export async function inviteFromRequest(
     locale: request.locale === "en" ? "en" : "pt",
     role: "learner",
     courseIds: input.courseIds,
+    editionIds: input.editionIds,
     mode: input.mode,
     invitedBy: input.invitedBy,
   });

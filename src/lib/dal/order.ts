@@ -13,3 +13,18 @@ export function bySortOrder<T extends { sort_order: number; created_at: string; 
     (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
   );
 }
+
+/**
+ * Display order for a course's editions: those without dates first (the general one), then by
+ * first day, and by age when two start together.
+ */
+export function byEditionOrder<
+  T extends { starts_on: string | null; created_at: string; id: string },
+>(a: T, b: T): number {
+  if (a.starts_on !== b.starts_on) {
+    if (a.starts_on === null) return -1;
+    if (b.starts_on === null) return 1;
+    return a.starts_on < b.starts_on ? -1 : 1;
+  }
+  return a.created_at.localeCompare(b.created_at) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+}

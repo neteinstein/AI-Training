@@ -16,12 +16,13 @@ const expect = (condition: boolean, good: string, bad: string) =>
   report(condition ? "ok" : "problem", condition ? good : bad);
 
 const BUCKET = "course-materials";
-const PUBLIC_TABLES = ["areas", "levels", "courses"] as const;
+const PUBLIC_TABLES = ["areas", "levels", "courses", "editions"] as const;
 const PRIVATE_TABLES = [
   "profiles",
   "enrollments",
   "modules",
   "materials",
+  "edition_hidden_materials",
   "info_requests",
   "storage_deletions",
 ] as const;
@@ -110,6 +111,12 @@ async function main() {
     (visibleCourses ?? []).every((course) => course.status === "published"),
     "Visitors only see published courses.",
     "Visitors can see courses that are not published: the access rules are not in place.",
+  );
+  const { data: visibleEditions } = await visitor.from("editions").select("is_listed");
+  expect(
+    (visibleEditions ?? []).every((edition) => edition.is_listed),
+    "Visitors only see the editions marked as public.",
+    "Visitors can see editions that are not public: the access rules are not in place.",
   );
   for (const table of PRIVATE_TABLES) {
     const { data, error } = await visitor.from(table).select("*").limit(1);

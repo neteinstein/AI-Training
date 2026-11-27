@@ -20,6 +20,7 @@ import {
   admin,
   createCatalogue,
   createUser,
+  defaultEdition,
   deleteCatalogue,
   deleteUsers,
   enroll,
@@ -153,6 +154,16 @@ describe("catalogue lists", () => {
       status: "draft",
       title: `Curso draft ${runId}`,
       areaName: `Área ${runId}`,
+      // Every course has at least the edition it was created with.
+      editions: [
+        {
+          id: await defaultEdition(catalogue.courses.draft),
+          name: "Edição geral",
+          startsOn: null,
+          endsOn: null,
+          isDefault: true,
+        },
+      ],
     });
   });
 

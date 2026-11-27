@@ -4,6 +4,7 @@ import type { ZodType } from "zod";
 import { passwordChangeSchema } from "@/features/account/schemas";
 import { areaSchema, levelSchema } from "@/features/catalog/schemas";
 import { courseSchema } from "@/features/courses/schemas";
+import { editionSchema } from "@/features/editions/schemas";
 import {
   fileMaterialSchema,
   isEditableKind,
@@ -37,6 +38,18 @@ describe("every validation message exists in both languages", () => {
       [
         courseSchema,
         { slug: "A b", area_id: "", level_id: "x", duration_hours: "muito", starts_on: "ontem" },
+      ],
+      [editionSchema, { name_pt: "", starts_on: "x", ends_on: "2027-01-01", is_listed: true }],
+      [editionSchema, { name_pt: "a", name_en: "b", starts_on: "", ends_on: "", is_listed: true }],
+      [
+        editionSchema,
+        {
+          name_pt: "a",
+          name_en: "b",
+          starts_on: "2027-02-02",
+          ends_on: "2027-02-01",
+          is_listed: 0,
+        },
       ],
       [materialSchemas.video, { url: "https://example.org", is_published: true }],
       [materialSchemas.embed, { url: "https://example.org", is_published: true }],
@@ -166,6 +179,49 @@ describe("courses", () => {
   });
 });
 
+describe("editions", () => {
+  const edition = { name_pt: " Turma ", name_en: "Class", starts_on: "", ends_on: "" };
+
+  test("the name is needed in both languages; dates are optional", () => {
+    expect(editionSchema.parse({ ...edition, is_listed: false })).toEqual({
+      name: { pt: "Turma", en: "Class" },
+      startsOn: null,
+      endsOn: null,
+      isListed: false,
+    });
+    expect(problems(editionSchema, { ...edition, name_en: " ", is_listed: false })).toEqual({
+      name_en: "Preencha este campo.",
+    });
+  });
+
+  test("dates are real days, in order, and there when the edition is public", () => {
+    const check = (values: Record<string, unknown>, locale: "pt" | "en" = "pt") =>
+      problems(editionSchema, { ...edition, is_listed: false, ...values }, locale);
+
+    expect(check({ starts_on: "2027-02-30" })).toEqual({
+      starts_on: "Indique uma data válida.",
+    });
+    expect(check({ ends_on: "2027-03-01" })).toEqual({
+      starts_on: "Indique o primeiro dia, ou apague o último.",
+    });
+    expect(check({ is_listed: true })).toEqual({
+      starts_on: "Indique o primeiro dia para mostrar a edição no site público.",
+    });
+    expect(check({ starts_on: "2027-03-10", ends_on: "2027-03-01" }, "en")).toEqual({
+      ends_on: "The last day cannot be before the first.",
+    });
+    // One day is a fine edition.
+    expect(
+      editionSchema.parse({
+        ...edition,
+        starts_on: "2027-03-01",
+        ends_on: "2027-03-01",
+        is_listed: true,
+      }),
+    ).toMatchObject({ startsOn: "2027-03-01", endsOn: "2027-03-01", isListed: true });
+  });
+});
+
 describe("modules and materials", () => {
   const details = {
     title_pt: "Diapositivos",
@@ -173,6 +229,7 @@ describe("modules and materials", () => {
     description_pt: "",
     description_en: "",
     content_language: "",
+    edition_id: "",
     is_published: true,
   };
 
@@ -200,6 +257,7 @@ describe("modules and materials", () => {
       title: { pt: "Diapositivos", en: "" },
       description: { pt: "", en: "" },
       contentLanguage: null,
+      editionId: null,
       isPublished: true,
     });
     expect(

@@ -1,7 +1,7 @@
 "use client";
 
 import { LoaderCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useActionState, useId, useState } from "react";
 import { FormMessage } from "@/components/forms/form-message";
 import { LocaleField } from "@/components/forms/locale-field";
@@ -13,6 +13,7 @@ import { CopyField } from "@/components/trainer/copy-field";
 import { actionLooks } from "@/components/trainer/looks";
 import { useNoticeAction } from "@/components/trainer/use-notice-action";
 import { locales } from "@/config/site";
+import { editionLabel } from "@/features/editions/label";
 import { saveUserCourses } from "@/features/enrollments/actions";
 import { idleState } from "@/lib/actions/state";
 import type { CourseOption } from "@/lib/dal/trainer-queries";
@@ -140,14 +141,18 @@ export function UserCoursesForm({
   userId,
   courses,
   selected,
+  selectedEditions,
   isTrainer,
 }: {
   userId: string;
   courses: CourseOption[];
   selected: string[];
+  /** The edition the person is in, by course id. */
+  selectedEditions: Record<string, string>;
   isTrainer: boolean;
 }) {
   const t = useTranslations("Trainer");
+  const format = useFormatter();
   const [formAction] = useNoticeAction(saveUserCourses);
   const statusLabels: Record<CourseStatus, string> = {
     draft: t("courses.status.draft"),
@@ -161,13 +166,19 @@ export function UserCoursesForm({
       <input type="hidden" name="user_id" value={userId} />
       <CourseChecklist
         // Shown again from what the database holds after each save.
-        key={selected.join(",")}
+        key={`${selected.join(",")}|${Object.values(selectedEditions).join(",")}`}
         legend={t("users.coursesOf")}
         hideLegend
         help={isTrainer ? t("users.trainerCourses") : undefined}
         courses={courses}
         selected={selected}
+        selectedEditions={selectedEditions}
         statusLabels={statusLabels}
+        editionLabels={{
+          label: t("users.edition"),
+          of: (course) => t("users.editionOf", { course }),
+          option: (edition) => editionLabel(edition, format),
+        }}
         emptyText={t("users.noCourses")}
       />
       {courses.length > 0 ? (

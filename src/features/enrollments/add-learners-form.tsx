@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { controlClass } from "@/components/forms/field";
 import { LocaleField } from "@/components/forms/locale-field";
+import { SelectField } from "@/components/forms/select-field";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Chip } from "@/components/trainer/chips";
 import { useNoticeAction } from "@/components/trainer/use-notice-action";
@@ -11,8 +12,20 @@ import type { Person } from "@/lib/dal/trainer-queries";
 import { cn } from "@/lib/utils";
 import { addLearners } from "./actions";
 
-/** Ticks people who already have an account and adds them to the course in one go. */
-export function AddLearnersForm({ courseId, people }: { courseId: string; people: Person[] }) {
+/**
+ * Ticks people who already have an account and adds them to the course in one go. When the
+ * course has several editions, it also asks which one they join.
+ */
+export function AddLearnersForm({
+  courseId,
+  people,
+  editions,
+}: {
+  courseId: string;
+  people: Person[];
+  /** The course's editions, each already written out as one line. */
+  editions: Array<{ id: string; label: string; isDefault: boolean }>;
+}) {
   const t = useTranslations("Trainer.learners");
   const id = useId();
   const [formAction] = useNoticeAction(addLearners);
@@ -70,6 +83,22 @@ export function AddLearnersForm({ courseId, people }: { courseId: string; people
         ))}
         {anyMatch ? null : <li className="text-muted-foreground px-4 py-3">{t("noMatch")}</li>}
       </ul>
+
+      {editions.length > 1 ? (
+        <SelectField
+          label={t("edition")}
+          name="edition_id"
+          help={t("editionHelp")}
+          defaultValue={(editions.find((edition) => edition.isDefault) ?? editions[0]).id}
+          fieldClassName="max-w-md"
+        >
+          {editions.map((edition) => (
+            <option key={edition.id} value={edition.id}>
+              {edition.label}
+            </option>
+          ))}
+        </SelectField>
+      ) : null}
 
       <SubmitButton size="sm" className="self-start max-sm:w-full">
         {t("addSelected")}

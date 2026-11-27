@@ -2,12 +2,19 @@ import type { Locale } from "@/config/site";
 import { parseEmbed, parseExternalLink } from "@/lib/embeds/parse";
 import { isUuid } from "@/lib/ids";
 import { localized, pickLocalized } from "@/lib/i18n/localized";
-import { toAreaSummary, toCourseCard, toLevelSummaries } from "./catalog-queries";
-import { bySortOrder } from "./order";
+import {
+  EDITION_SUMMARY,
+  toAreaSummary,
+  toCourseCard,
+  toEditionSummary,
+  toLevelSummaries,
+} from "./catalog-queries";
+import { byEditionOrder, bySortOrder } from "./order";
 import type {
   Client,
   CourseCard,
   CourseContent,
+  EditionSummary,
   MaterialItem,
   MaterialPage,
   ModuleWithMaterials,
@@ -64,6 +71,7 @@ export function toMaterialItem(row: MaterialRow, locale: Locale): MaterialItem {
             sizeBytes: row.size_bytes ?? 0,
           }
         : null,
+    editionId: row.edition_id,
   };
 }
 
@@ -89,15 +97,26 @@ export async function fetchMyCourses(
   return toCourseCards(client, rows, locale);
 }
 
+/** What a trainer may ask to look at, in place of the whole course. */
+export type Preview = {
+  /** Show the course as the learners of this edition see it, plus what is still hidden. */
+  editionId?: string | null;
+};
+
 /**
  * A course with its modules and materials, as the given user may see it, or null when they
- * may not open it. Trainers see every course and every material, hidden ones included.
+ * may not open it.
+ *
+ * A learner gets what their edition shows: Row Level Security decides, this function only
+ * asks. A trainer gets every material, hidden ones included, or with `preview.editionId` what
+ * falls to that edition: the course's materials it does not hide, and its own.
  */
 export async function fetchCourseContent(
   client: Client,
   viewer: { id: string; role: "learner" | "trainer" },
   slug: string,
   locale: Locale,
+  preview: Preview = {},
 ): Promise<CourseContent | null> {
   const { data: courseRow, error } = await client
     .from("courses")
@@ -107,18 +126,47 @@ export async function fetchCourseContent(
   if (error) throw new Error(`course: ${error.message}`);
   if (!courseRow) return null;
 
+  let edition: EditionSummary | null = null;
+  let editions: EditionSummary[] = [];
+  /** Set when a trainer previews one edition: what does not fall to it is left out. */
+  let scope: { editionId: string; hidden: Set<string> } | null = null;
+
   if (viewer.role !== "trainer") {
     // A published course is public, so being able to read its row proves nothing: the
     // learner area is only for people enrolled in it.
     if (courseRow.status === "draft") return null;
     const { data: enrollment, error: enrollmentError } = await client
       .from("enrollments")
-      .select("course_id")
+      .select("course_id, edition_id")
       .eq("user_id", viewer.id)
       .eq("course_id", courseRow.id)
       .maybeSingle();
     if (enrollmentError) throw new Error(`enrollment: ${enrollmentError.message}`);
     if (!enrollment) return null;
+
+    const { data: editionRow, error: editionError } = await client
+      .from("editions")
+      .select(EDITION_SUMMARY)
+      .eq("id", enrollment.edition_id)
+      .maybeSingle();
+    if (editionError) throw new Error(`edition: ${editionError.message}`);
+    edition = editionRow ? toEditionSummary(editionRow, locale) : null;
+  } else {
+    const { data: editionRows, error: editionsError } = await client
+      .from("editions")
+      .select(`${EDITION_SUMMARY}, created_at, edition_hidden_materials(material_id)`)
+      .eq("course_id", courseRow.id);
+    if (editionsError) throw new Error(`editions: ${editionsError.message}`);
+    const ordered = [...editionRows].sort(byEditionOrder);
+    editions = ordered.map((row) => toEditionSummary(row, locale));
+    const chosen = ordered.find((row) => row.id === preview.editionId);
+    if (chosen) {
+      edition = toEditionSummary(chosen, locale);
+      scope = {
+        editionId: chosen.id,
+        hidden: new Set(chosen.edition_hidden_materials.map((row) => row.material_id)),
+      };
+    }
   }
 
   const [course] = await toCourseCards(client, [courseRow], locale);
@@ -130,14 +178,23 @@ export async function fetchCourseContent(
     .eq("course_id", courseRow.id);
   if (modulesError) throw new Error(`modules: ${modulesError.message}`);
 
+  // The same rule as the database's own (private.edition_materials), without "published":
+  // a trainer also sees what is still hidden from everyone, marked as such.
+  const inScope = (row: MaterialRow) =>
+    !scope ||
+    ((row.edition_id === null || row.edition_id === scope.editionId) && !scope.hidden.has(row.id));
+
   const modules: ModuleWithMaterials[] = [...moduleRows].sort(bySortOrder).map((module) => ({
     id: module.id,
     title: pickLocalized(module, "title", locale),
     description: pickLocalized(module, "description", locale),
-    materials: [...module.materials].sort(bySortOrder).map((row) => toMaterialItem(row, locale)),
+    materials: [...module.materials]
+      .filter(inScope)
+      .sort(bySortOrder)
+      .map((row) => toMaterialItem(row, locale)),
   }));
 
-  return { course, modules };
+  return { course, modules, edition, editions };
 }
 
 /** One material with its course, module and neighbours, or null when it is out of reach. */
@@ -147,8 +204,9 @@ export async function fetchMaterialPage(
   slug: string,
   materialId: string,
   locale: Locale,
+  preview: Preview = {},
 ): Promise<MaterialPage | null> {
-  const content = await fetchCourseContent(client, viewer, slug, locale);
+  const content = await fetchCourseContent(client, viewer, slug, locale, preview);
   if (!content) return null;
 
   // Reading order across the whole course, so "next" can cross into the following module.
@@ -178,6 +236,7 @@ export async function fetchMaterialPage(
 
   return {
     course: content.course,
+    edition: content.edition,
     module: {
       id: module.id,
       title: module.title,

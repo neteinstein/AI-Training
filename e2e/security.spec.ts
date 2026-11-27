@@ -92,6 +92,8 @@ test.describe("security headers", () => {
       "/pt/trainer/courses",
       course,
       `${course}/content`,
+      `${course}/editions`,
+      `${course}/editions/new`,
       `${course}/learners`,
       "/pt/trainer/areas/new",
       "/pt/trainer/users/invite",

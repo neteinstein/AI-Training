@@ -241,6 +241,11 @@ export type MaterialDetails = {
   contentLanguage: Locale | null;
   /** Learners only see published materials. */
   isPublished: boolean;
+  /**
+   * The one edition that shows the material; null when every edition of the course does.
+   * Left out, a new material is for every edition and an existing one stays as it is.
+   */
+  editionId?: string | null;
 };
 
 export type MaterialInput =
@@ -259,6 +264,7 @@ function detailColumns(details: MaterialDetails) {
     ...describeColumns(details.description),
     content_language: details.contentLanguage,
     is_published: details.isPublished,
+    edition_id: details.editionId,
   };
 }
 

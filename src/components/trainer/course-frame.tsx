@@ -23,13 +23,16 @@ export async function CourseFrame({
   tab,
   trail = [],
   narrow,
+  previewEdition,
   children,
 }: {
   courseId: string;
-  tab: "details" | "content" | "learners";
+  tab: "details" | "content" | "editions" | "learners";
   /** Steps after the course in the breadcrumb, e.g. the module being edited. */
   trail?: Crumb[];
   narrow?: boolean;
+  /** The edition being looked at: "view as learner" then shows what that edition sees. */
+  previewEdition?: string | null;
   children: ReactNode;
 }) {
   const locale = await getLocale();
@@ -48,6 +51,7 @@ export async function CourseFrame({
   const tabHref = {
     details: routes.trainerCourse(course.id),
     content: routes.trainerCourseContent(course.id),
+    editions: routes.trainerCourseEditions(course.id),
     learners: routes.trainerCourseLearners(course.id),
   };
 
@@ -66,7 +70,7 @@ export async function CourseFrame({
               {t("courses.viewPublic")}
             </Link>
           ) : null}
-          <Link href={routes.learnCourse(course.slug)} className={barLink}>
+          <Link href={routes.learnCourse(course.slug, previewEdition)} className={barLink}>
             <Eye aria-hidden="true" className="size-[18px]" />
             {t("courses.viewAsLearner")}
           </Link>
@@ -98,6 +102,11 @@ export async function CourseFrame({
           tabs={[
             { href: tabHref.details, label: t("courses.tabs.details"), current: tab === "details" },
             { href: tabHref.content, label: t("courses.tabs.content"), current: tab === "content" },
+            {
+              href: tabHref.editions,
+              label: t("courses.tabs.editions"),
+              current: tab === "editions",
+            },
             {
               href: tabHref.learners,
               label: t("courses.tabs.learners", { count: course.learnerCount }),

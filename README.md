@@ -187,6 +187,13 @@ A course is a **draft** (trainers only), **published** (public site and enrolled
 **unlisted** (hidden from the public site; enrolled learners keep access). A course with learners
 cannot be deleted, only unlisted.
 
+### Editions of a course
+
+A course can run more than once. Each **edition** has its own learners and, if you like, dates.
+Every edition shows the course's materials; a trainer can hide some of them in one edition and
+add materials that only that edition gets. Editions marked as public are listed on the course's
+page as upcoming dates.
+
 ## 🔐 Built to be trusted
 
 - **The database decides who sees what.** Rules live in Postgres, so a forgotten check in a page

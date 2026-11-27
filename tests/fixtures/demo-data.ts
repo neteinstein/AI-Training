@@ -19,6 +19,12 @@ export const demoCourses = {
   },
 } as const;
 
+/** Besides the edition every course is created with. */
+export const demoEditions = {
+  /** Of the classroom course: dated, public, with a page of its own and one material hidden. */
+  classroomInPerson: "ed100000-0000-4000-8000-000000000001",
+} as const;
+
 export const demoModules = {
   classroomIntro: "d1000000-0000-4000-8000-000000000001",
 } as const;
@@ -29,6 +35,8 @@ export const demoMaterials = {
   link: "e1000000-0000-4000-8000-000000000003",
   promptGuide: "e1000000-0000-4000-8000-000000000004",
   hiddenNotes: "e1000000-0000-4000-8000-000000000005",
+  /** Only the in-person class of the classroom course has it. */
+  timetable: "e1000000-0000-4000-8000-000000000007",
 } as const;
 
 export const demoUsers = {

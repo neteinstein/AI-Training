@@ -51,6 +51,7 @@ describe("server actions", () => {
     "features/catalog/actions.ts": "trainer",
     "features/courses/actions.ts": "trainer",
     "features/materials/actions.ts": "trainer",
+    "features/editions/actions.ts": "trainer",
     "features/enrollments/actions.ts": "trainer",
     "features/users/actions.ts": "trainer",
     "features/requests/trainer-actions.ts": "trainer",

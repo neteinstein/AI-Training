@@ -5,6 +5,7 @@ import {
   admin,
   deleteUserByEmail,
   demoCourses,
+  demoEditions,
   demoMaterials,
   demoUsers,
   latestEmailTo,
@@ -127,6 +128,7 @@ for (const scheme of ["light", "dark"] as const) {
     test("back-office", async ({ page }, info) => {
       test.slow();
       await signInAsTrainer(page);
+      const inPerson = demoEditions.classroomInPerson;
       const pages = {
         "office-1-dashboard": "/pt/trainer",
         "office-2-courses": "/pt/trainer/courses",
@@ -137,10 +139,26 @@ for (const scheme of ["light", "dark"] as const) {
         "office-7-area-form": "/pt/trainer/areas/new",
         "office-8-users": "/pt/trainer/users",
         "office-9-invite": "/pt/trainer/users/invite",
+        "office-13-editions": `${trainerCourse}/editions`,
+        "office-14-edition-form": `${trainerCourse}/editions/${inPerson}`,
+        "office-15-edition-content": `${trainerCourse}/content?edition=${inPerson}`,
+        // What a trainer sees when looking at the course as one edition's learners do.
+        "office-16-edition-preview": `${learnCourse}?edition=${inPerson}`,
       };
-      for (const [name, path] of Object.entries(pages)) {
-        await open(page, path);
-        await shootPageOnTallScreen(page, info.project.name, name);
+      // For the pictures only, the demo course's second edition gets a learner too, so that
+      // the list of learners shows both editions with someone in them.
+      const guest = { user_id: demoUsers.john.id, course_id: classroom.id };
+      const joined = await admin()
+        .from("enrollments")
+        .upsert({ ...guest, edition_id: inPerson }, { onConflict: "user_id,course_id" });
+      expect(joined.error).toBeNull();
+      try {
+        for (const [name, path] of Object.entries(pages)) {
+          await open(page, path);
+          await shootPageOnTallScreen(page, info.project.name, name);
+        }
+      } finally {
+        await admin().from("enrollments").delete().match(guest);
       }
 
       // A menu and the question before deleting are drawn over the page, on the screen.

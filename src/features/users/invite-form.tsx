@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { FormMessage } from "@/components/forms/form-message";
 import { LocaleField } from "@/components/forms/locale-field";
@@ -12,6 +12,8 @@ import { Chip } from "@/components/trainer/chips";
 import { CopyField } from "@/components/trainer/copy-field";
 import { buttonClass } from "@/components/ui/button";
 import { locales } from "@/config/site";
+import { editionLabel } from "@/features/editions/label";
+import { editionField } from "@/features/enrollments/fields";
 import { Link } from "@/i18n/navigation";
 import type { CourseOption } from "@/lib/dal/trainer-queries";
 import type { CourseStatus } from "@/lib/dal/types";
@@ -41,8 +43,15 @@ export function InviteForm({
 }) {
   const t = useTranslations("Trainer");
   const tLanguages = useTranslations("Languages");
+  const format = useFormatter();
   const [state, formAction] = useActionState(invitePeople, start);
   const values = state.values;
+  // The editions last sent, so the form comes back as it was.
+  const sentEditions: Record<string, string> = {};
+  for (const course of courses) {
+    const sent = values?.[editionField(course.id)];
+    if (sent) sentEditions[course.id] = sent;
+  }
   const errors = state.fieldErrors;
   const statusLabels: Record<CourseStatus, string> = {
     draft: t("courses.status.draft"),
@@ -175,13 +184,19 @@ export function InviteForm({
           )}
 
           <CourseChecklist
-            // The ticks follow what was last sent.
-            key={values?.course_ids ?? "start"}
+            // The ticks and the editions follow what was last sent.
+            key={`${values?.course_ids ?? "start"}|${Object.values(sentEditions).join(",")}`}
             legend={t("users.courses")}
             help={t("users.coursesHelp")}
             courses={courses}
             selected={values ? values.course_ids.split(",") : preselected}
+            selectedEditions={sentEditions}
             statusLabels={statusLabels}
+            editionLabels={{
+              label: t("users.edition"),
+              of: (course) => t("users.editionOf", { course }),
+              option: (edition) => editionLabel(edition, format),
+            }}
             emptyText={t("users.noCourses")}
           />
 

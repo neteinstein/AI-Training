@@ -99,3 +99,24 @@ values
    E'## Estrutura sugerida\n\n| Momento | Tempo | Atividade |\n| --- | --- | --- |\n| Abertura | 10 min | Pergunta de partida e levantamento de ideias |\n| Desenvolvimento | 30 min | Trabalho em pares com guião |\n| Fecho | 10 min | Síntese e bilhete de saída |',
    E'## Suggested structure\n\n| Stage | Time | Activity |\n| --- | --- | --- |\n| Opening | 10 min | Starter question and gathering ideas |\n| Main part | 30 min | Pair work with a guide |\n| Closing | 10 min | Summary and exit ticket |',
    10);
+
+-- Every course above already has the edition it was created with ("Edição geral"). The first
+-- course gets a second one: a dated class, shown on its public page. Its dates move with the
+-- day the database is built, so it is always still to come.
+insert into public.editions (id, course_id, name_pt, name_en, starts_on, ends_on, is_listed)
+values
+  ('ed100000-0000-4000-8000-000000000001', 'c1000000-0000-4000-8000-000000000001',
+   'Turma presencial', 'In-person class', current_date + 42, current_date + 98, true);
+
+-- That class has a page of its own, and does not get the recommended reading.
+insert into public.materials
+  (id, module_id, kind, title_pt, title_en, is_published, body_pt, body_en, sort_order, edition_id)
+values
+  ('e1000000-0000-4000-8000-000000000007', 'd1000000-0000-4000-8000-000000000001', 'page',
+   'Horário das sessões', 'Session timetable', true,
+   E'As sessões presenciais decorrem às terças-feiras, das 18h00 às 20h00, na sala 2.',
+   E'The in-person sessions take place on Tuesdays, from 6 pm to 8 pm, in room 2.',
+   60, 'ed100000-0000-4000-8000-000000000001');
+
+insert into public.edition_hidden_materials (edition_id, material_id)
+values ('ed100000-0000-4000-8000-000000000001', 'e1000000-0000-4000-8000-000000000003');

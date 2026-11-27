@@ -1,7 +1,15 @@
-import { ChevronDown, ChevronRight, Download, ExternalLink, EyeOff, Pencil } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Download,
+  ExternalLink,
+  EyeOff,
+  Pencil,
+  UsersRound,
+} from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { AreaChip } from "@/components/catalog/area-chip";
 import { CourseFacts } from "@/components/catalog/course-card";
 import { CourseWhenWhere } from "@/components/catalog/course-when-where";
@@ -13,17 +21,23 @@ import { Link } from "@/i18n/navigation";
 import { fetchCourseContent } from "@/lib/dal/learner-queries";
 import { requireUser } from "@/lib/dal/session";
 import type { MaterialItem } from "@/lib/dal/types";
+import { formatDays } from "@/lib/dates";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 
 type Props = PageProps<"/[locale]/learn/courses/[slug]">;
 
-async function loadCourse(params: Props["params"]) {
+/** `asked` is the page's query: a trainer may name the edition whose view they want. */
+async function loadCourse(params: Props["params"], asked?: Props["searchParams"]) {
   const { slug } = await params;
   const locale = await getLocale();
   const user = await requireUser(locale);
   const supabase = await createSupabaseServerClient();
-  const content = await fetchCourseContent(supabase, user, slug, locale);
+  const edition = (await asked)?.edition;
+  const content = await fetchCourseContent(supabase, user, slug, locale, {
+    editionId: typeof edition === "string" ? edition : null,
+  });
   return { slug, locale, user, content };
 }
 
@@ -32,13 +46,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: content?.course.title };
 }
 
-export default async function LearnCoursePage({ params }: Props) {
-  const { slug, locale, user, content } = await loadCourse(params);
+export default async function LearnCoursePage({ params, searchParams }: Props) {
+  const { slug, locale, user, content } = await loadCourse(params, searchParams);
   if (!content) notFound();
 
   const t = await getTranslations("Learn");
   const tm = await getTranslations("Materials");
-  const { course, modules } = content;
+  const format = await getFormatter();
+  const { course, modules, edition, editions } = content;
+  const isTrainer = user.role === "trainer";
+  // A trainer's links keep the edition being previewed; a learner's never name one.
+  const previewEdition = isTrainer ? edition?.id : undefined;
+  const editionDays = edition ? formatDays(format, edition.startsOn, edition.endsOn) : null;
+  const editionName = (id: string) => editions.find((entry) => entry.id === id)?.name ?? "";
   const labels = {
     kind: (kind: MaterialItem["kind"]) => tm(`kind.${kind}`),
     provider: (provider: NonNullable<MaterialItem["embed"]>["provider"]) =>
@@ -56,6 +76,19 @@ export default async function LearnCoursePage({ params }: Props) {
           <h1 className="font-heading text-[1.75rem] leading-[1.2] sm:text-4xl">{course.title}</h1>
           <CourseWhenWhere course={course} />
           <CourseFacts course={course} />
+          {edition ? (
+            <p className="text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
+              <UsersRound aria-hidden="true" className="size-[18px] flex-none" />
+              <span className="sr-only">{t("edition")}: </span>
+              <span className="text-foreground font-semibold break-words">{edition.name}</span>
+              {editionDays ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{editionDays}</span>
+                </>
+              ) : null}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -63,16 +96,41 @@ export default async function LearnCoursePage({ params }: Props) {
         id="content"
         className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-3 px-4 pt-5 pb-8"
       >
-        {user.role === "trainer" ? (
-          <div className="bg-highlight-tint mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-2xl px-4 py-3 text-[0.9375rem]">
-            <p>{t("previewNote")}</p>
-            <Link
-              href={routes.trainerCourseContent(course.id)}
-              className="text-highlight-foreground inline-flex min-h-11 items-center gap-1.5 font-semibold no-underline hover:underline"
-            >
-              <Pencil aria-hidden="true" className="size-4" />
-              {t("editCourse")}
-            </Link>
+        {isTrainer ? (
+          <div className="bg-highlight-tint mb-2 flex flex-col gap-2 rounded-2xl px-4 py-3 text-[0.9375rem]">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+              <p>{edition ? t("previewNoteEdition", { name: edition.name }) : t("previewNote")}</p>
+              <Link
+                href={routes.trainerCourseContent(course.id, previewEdition)}
+                className="text-highlight-foreground inline-flex min-h-11 items-center gap-1.5 font-semibold no-underline hover:underline"
+              >
+                <Pencil aria-hidden="true" className="size-4" />
+                {t("editCourse")}
+              </Link>
+            </div>
+            {/* With a single edition every learner sees the same. */}
+            {editions.length > 1 ? (
+              <nav aria-label={t("previewEdition")} className="flex flex-wrap items-center gap-2">
+                {[{ id: null, name: t("wholeCourse") }, ...editions].map((entry) => {
+                  const current = (entry.id ?? undefined) === previewEdition;
+                  return (
+                    <Link
+                      key={entry.id ?? "all"}
+                      href={routes.learnCourse(slug, entry.id)}
+                      aria-current={current ? "true" : undefined}
+                      className={cn(
+                        "inline-flex min-h-11 items-center rounded-full border px-3.5 text-sm font-semibold no-underline transition-colors",
+                        current
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-input bg-card text-foreground hover:bg-muted",
+                      )}
+                    >
+                      {entry.name}
+                    </Link>
+                  );
+                })}
+              </nav>
+            ) : null}
           </div>
         ) : null}
 
@@ -121,8 +179,14 @@ export default async function LearnCoursePage({ params }: Props) {
                     }
                   >
                     <MaterialRow
-                      slug={slug}
+                      href={routes.learnMaterial(slug, material.id, previewEdition)}
                       material={material}
+                      onlyIn={
+                        // Looking at the whole course, a trainer is told what only one edition has.
+                        isTrainer && !edition && material.editionId
+                          ? t("onlyIn", { name: editionName(material.editionId) })
+                          : undefined
+                      }
                       meta={materialMeta(material, labels, locale)}
                       lang={
                         material.titleLang === locale ? undefined : htmlLang[material.titleLang]
@@ -144,22 +208,28 @@ export default async function LearnCoursePage({ params }: Props) {
 
 /** One material in a module: the row opens it; files also have a direct download. */
 function MaterialRow({
-  slug,
+  href,
   material,
+  onlyIn,
   meta,
   lang,
   hiddenLabel,
   downloadLabel,
   newTabLabel,
 }: {
-  slug: string;
+  /** The material's own page. */
+  href: string;
   material: MaterialItem;
+  /** "Only: January class", for a material of one edition shown among the whole course's. */
+  onlyIn?: string;
   meta: string;
   lang?: string;
   hiddenLabel: string;
   downloadLabel: string;
   newTabLabel: string;
 }) {
+  const tag =
+    "bg-highlight-tint text-highlight-foreground inline-flex min-h-[26px] items-center gap-1 rounded-full px-2.5 text-xs font-semibold";
   const body = (
     <>
       <MaterialIcon material={material} />
@@ -169,12 +239,17 @@ function MaterialRow({
         </span>
         <span className="text-muted-foreground text-[0.8125rem]">{meta}</span>
       </span>
-      {material.isPublished ? null : (
-        <span className="bg-highlight-tint text-highlight-foreground ml-auto inline-flex min-h-[26px] flex-none items-center gap-1 rounded-full px-2.5 text-xs font-semibold">
-          <EyeOff aria-hidden="true" className="size-3.5" />
-          {hiddenLabel}
+      {onlyIn || !material.isPublished ? (
+        <span className="ml-auto flex min-w-0 flex-wrap justify-end gap-1.5">
+          {onlyIn ? <span className={cn(tag, "min-w-0 break-words")}>{onlyIn}</span> : null}
+          {material.isPublished ? null : (
+            <span className={cn(tag, "flex-none")}>
+              <EyeOff aria-hidden="true" className="size-3.5" />
+              {hiddenLabel}
+            </span>
+          )}
         </span>
-      )}
+      ) : null}
     </>
   );
   const rowClass =
@@ -196,7 +271,7 @@ function MaterialRow({
 
   return (
     <>
-      <Link href={routes.learnMaterial(slug, material.id)} className={rowClass}>
+      <Link href={href} className={rowClass}>
         {body}
       </Link>
       {material.kind === "file" ? (

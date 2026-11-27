@@ -204,10 +204,30 @@ export async function createCatalogue(): Promise<Catalogue> {
   return { areaId: area.id, levelId: level.id, courses, modules, materials };
 }
 
-export async function enroll(userId: string, courseIds: string[]): Promise<void> {
-  const { error } = await admin()
-    .from("enrollments")
-    .insert(courseIds.map((course_id) => ({ user_id: userId, course_id })));
+/** The edition a course was created with. */
+export async function defaultEdition(courseId: string): Promise<string> {
+  const { data, error } = await admin()
+    .from("editions")
+    .select("id")
+    .eq("course_id", courseId)
+    .eq("is_default", true)
+    .single();
+  if (error || !data) throw new Error(`No default edition for ${courseId}: ${error?.message}`);
+  return data.id;
+}
+
+/** Enrols a user in courses: in the edition given for a course, or else its default one. */
+export async function enroll(
+  userId: string,
+  courseIds: string[],
+  editions: Record<string, string> = {},
+): Promise<void> {
+  const rows = [];
+  for (const course_id of courseIds) {
+    const edition_id = editions[course_id] ?? (await defaultEdition(course_id));
+    rows.push({ user_id: userId, course_id, edition_id });
+  }
+  const { error } = await admin().from("enrollments").insert(rows);
   if (error) throw new Error(`Enrolment failed: ${error.message}`);
 }
 

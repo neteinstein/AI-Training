@@ -97,6 +97,7 @@ export default async function UserPage({ params }: Props) {
             userId={user.id}
             courses={courses}
             selected={user.courseIds}
+            selectedEditions={user.editionByCourse}
             isTrainer={user.role === "trainer"}
           />
         </Section>
