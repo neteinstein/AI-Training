@@ -49,6 +49,26 @@ const graded = (page: Page, prompt: string) =>
     .locator("ol > li")
     .filter({ has: page.getByRole("heading", { level: 3, name: prompt }) });
 
+/** What the database holds as right: for each question, in order, the right answers' texts. */
+async function rightAnswers(quizId: string) {
+  const { data, error } = await admin()
+    .from("quiz_questions")
+    .select("prompt_pt, sort_order, quiz_options(id, label_pt), quiz_question_keys(*)")
+    .eq("material_id", quizId)
+    .order("sort_order");
+  expect(error).toBeNull();
+  return (data ?? []).map((question) => {
+    const right = new Set(question.quiz_question_keys?.correct_option_ids ?? []);
+    return [
+      question.prompt_pt,
+      question.quiz_options
+        .filter((option) => right.has(option.id))
+        .map((option) => option.label_pt)
+        .sort(),
+    ];
+  });
+}
+
 test.describe("quizzes", () => {
   test("a trainer writes a quiz, a learner answers it, and both see the result", async ({
     page,
@@ -112,13 +132,16 @@ test.describe("quizzes", () => {
       await page.getByRole("button", { name: "Criar" }).click();
       await expect(alertWith(page, "Verifique os campos assinalados.")).toBeVisible();
       await expect(second.getByText("Assinale pelo menos uma resposta certa.")).toBeVisible();
-      // What was written is still there.
+      // What was written is still there: the texts, and the ticks. (A form is reset when its
+      // handler has run, and a reset once took the ticks off the screen.)
       await expect(second.getByLabel("Texto da pergunta: Português")).toHaveValue(
         "Quais são pares?",
       );
-      await expect(
-        editorQuestion(page, 1).getByRole("checkbox", { name: "A resposta 2 é certa" }),
-      ).toBeChecked();
+      await expect(second.getByLabel("Resposta 3: Português")).toHaveValue("Quatro");
+      const firstRight = editorQuestion(page, 1).getByRole("checkbox");
+      await expect(firstRight.nth(0)).not.toBeChecked();
+      await expect(firstRight.nth(1)).toBeChecked();
+      await expect(firstRight.nth(2)).not.toBeChecked();
 
       // Two right answers: the learner will have to choose both.
       await second.getByRole("checkbox", { name: "A resposta 1 é certa" }).check();
@@ -144,6 +167,11 @@ test.describe("quizzes", () => {
         return data?.map((entry) => entry.id);
       };
       expect(await questionIds()).toHaveLength(2);
+      // What was saved as right is what the screen showed as ticked.
+      expect(await rightAnswers(quizId)).toEqual([
+        ["Quanto é 2 + 2?", ["4"]],
+        ["Quais são pares?", ["Dois", "Quatro"]],
+      ]);
 
       // --- Ana answers it --------------------------------------------------------------------
       await page.context().clearCookies();
@@ -335,6 +363,100 @@ test.describe("quizzes", () => {
         .delete()
         .eq("user_id", demoUsers.ana.id)
         .eq("material_id", demoMaterials.quiz);
+    }
+  });
+
+  test("a quiz rewritten while someone answers it asks them to start again", async ({ page }) => {
+    const course = await freshCourse("Questionário em mudança");
+    const service = admin();
+    try {
+      const moduleId = await course.addModule("Módulo um");
+      const opened = await service
+        .from("courses")
+        .update({ status: "unlisted", summary_pt: "Resumo", summary_en: "Summary" })
+        .eq("id", course.id);
+      expect(opened.error).toBeNull();
+      const { data: edition } = await service
+        .from("editions")
+        .select("id")
+        .eq("course_id", course.id)
+        .single();
+      const enrolled = await service
+        .from("enrollments")
+        .insert({ user_id: demoUsers.ana.id, course_id: course.id, edition_id: edition!.id });
+      expect(enrolled.error).toBeNull();
+
+      // A quiz of two questions, written straight into the tables: "Sim" is right in both.
+      const { data: quiz, error: quizError } = await service
+        .from("materials")
+        .insert({
+          module_id: moduleId,
+          kind: "quiz" as const,
+          title_pt: "Em mudança",
+          is_published: true,
+          sort_order: 10,
+        })
+        .select("id")
+        .single();
+      expect(quizError).toBeNull();
+      for (const [index, prompt] of ["Primeira?", "Segunda?"].entries()) {
+        const { data: question } = await service
+          .from("quiz_questions")
+          .insert({ material_id: quiz!.id, sort_order: index + 1, prompt_pt: prompt })
+          .select("id")
+          .single();
+        const { data: options } = await service
+          .from("quiz_options")
+          .insert(
+            ["Sim", "Não"].map((label_pt, position) => ({
+              question_id: question!.id,
+              sort_order: position + 1,
+              label_pt,
+            })),
+          )
+          .select("id, label_pt");
+        const key = await service.from("quiz_question_keys").insert({
+          question_id: question!.id,
+          correct_option_ids: [options!.find((option) => option.label_pt === "Sim")!.id],
+        });
+        expect(key.error).toBeNull();
+      }
+
+      await signIn(page, demoUsers.ana.email);
+      await expect(page).toHaveURL(/\/pt\/learn$/);
+      await page.goto(`/pt/learn/courses/${course.slug}/materials/${quiz!.id}`);
+      const first = asked(page, "Primeira?");
+      const second = asked(page, "Segunda?");
+      await first.getByRole("radio", { name: "Sim" }).check();
+      await second.getByRole("radio", { name: "Não" }).check();
+
+      // Meanwhile the second question is taken out of the quiz.
+      const removed = await service
+        .from("quiz_questions")
+        .delete()
+        .eq("material_id", quiz!.id)
+        .eq("prompt_pt", "Segunda?");
+      expect(removed.error).toBeNull();
+      await page.getByRole("button", { name: "Entregar" }).click();
+      await expect(alertWith(page, "O questionário foi alterado entretanto.")).toBeVisible();
+
+      // The page shows the quiz as it is now, with nothing chosen: on the screen and in what
+      // would be sent. Nothing was kept of the first try.
+      await expect(second).toHaveCount(0);
+      await expect(page.getByText("Pergunta 1 de 1")).toBeVisible();
+      await expect(first.getByRole("radio", { name: "Sim" })).not.toBeChecked();
+      await expect(first.getByRole("radio", { name: "Não" })).not.toBeChecked();
+      const { data: none } = await service
+        .from("quiz_attempts")
+        .select("id")
+        .eq("material_id", quiz!.id);
+      expect(none).toEqual([]);
+
+      await first.getByRole("radio", { name: "Sim" }).check();
+      await page.getByRole("button", { name: "Entregar" }).click();
+      await expect(page.getByRole("heading", { level: 2, name: "Acertou 1 de 1." })).toBeVisible();
+    } finally {
+      await course.remove();
     }
   });
 

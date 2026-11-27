@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, CircleAlert, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 import { controlClass } from "@/components/forms/field";
+import { keepChecked } from "@/components/forms/keep-checked";
 import { useActiveLanguage } from "@/components/forms/language-tabs";
 import { actionLooks } from "@/components/trainer/looks";
 import type { EditableQuestion } from "@/lib/dal/quiz-queries";
@@ -303,6 +304,7 @@ export function QuizEditor({
                             <input
                               type="checkbox"
                               checked={option.correct}
+                              ref={keepChecked(option.correct)}
                               onChange={(event) =>
                                 changeOption(question.key, option.key, (current) => ({
                                   ...current,

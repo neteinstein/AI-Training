@@ -4,6 +4,7 @@ import { Check, CircleAlert, CircleCheck, CircleX, RotateCcw, X } from "lucide-r
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState, type FormEvent } from "react";
 import { FormMessage } from "@/components/forms/form-message";
+import { keepChecked } from "@/components/forms/keep-checked";
 import { LocaleField } from "@/components/forms/locale-field";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { Button } from "@/components/ui/button";
@@ -168,6 +169,7 @@ function QuizRound({
                           name={answerField(question.id)}
                           value={option.id}
                           checked={on}
+                          ref={keepChecked(on)}
                           onChange={(event) => choose(question, option.id, event.target.checked)}
                           className="accent-primary mt-0.5 size-5 flex-none"
                         />
