@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  DatabaseBackup,
   Inbox,
   Layers,
   LayoutDashboard,
@@ -43,6 +44,7 @@ export async function Sidebar() {
     { href: routes.trainerLevels, label: t("levels"), icon: Signal },
     { href: routes.trainerUsers, label: t("users"), icon: Users },
     { href: routes.trainerRequests, label: t("requests"), icon: Inbox, badge: newRequests },
+    { href: routes.trainerBackup, label: t("backup"), icon: DatabaseBackup },
   ];
 
   const account = (

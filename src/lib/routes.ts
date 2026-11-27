@@ -62,6 +62,9 @@ export const routes = {
   trainerRequests: "/trainer/requests",
   trainerRequestsIn: (status: string) => `/trainer/requests?status=${status}`,
   trainerInviteTo: (courseId: string) => `/trainer/users/invite?course=${courseId}`,
+  trainerBackup: "/trainer/backup",
+  /** Not under a language: the backup page's form posts here and gets a ZIP file back. */
+  backupDownload: "/api/trainer/backup",
 } as const;
 
 /** Where a signed-in user lands, by role. */
