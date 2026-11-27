@@ -196,9 +196,9 @@ page as upcoming dates.
 
 ### A backup in one click
 
-From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue, every
-module and material, the uploaded files and, when they choose, the people, enrolments and
-requests. A README inside says what is where.
+From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue with
+its editions, every module and material, the uploaded files and, when they choose, the people,
+enrolments and requests. A README inside says what is where.
 
 ## 🔐 Built to be trusted
 

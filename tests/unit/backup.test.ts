@@ -1,4 +1,6 @@
 // @vitest-environment node
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, test, vi } from "vitest";
 import {
@@ -10,7 +12,7 @@ import {
   type Manifest,
 } from "@/features/backup/archive";
 import { zipStream, type ZipEntry } from "@/features/backup/zip";
-import type { BackupData } from "@/lib/dal/backup";
+import { BACKUP_TABLES, TABLES_NOT_BACKED_UP, type BackupData } from "@/lib/dal/backup";
 import { isSameOrigin } from "@/lib/security/same-origin";
 
 const encoder = new TextEncoder();
@@ -274,6 +276,24 @@ describe("backup archive", () => {
       ),
     );
     await expect(readAll(archive)).rejects.toThrow("JWT expired");
+  });
+});
+
+describe("what a backup holds", () => {
+  test("every table of the database is in a backup, or left out on purpose", () => {
+    // The tables as the database has them: the types are made from it, and CI checks they are
+    // up to date. A new table shows up here until it is added to the backup's lists.
+    const types = readFileSync(
+      join(__dirname, "..", "..", "src", "lib", "supabase", "database.types.ts"),
+      "utf8",
+    );
+    const tables = types.slice(types.indexOf("    Tables: {"), types.indexOf("    Views: {"));
+    const inDatabase = [...tables.matchAll(/^ {6}(\w+): \{$/gm)].map((match) => match[1]);
+    expect(inDatabase).toContain("courses");
+
+    const decided = [...BACKUP_TABLES, ...Object.keys(TABLES_NOT_BACKED_UP)];
+    expect(new Set(decided).size, "a table is named twice").toBe(decided.length);
+    expect([...decided].sort()).toEqual([...inDatabase].sort());
   });
 });
 

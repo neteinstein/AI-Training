@@ -229,8 +229,8 @@ manifest.json          when and by whom, what was included, rows per table, and 
                        its material and storage path (plus any file storage did not have)
 ```
 
-- **Always in it:** areas, levels, courses, modules and materials (so text pages, links and
-  the addresses of videos and Google documents).
+- **Always in it:** areas, levels, courses and their editions, modules and materials (so text
+  pages, links and the addresses of videos and Google documents), and what each edition hides.
 - **Ticked by default:** the uploaded files. Untick them for a small, text-only backup.
 - **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`). It is personal
   data, and the page says so.
@@ -258,10 +258,16 @@ How it works, and what follows from it:
   backup without files. On the Free plan, storage holds 1 GB.
 
 There is no restore button. The rows are exactly what the database holds, so a restore inserts
-the tables in the order of `data/` above (areas, levels, courses, modules, materials, then
-profiles once the accounts exist again, enrolments and requests) and uploads each file back to
-the `course-materials` bucket under its `storagePath`. On a paid Supabase plan, the project's own
-daily database backups cover the database as well; they do not cover stored files.
+the tables in the order of `data/` above (areas, levels, courses, editions, modules, materials,
+what each edition hides, then profiles once the accounts exist again, enrolments and requests)
+and uploads each file back to the `course-materials` bucket under its `storagePath`. On a paid
+Supabase plan, the project's own daily database backups cover the database as well; they do not
+cover stored files.
+
+**A new table** goes into one of the two lists in `src/lib/dal/backup.ts`: the content, or the
+people when it holds personal data. A table that should stay out is named there too, with the
+reason. A unit test compares the three with the tables of the database and fails for a table
+nobody has decided about, so a backup cannot go on leaving out something new unnoticed.
 
 ## Database and access rules
 

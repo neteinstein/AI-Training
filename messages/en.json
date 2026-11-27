@@ -639,7 +639,7 @@
       "title": "Backup",
       "intro": "Download a copy of everything on the platform as a ZIP file, to keep somewhere safe.",
       "contentsTitle": "What goes in",
-      "catalogue": "{courses, plural, one {# course} other {# courses}}, {modules, plural, one {# module} other {# modules}} and {materials, plural, one {# material} other {# materials}}, with the fields and levels: titles, descriptions, text pages, links and the addresses of videos and Google documents.",
+      "catalogue": "{courses, plural, one {# course} other {# courses}}, {modules, plural, one {# module} other {# modules}} and {materials, plural, one {# material} other {# materials}}, with the fields, the levels and the editions: titles, descriptions, text pages, links and the addresses of videos and Google documents.",
       "notIncluded": "Never included: passwords, and the content of videos and Google documents, which stays on YouTube, Vimeo or Google. The README.txt file inside the ZIP explains what is in it.",
       "optionsTitle": "Also include",
       "includeFiles": "Uploaded files ({count, plural, one {# file} other {# files}}, {size})",

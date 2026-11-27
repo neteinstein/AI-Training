@@ -5,6 +5,7 @@ import {
   admin,
   createCatalogue,
   createUser,
+  defaultEdition,
   deleteCatalogue,
   deleteUsers,
   enroll,
@@ -17,8 +18,15 @@ let catalogue: Catalogue;
 let trainer: TestUser;
 let learner: TestUser;
 let fileMaterialId: string;
+/** The editions the published and the draft course were created with. */
+let publishedEdition: string;
+let draftEdition: string;
+/** A second edition of the published course, which hides one of its materials. */
+let secondEdition: string;
 
 const ids = (rows: BackupRow[] | undefined) => (rows ?? []).map((row) => row.id as string);
+/** What tells one row from another: its id, or all of it where a table has none. */
+const keyOf = (row: BackupRow) => (typeof row.id === "string" ? row.id : JSON.stringify(row));
 
 beforeAll(async () => {
   await ensureKeeperTrainer();
@@ -44,6 +52,20 @@ beforeAll(async () => {
     .single();
   if (error || !data) throw new Error(`File material failed: ${error?.message}`);
   fileMaterialId = data.id;
+
+  publishedEdition = await defaultEdition(catalogue.courses.published);
+  draftEdition = await defaultEdition(catalogue.courses.draft);
+  const { data: edition, error: editionError } = await admin()
+    .from("editions")
+    .insert({ course_id: catalogue.courses.published, name_pt: "Turma B", name_en: "Class B" })
+    .select("id")
+    .single();
+  if (editionError || !edition) throw new Error(`Edition failed: ${editionError?.message}`);
+  secondEdition = edition.id;
+  const { error: hideError } = await admin()
+    .from("edition_hidden_materials")
+    .insert({ edition_id: secondEdition, material_id: catalogue.materials.visible });
+  if (hideError) throw new Error(`Hiding a material failed: ${hideError.message}`);
 });
 
 afterAll(async () => {
@@ -60,8 +82,10 @@ describe("backup data", () => {
       "areas",
       "levels",
       "courses",
+      "editions",
       "modules",
       "materials",
+      "edition_hidden_materials",
     ]);
     expect(ids(backup.tables.areas)).toContain(catalogue.areaId);
     expect(ids(backup.tables.levels)).toContain(catalogue.levelId);
@@ -75,9 +99,20 @@ describe("backup data", () => {
       expect.arrayContaining([...Object.values(catalogue.materials), fileMaterialId]),
     );
 
+    // Every edition, the ones no learner is in as well, and what an edition hides.
+    expect(ids(backup.tables.editions)).toEqual(
+      expect.arrayContaining([publishedEdition, draftEdition, secondEdition]),
+    );
+    expect(backup.tables.edition_hidden_materials).toContainEqual(
+      expect.objectContaining({
+        edition_id: secondEdition,
+        material_id: catalogue.materials.visible,
+      }),
+    );
+
     // Every row once, in a full copy of its columns.
     for (const rows of Object.values(backup.tables)) {
-      expect(new Set(ids(rows)).size).toBe(rows.length);
+      expect(new Set(rows.map(keyOf)).size).toBe(rows.length);
     }
     const hidden = backup.tables.materials!.find((row) => row.id === catalogue.materials.hidden);
     expect(hidden).toMatchObject({ kind: "page", body_pt: "Rascunho", is_published: false });
@@ -97,9 +132,15 @@ describe("backup data", () => {
       expect.arrayContaining(["profiles", "enrollments", "info_requests"]),
     );
     expect(ids(backup.tables.profiles)).toEqual(expect.arrayContaining([trainer.id, learner.id]));
+    // An enrolment says which edition it is in, and that edition is in the backup too.
     expect(backup.tables.enrollments).toContainEqual(
-      expect.objectContaining({ user_id: learner.id, course_id: catalogue.courses.published }),
+      expect.objectContaining({
+        user_id: learner.id,
+        course_id: catalogue.courses.published,
+        edition_id: publishedEdition,
+      }),
     );
+    expect(ids(backup.tables.editions)).toContain(publishedEdition);
   });
 
   test("the database still decides: a learner's client gets only what a learner may see", async () => {
@@ -109,6 +150,11 @@ describe("backup data", () => {
     expect(ids(backup.tables.courses)).not.toContain(catalogue.courses.draft);
     expect(ids(backup.tables.materials)).not.toContain(catalogue.materials.hidden);
     expect(ids(backup.tables.materials)).not.toContain(fileMaterialId);
+    // Of the editions, the learner's own; not another one, a draft's, or what any of them hides.
+    expect(ids(backup.tables.editions)).toContain(publishedEdition);
+    expect(ids(backup.tables.editions)).not.toContain(secondEdition);
+    expect(ids(backup.tables.editions)).not.toContain(draftEdition);
+    expect(backup.tables.edition_hidden_materials).toEqual([]);
     expect(ids(backup.tables.profiles)).toEqual([learner.id]);
     expect(backup.tables.info_requests).toEqual([]);
     expect(backup.files.map((entry) => entry.materialId)).not.toContain(fileMaterialId);

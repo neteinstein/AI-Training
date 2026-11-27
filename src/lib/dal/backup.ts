@@ -11,8 +11,11 @@ const CONTENT_TABLES = [
   { name: "areas", order: ["sort_order", "id"] },
   { name: "levels", order: ["sort_order", "id"] },
   { name: "courses", order: ["sort_order", "id"] },
+  // Before the materials: a material kept to one edition points at it.
+  { name: "editions", order: ["course_id", "created_at", "id"] },
   { name: "modules", order: ["course_id", "sort_order", "id"] },
   { name: "materials", order: ["module_id", "sort_order", "id"] },
+  { name: "edition_hidden_materials", order: ["edition_id", "material_id"] },
 ] as const;
 
 /** The tables about people: personal data, only exported when the trainer asks for it. */
@@ -24,6 +27,21 @@ const PEOPLE_TABLES = [
 
 export type BackupTable =
   (typeof CONTENT_TABLES)[number]["name"] | (typeof PEOPLE_TABLES)[number]["name"];
+
+/** Every table a backup can hold, content first. */
+export const BACKUP_TABLES: readonly BackupTable[] = [...CONTENT_TABLES, ...PEOPLE_TABLES].map(
+  (table) => table.name,
+);
+
+/**
+ * The tables a backup leaves out on purpose, each with its reason. A table that is neither
+ * here nor in the two lists above fails a unit test: a new table has to be put in one of the
+ * three places, so that a backup never goes on leaving out something new without anyone
+ * having decided so.
+ */
+export const TABLES_NOT_BACKED_UP = {
+  storage_deletions: "a queue of stored files still to be deleted: there is nothing to restore",
+} as const;
 
 export type BackupRow = Record<string, unknown>;
 

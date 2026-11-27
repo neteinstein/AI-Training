@@ -639,7 +639,7 @@
       "title": "Cópia de segurança",
       "intro": "Descarregue uma cópia de tudo o que está na plataforma, num ficheiro ZIP, para guardar num lugar seguro.",
       "contentsTitle": "O que inclui",
-      "catalogue": "{courses, plural, one {# curso} other {# cursos}}, {modules, plural, one {# módulo} other {# módulos}} e {materials, plural, one {# material} other {# materiais}}, com as áreas e os níveis: títulos, descrições, páginas de texto, ligações e os endereços dos vídeos e dos documentos Google.",
+      "catalogue": "{courses, plural, one {# curso} other {# cursos}}, {modules, plural, one {# módulo} other {# módulos}} e {materials, plural, one {# material} other {# materiais}}, com as áreas, os níveis e as edições: títulos, descrições, páginas de texto, ligações e os endereços dos vídeos e dos documentos Google.",
       "notIncluded": "Nunca inclui as palavras-passe, nem o conteúdo dos vídeos e dos documentos Google, que fica no YouTube, no Vimeo ou no Google. O ficheiro README.txt, dentro do ZIP, explica o que lá está.",
       "optionsTitle": "Incluir também",
       "includeFiles": "Ficheiros carregados ({count, plural, one {# ficheiro} other {# ficheiros}}, {size})",
