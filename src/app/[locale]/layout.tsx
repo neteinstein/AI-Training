@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
-import { htmlLang, siteConfig, siteUrl } from "@/config/site";
+import { htmlLang, locales, ogLocale, siteConfig, siteUrl } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -28,11 +28,31 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
   const t = await getTranslations("Metadata");
   return {
     metadataBase: new URL(siteUrl),
     title: { default: t("title"), template: `%s · ${siteConfig.name}` },
     description: t("description"),
+    // Link previews. og:title and og:description come from each page's own title and
+    // description, and the X card copies all of it. A page that sets its own `openGraph`
+    // replaces all of this, picture included.
+    openGraph: {
+      type: "website",
+      siteName: siteConfig.name,
+      locale: ogLocale[locale],
+      alternateLocale: locales.filter((other) => other !== locale).map((other) => ogLocale[other]),
+      images: [
+        {
+          url: siteConfig.ogImage.path,
+          width: siteConfig.ogImage.width,
+          height: siteConfig.ogImage.height,
+          type: "image/png",
+          alt: siteConfig.name,
+        },
+      ],
+    },
+    twitter: { card: "summary_large_image" },
   };
 }
 

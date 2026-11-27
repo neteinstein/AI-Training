@@ -16,6 +16,7 @@
     "test:integration": "vitest run --project integration",
     "e2e": "playwright test",
     "screens:frame": "node scripts/frame-screens.mjs",
+    "og:image": "tsx scripts/og-image.ts",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
