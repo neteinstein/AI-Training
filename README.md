@@ -187,6 +187,12 @@ A course is a **draft** (trainers only), **published** (public site and enrolled
 **unlisted** (hidden from the public site; enrolled learners keep access). A course with learners
 cannot be deleted, only unlisted.
 
+### A backup in one click
+
+From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue, every
+module and material, the uploaded files and, when they choose, the people, enrolments and
+requests. A README inside says what is where.
+
 ## 🔐 Built to be trusted
 
 - **The database decides who sees what.** Rules live in Postgres, so a forgotten check in a page
