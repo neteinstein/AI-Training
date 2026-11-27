@@ -8,6 +8,7 @@ import { AreaIcon } from "@/components/catalog/area-icon";
 import { areaTone } from "@/components/catalog/area-style";
 import { BilingualField } from "@/components/forms/bilingual-field";
 import { FormMessage } from "@/components/forms/form-message";
+import { keepChecked } from "@/components/forms/keep-checked";
 import { LanguageTabs } from "@/components/forms/language-tabs";
 import { LocaleField } from "@/components/forms/locale-field";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -95,6 +96,7 @@ export function AreaForm({ area }: { area?: TrainerArea }) {
                 name="color"
                 value={option}
                 checked={color === option}
+                ref={keepChecked(color === option)}
                 onChange={() => setColor(option)}
                 className="sr-only"
               />
@@ -133,6 +135,7 @@ export function AreaForm({ area }: { area?: TrainerArea }) {
                 name="icon"
                 value={option}
                 checked={icon === option}
+                ref={keepChecked(icon === option)}
                 onChange={() => setIcon(option)}
                 className="sr-only"
               />
