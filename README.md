@@ -107,8 +107,9 @@ readings and pages. Everything for the course is on one screen.
 <tr>
 <td valign="top">
 
-**A dashboard that answers "what needs me?"** Published courses, drafts, active learners, pending
-invitations and new requests, with shortcuts to invite someone or start a course.
+**A dashboard that answers "what needs me?"** Published, draft and unlisted courses, active
+learners, pending invitations and new requests, the latest of each listed below, and shortcuts to
+invite someone or start a course.
 
 </td>
 <td valign="top">

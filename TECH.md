@@ -88,6 +88,7 @@ Emails sent locally (invitations, password resets) are caught at <http://127.0.0
 | `npm test`                  | Unit tests (Vitest)                                        |
 | `npm run test:integration`  | Database and API rules against the local Supabase stack    |
 | `npm run e2e`               | End-to-end tests (Playwright) against the production build |
+| `npm run screens:frame`     | Frame the saved screens into the README's pictures         |
 | `npm run db:start`          | Start the local Supabase stack (`db:stop` stops it)        |
 | `npm run db:reset`          | Rebuild the local database from migrations and seed        |
 | `npm run db:types`          | Regenerate `src/lib/supabase/database.types.ts`            |
@@ -247,11 +248,14 @@ jobs. Besides the tests:
 ## Screenshots
 
 The pictures in the [README](README.md) live in `docs/screenshots/`. They are the real screens
-of the app, captured against the demo data and framed afterwards.
+of the app, captured against the demo data and then framed in a browser window or a phone.
 
 The captures come from `e2e/screens.spec.ts`, which is not a test of behaviour: with
 `SCREENS=1` it saves a picture of every main screen, at desktop and phone size, into
 `e2e-screens/` (ignored by Git). CI does this on every run and keeps the pictures for a week.
+
+To refresh the README's pictures, first put the captures in `e2e-screens/`, either by saving
+them yourself:
 
 ```bash
 npm run db:start && npm run env:local && npm run seed:dev
@@ -259,7 +263,22 @@ npm run build
 SCREENS=1 npx playwright test e2e/screens.spec.ts
 ```
 
-The demo data is in Portuguese, the default language, so that is what the screenshots show.
+or by taking them from a CI run (the run's number is in its address on GitHub):
+
+```bash
+rm -rf e2e-screens && gh run download <run number> -n screens -D e2e-screens
+```
+
+Then frame them. This rewrites every picture in `docs/screenshots/`; name some, such as
+`npm run screens:frame -- hero mobile`, to redo only those.
+
+```bash
+npm run screens:frame
+```
+
+Which screen goes in which picture, and how far down each one is cut, is set at the bottom of
+`scripts/frame-screens.mjs`. When a screen grows or a caption in the README changes, adjust it
+there. The demo data is in Portuguese, the default language, so that is what the pictures show.
 
 ## Going live
 
