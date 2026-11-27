@@ -34,7 +34,10 @@ describe("every validation message exists in both languages", () => {
   test("schemas only use keys of the Validation translations", () => {
     const samples: Array<[ZodType, unknown]> = [
       [areaSchema, {}],
-      [courseSchema, { slug: "A b", area_id: "", level_id: "x", duration_hours: "muito" }],
+      [
+        courseSchema,
+        { slug: "A b", area_id: "", level_id: "x", duration_hours: "muito", starts_on: "ontem" },
+      ],
       [materialSchemas.video, { url: "https://example.org", is_published: true }],
       [materialSchemas.embed, { url: "https://example.org", is_published: true }],
       [materialSchemas.link, { url: "nada", is_published: true }],
@@ -104,6 +107,8 @@ describe("courses", () => {
     description_pt: "## Programa\n\n    código\n",
     description_en: "",
     duration_hours: "",
+    starts_on: "2027-02-13",
+    location: " Lisboa ",
   };
 
   test("hours are read the way people type them", () => {
@@ -123,6 +128,34 @@ describe("courses", () => {
 
   test("a description keeps its Markdown spacing", () => {
     expect(courseSchema.parse(course).description.pt).toBe("## Programa\n\n    código\n");
+  });
+
+  test("the date and the place are required", () => {
+    expect(courseSchema.parse(course)).toMatchObject({
+      startsOn: "2027-02-13",
+      location: "Lisboa",
+    });
+    expect(problems(courseSchema, { ...course, starts_on: "", location: "  " })).toEqual({
+      starts_on: "Preencha este campo.",
+      location: "Preencha este campo.",
+    });
+    const { starts_on: _date, location: _place, ...withoutEither } = course;
+    expect(Object.keys(problems(courseSchema, withoutEither) ?? {})).toEqual([
+      "starts_on",
+      "location",
+    ]);
+    expect(problems(courseSchema, { ...course, location: "x".repeat(121) }, "en")).toEqual({
+      location: "Use at most 120 characters.",
+    });
+  });
+
+  test("the date is a real day, as a date input sends it", () => {
+    for (const bad of ["13/02/2027", "2027-2-13", "2027-02-30", "2027-13-01", "amanhã"]) {
+      expect(problems(courseSchema, { ...course, starts_on: bad }), bad).toEqual({
+        starts_on: "Indique uma data válida.",
+      });
+    }
+    expect(courseSchema.parse({ ...course, starts_on: "2028-02-29" }).startsOn).toBe("2028-02-29");
   });
 
   test("an area and a level must be chosen", () => {

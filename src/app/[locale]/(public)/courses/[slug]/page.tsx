@@ -1,7 +1,7 @@
-import { ArrowRight, ChevronRight, Clock } from "lucide-react";
+import { ArrowRight, CalendarDays, ChevronRight, Clock, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { AreaChip } from "@/components/catalog/area-chip";
 import { CourseCard } from "@/components/catalog/course-card";
 import { LevelGlyph } from "@/components/catalog/level-glyph";
@@ -11,6 +11,7 @@ import { buttonClass } from "@/components/ui/button";
 import { htmlLang } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { getCatalog, getPublishedCourse } from "@/lib/dal/catalog";
+import { dayToDate } from "@/lib/dates";
 import { routes } from "@/lib/routes";
 import { localizedAlternates } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -42,8 +43,13 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
   const related = courses
     .filter((other) => other.area.id === course.area.id && other.id !== course.id)
     .slice(0, 3);
+  const format = await getFormatter();
   const duration =
     course.durationHours !== null ? tCatalog("hours", { hours: course.durationHours }) : null;
+  // A calendar day, not an instant: shown in UTC so it never shifts.
+  const date = course.startsOn
+    ? format.dateTime(dayToDate(course.startsOn), { dateStyle: "long", timeZone: "UTC" })
+    : null;
   const translated = course.descriptionLang === locale;
 
   return (
@@ -78,6 +84,20 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
             <span className="text-muted-foreground inline-flex items-center gap-2 text-[0.9375rem]">
               <Clock aria-hidden="true" className="size-[18px]" strokeWidth={1.75} />
               {duration}
+            </span>
+          ) : null}
+          {date ? (
+            <span className="text-muted-foreground inline-flex items-center gap-2 text-[0.9375rem]">
+              <CalendarDays aria-hidden="true" className="size-[18px]" strokeWidth={1.75} />
+              <span className="sr-only">{t("date")}: </span>
+              <time dateTime={course.startsOn ?? undefined}>{date}</time>
+            </span>
+          ) : null}
+          {course.location ? (
+            <span className="text-muted-foreground inline-flex items-center gap-2 text-[0.9375rem]">
+              <MapPin aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={1.75} />
+              <span className="sr-only">{t("location")}: </span>
+              {course.location}
             </span>
           ) : null}
         </div>
@@ -142,6 +162,20 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
               <>
                 <dt>{t("duration")}</dt>
                 <dd>{duration}</dd>
+              </>
+            ) : null}
+            {date ? (
+              <>
+                <dt>{t("date")}</dt>
+                <dd>
+                  <time dateTime={course.startsOn ?? undefined}>{date}</time>
+                </dd>
+              </>
+            ) : null}
+            {course.location ? (
+              <>
+                <dt>{t("location")}</dt>
+                <dd className="break-words">{course.location}</dd>
               </>
             ) : null}
           </dl>

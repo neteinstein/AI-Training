@@ -288,6 +288,8 @@ describe("courses", () => {
     summary: none,
     description: { pt: "## Programa\n\nTexto.", en: "" },
     durationHours: 7.54,
+    startsOn: "2027-02-13",
+    location: " Lisboa ",
     ...overrides,
   });
 
@@ -304,6 +306,8 @@ describe("courses", () => {
       description_pt: "## Programa\n\nTexto.",
       description_en: null,
       duration_hours: 7.5,
+      starts_on: "2027-02-13",
+      location: "Lisboa",
       published_at: null,
     });
 
@@ -342,6 +346,9 @@ describe("courses", () => {
       { levelId: "nope" },
       { durationHours: 0 },
       { durationHours: Number.NaN },
+      { startsOn: "" },
+      { startsOn: "2027-02-30" },
+      { location: "   " },
       { slug: "com espaços" },
     ];
     for (const overrides of invalid) {

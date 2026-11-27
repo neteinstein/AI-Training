@@ -41,6 +41,10 @@ export type CourseCard = {
   title: string;
   summary: string;
   durationHours: number | null;
+  /** The day the course takes place (or starts), as YYYY-MM-DD. */
+  startsOn: string | null;
+  /** Where it takes place, as the trainer wrote it. */
+  location: string | null;
   area: AreaSummary;
   level: LevelSummary;
 };

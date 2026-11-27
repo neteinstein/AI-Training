@@ -15,7 +15,7 @@ import { idleState } from "@/lib/actions/state";
 import type { TrainerCourse } from "@/lib/dal/trainer-queries";
 import { routes } from "@/lib/routes";
 import { saveCourse } from "./actions";
-import { DESCRIPTION_MAX, SUMMARY_MAX } from "./constants";
+import { DESCRIPTION_MAX, LOCATION_MAX, SUMMARY_MAX } from "./constants";
 
 type Option = { id: string; name: string };
 
@@ -137,6 +137,26 @@ export function CourseForm({
           maxLength={5}
           defaultValue={values?.duration_hours ?? hours}
           error={errors?.duration_hours}
+        />
+        <TextField
+          label={t("courses.startsOn")}
+          name="starts_on"
+          type="date"
+          required
+          help={t("courses.startsOnHelp")}
+          defaultValue={values?.starts_on ?? course?.startsOn ?? ""}
+          error={errors?.starts_on}
+        />
+        <TextField
+          label={t("courses.location")}
+          name="location"
+          required
+          help={t("courses.locationHelp")}
+          maxLength={LOCATION_MAX}
+          autoComplete="off"
+          defaultValue={values?.location ?? course?.location ?? ""}
+          error={errors?.location}
+          fieldClassName="lg:col-span-2"
         />
       </div>
 

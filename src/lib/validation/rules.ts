@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { locales } from "@/config/site";
+import { isIsoDate } from "@/lib/dates";
 import { isUuid } from "@/lib/ids";
 import { SLUG_PATTERN } from "@/lib/slug";
 
@@ -32,6 +33,13 @@ export const slug = z
   .min(1, "required")
   .max(80, "tooLong")
   .regex(SLUG_PATTERN, "slug");
+
+/** A day, as a date input sends it (YYYY-MM-DD). */
+export const requiredDate = z
+  .string("required")
+  .trim()
+  .min(1, "required")
+  .refine(isIsoDate, "date");
 
 /** An id chosen from a list. An empty or malformed value reads "choose an option". */
 export const chosenId = z.string("required").refine(isUuid, "choose");
