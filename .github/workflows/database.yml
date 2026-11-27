@@ -72,6 +72,10 @@ jobs:
       # handed to the steps below, never to this one.
       - run: npm ci
 
+      # The steps below call it through scripts/supabase-remote.sh, which runs a command again
+      # when it could not connect at all ("IPv6 is not supported on your current network": the
+      # lookup of the project's IPv4 address failed that time) and passes on any other failure.
+
       - name: List what would be applied
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -80,11 +84,11 @@ jobs:
           {
             echo "### Migrations: this branch against the hosted database"
             echo '```'
-            npx supabase migration list --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+            bash scripts/supabase-remote.sh migration list --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
             echo '```'
             echo "### What would be applied"
             echo '```'
-            npx supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --skip-vault --dry-run
+            bash scripts/supabase-remote.sh db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --skip-vault --dry-run
             echo '```'
           } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
 
@@ -97,7 +101,7 @@ jobs:
           {
             echo "### Applied"
             echo '```'
-            npx supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --skip-vault --yes
+            bash scripts/supabase-remote.sh db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --skip-vault --yes
             echo '```'
           } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
 

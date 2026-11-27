@@ -421,6 +421,11 @@ what is removed.
 The workflow needs two repository secrets (GitHub: Settings, Secrets and variables, Actions).
 The project it writes to is named at the top of the workflow file.
 
+Should a run say "IPv6 is not supported on your current network": the command line finds the
+project's IPv4 address through Supabase's API, and that lookup failed, before anything was
+connected to. The workflow tries such a command again by itself (`scripts/supabase-remote.sh`);
+a migration that fails is never tried twice.
+
 | Secret                  | What it is                                                   |
 | ----------------------- | ------------------------------------------------------------ |
 | `SUPABASE_ACCESS_TOKEN` | A token from the Supabase dashboard (Account, Access Tokens) |
