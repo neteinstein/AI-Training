@@ -145,7 +145,8 @@
       "newRequests": "{count, plural, one {# new request} other {# new requests}}",
       "role": "Trainer",
       "account": "My account",
-      "learnerArea": "View as a learner"
+      "learnerArea": "View as a learner",
+      "backup": "Backup"
     },
     "breadcrumb": "You are here",
     "common": {
@@ -633,6 +634,22 @@
       "deleted": "Request deleted.",
       "deleteTitle": "Delete the request from {name}?",
       "deleteText": "The request and the details the person sent are erased. This cannot be undone."
+    },
+    "backup": {
+      "title": "Backup",
+      "intro": "Download a copy of everything on the platform as a ZIP file, to keep somewhere safe.",
+      "contentsTitle": "What goes in",
+      "catalogue": "{courses, plural, one {# course} other {# courses}}, {modules, plural, one {# module} other {# modules}} and {materials, plural, one {# material} other {# materials}}, with the fields and levels: titles, descriptions, text pages, links and the addresses of videos and Google documents.",
+      "notIncluded": "Never included: passwords, and the content of videos and Google documents, which stays on YouTube, Vimeo or Google. The README.txt file inside the ZIP explains what is in it.",
+      "optionsTitle": "Also include",
+      "includeFiles": "Uploaded files ({count, plural, one {# file} other {# files}}, {size})",
+      "includeFilesHint": "Untick for a small file with only the text and the structure.",
+      "includePeople": "People: accounts, enrolments and information requests ({people, plural, one {# person} other {# people}}, {requests, plural, one {# request} other {# requests}})",
+      "includePeopleHint": "This is personal data. Keep the backup somewhere safe and delete it when it is no longer needed.",
+      "download": "Download backup",
+      "preparing": "Preparing the backup. The download starts in a moment and carries on in your browser.",
+      "failed": "The backup could not be made. Please try again.",
+      "tooLarge": "With the uploaded files, the backup would be over 4 GB. Download it without the files."
     }
   },
   "Nav": {

@@ -71,6 +71,7 @@ const trainerPages = [
   "/pt/trainer/users/invite",
   `/pt/trainer/users/${demoUsers.ana.id}`,
   "/pt/trainer/requests",
+  "/pt/trainer/backup",
   "/en/trainer/courses",
 ];
 
