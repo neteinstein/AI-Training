@@ -19,6 +19,10 @@ import { Link } from "@/i18n/navigation";
 import { requireTrainer } from "@/lib/dal/session";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
+
+/** The menu's width on wide screens, shared with the placeholder shown while it loads. */
+const MENU_WIDTH = "w-62";
 
 /**
  * The back-office menu: a column beside the page on wide screens, a bar with a menu button on
@@ -87,10 +91,17 @@ export async function Sidebar() {
         />
       </header>
 
-      {/* Wide screens */}
+      {/*
+        Wide screens. The width leaves 159px for an entry's text: the longest one, "Cópia de
+        segurança", needs 154px when it is the current page and bold, and has to stay on one
+        line. A browser test measures the entries in both languages.
+      */}
       <aside
         aria-label={t("label")}
-        className="border-border bg-muted hidden w-58 flex-none flex-col gap-6 border-r px-4 py-5 md:sticky md:top-0 md:flex md:h-dvh md:overflow-y-auto"
+        className={cn(
+          MENU_WIDTH,
+          "border-border bg-muted hidden flex-none flex-col gap-6 border-r px-4 py-5 md:sticky md:top-0 md:flex md:h-dvh md:overflow-y-auto",
+        )}
       >
         <Link
           href={routes.trainer}
@@ -137,7 +148,12 @@ export function SidebarPlaceholder() {
   return (
     <>
       <div className="border-border bg-muted min-h-14 border-b md:hidden" />
-      <div className="border-border bg-muted hidden w-58 flex-none border-r md:block md:h-dvh" />
+      <div
+        className={cn(
+          MENU_WIDTH,
+          "border-border bg-muted hidden flex-none border-r md:block md:h-dvh",
+        )}
+      />
     </>
   );
 }
