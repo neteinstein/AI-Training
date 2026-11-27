@@ -55,6 +55,12 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      # The local Supabase stack listens on ports 54320 to 54329, which lie inside the range
+      # Linux hands out to outgoing connections. Now and then a download in progress held one
+      # of them when the stack started, and the job failed with "address already in use" before
+      # any test had run. Reserved, the ports are left alone.
+      - name: Keep the stack's ports free
+        run: sudo sysctl -w net.ipv4.ip_local_reserved_ports=54320-54329
       - run: npm ci
       # Only the services the tests need: database, auth, API gateway, storage and mail catcher.
       - run: npx supabase start -x realtime,imgproxy,studio,postgres-meta,edge-runtime,logflare,vector,supavisor
@@ -85,6 +91,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      # As in the job above: the stack's ports are not to be handed out to anything else.
+      - name: Keep the stack's ports free
+        run: sudo sysctl -w net.ipv4.ip_local_reserved_ports=54320-54329
       - run: npm ci
       - run: npx supabase start -x realtime,imgproxy,studio,postgres-meta,edge-runtime,logflare,vector,supavisor
       - run: npm run env:local
