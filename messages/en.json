@@ -129,7 +129,9 @@
     "previewEdition": "See what each edition sees",
     "wholeCourse": "Whole course",
     "previewNoteEdition": "You are viewing this course as a learner of the edition “{name}”. Materials marked as hidden are only shown to trainers.",
-    "onlyIn": "Only: {name}"
+    "onlyIn": "Only: {name}",
+    "progress": "{done} of {total, plural, one {# material opened} other {# materials opened}}",
+    "opened": "Opened"
   },
   "Trainer": {
     "title": "Back-office",
@@ -506,7 +508,18 @@
       "emptyEdition": "Nobody in this edition yet.",
       "editionCount": "{count, plural, =0 {no learners} one {# learner} other {# learners}}",
       "moveTo": "Move to another edition",
-      "moved": "Person moved to “{name}”."
+      "moved": "Person moved to “{name}”.",
+      "progressShort": "{done} of {total}",
+      "progressNamed": "Progress of {name}: {done} of {total, plural, one {# material opened} other {# materials opened}}",
+      "lastActivity": "Last activity: {date}",
+      "noActivity": "No activity yet",
+      "progressTitle": "Progress of {name}",
+      "progressLead": "The materials this person's edition shows, and the day they first opened each one.",
+      "progressSummary": "{done} of {total, plural, one {# material opened} other {# materials opened}}",
+      "openedOn": "Opened on {date}",
+      "notOpened": "Not opened yet",
+      "nothingToOpen": "This person's edition does not show any material yet.",
+      "inEdition": "Edition: {name}"
     },
     "users": {
       "title": "Users",
@@ -807,7 +820,7 @@
       },
       "data": {
         "title": "What we collect",
-        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language and the courses you are enrolled in. We do not collect browsing data for advertising and we use no third-party analytics."
+        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language, the courses you are enrolled in and which of their materials you opened, and when. Trainers see this, to follow how the course is going. We do not collect browsing data for advertising and we use no third-party analytics."
       },
       "purpose": {
         "title": "What we use it for",

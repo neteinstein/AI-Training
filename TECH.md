@@ -28,16 +28,17 @@ and how it looks, see the [README](README.md).
 
 ## Status
 
-| Part                                                             | State                           |
-| ---------------------------------------------------------------- | ------------------------------- |
-| Database, access rules, file storage                             | Done, tested                    |
-| Sign-in, invitations, password reset, bilingual emails           | Done, tested in the browser     |
-| Logic behind every screen (queries, changes, validation, embeds) | Done, tested against a database |
-| File downloads, security headers                                 | Done, tested in the browser     |
-| Public site: landing page, catalogue, course page, request form  | Done, tested in the browser     |
-| Learner area: my courses, materials, PDF and document viewers    | Done, tested in the browser     |
-| Back-office: courses, content, users, invitations, requests      | Done, tested in the browser     |
-| Editions of a course: own learners, own view of the content      | Done, tested in the browser     |
+| Part                                                              | State                           |
+| ----------------------------------------------------------------- | ------------------------------- |
+| Database, access rules, file storage                              | Done, tested                    |
+| Sign-in, invitations, password reset, bilingual emails            | Done, tested in the browser     |
+| Logic behind every screen (queries, changes, validation, embeds)  | Done, tested against a database |
+| File downloads, security headers                                  | Done, tested in the browser     |
+| Public site: landing page, catalogue, course page, request form   | Done, tested in the browser     |
+| Learner area: my courses, materials, PDF and document viewers     | Done, tested in the browser     |
+| Back-office: courses, content, users, invitations, requests       | Done, tested in the browser     |
+| Editions of a course: own learners, own view of the content       | Done, tested in the browser     |
+| Progress: what each learner has opened, for them and for trainers | Done, tested in the browser     |
 
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
@@ -232,6 +233,14 @@ All access rules live in the database, in `supabase/migrations`:
   be deleted, only unlisted.
 - Uploaded files sit in a private bucket; a learner can only fetch files that belong to a
   published material of a course they may open.
+- What a learner has opened is kept in `material_progress`, one row per person and material.
+  Nobody writes it directly: the function `record_material_open` notes an opening, and only
+  for a learner and a material their edition shows. A learner reads their own rows, a trainer
+  everyone's. Progress is counted against what the learner's edition shows now, so hiding a
+  material or moving someone changes the count at once. Opening is noted on the server, where
+  the material's page is drawn, where a file is fetched (`/api/materials/[id]/download`) and
+  where a link is followed (`/api/materials/[id]/open`, which then sends the browser on).
+  Deleting a material deletes what was noted about it.
 - A user's role is never taken from data the user can edit, and the last trainer can be neither
   demoted nor deleted.
 

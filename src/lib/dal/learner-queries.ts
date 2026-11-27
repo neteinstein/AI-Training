@@ -18,6 +18,7 @@ import type {
   MaterialItem,
   MaterialPage,
   ModuleWithMaterials,
+  MyCourse,
   Tables,
 } from "./types";
 
@@ -47,7 +48,7 @@ async function toCourseCards(client: Client, rows: CourseRow[], locale: Locale) 
   return cards;
 }
 
-export function toMaterialItem(row: MaterialRow, locale: Locale): MaterialItem {
+export function toMaterialItem(row: MaterialRow, locale: Locale, isDone = false): MaterialItem {
   const title = localized(row, "title", locale);
   return {
     id: row.id,
@@ -72,6 +73,7 @@ export function toMaterialItem(row: MaterialRow, locale: Locale): MaterialItem {
           }
         : null,
     editionId: row.edition_id,
+    isDone,
   };
 }
 
@@ -83,18 +85,42 @@ export async function fetchMyCourses(
   client: Client,
   userId: string,
   locale: Locale,
-): Promise<CourseCard[]> {
-  const { data, error } = await client
-    .from("enrollments")
-    .select("created_at, courses!inner(*)")
-    .eq("user_id", userId)
-    .in("courses.status", ["published", "unlisted"]);
-  if (error) throw new Error(`enrollments: ${error.message}`);
+): Promise<MyCourse[]> {
+  const [enrolled, counted] = await Promise.all([
+    client
+      .from("enrollments")
+      .select("created_at, courses!inner(*)")
+      .eq("user_id", userId)
+      .in("courses.status", ["published", "unlisted"]),
+    // The caller's own progress: the view only ever answers about whoever asks.
+    client.from("my_course_progress").select("course_id, total_materials, done_materials"),
+  ]);
+  if (enrolled.error) throw new Error(`enrollments: ${enrolled.error.message}`);
+  if (counted.error) throw new Error(`progress: ${counted.error.message}`);
 
-  const rows = data
+  const progress = new Map(
+    counted.data.map((row) => [
+      row.course_id,
+      { done: row.done_materials ?? 0, total: row.total_materials ?? 0 },
+    ]),
+  );
+  const rows = enrolled.data
     .map((row) => row.courses)
     .sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug));
-  return toCourseCards(client, rows, locale);
+  const cards = await toCourseCards(client, rows, locale);
+  return cards.map((card) => ({ ...card, progress: progress.get(card.id) ?? null }));
+}
+
+/**
+ * Notes that the caller has opened a material. The database decides whether it counts: only
+ * for a learner, and only for a material their edition shows. True when it was noted.
+ */
+export async function recordMaterialOpen(client: Client, materialId: string): Promise<boolean> {
+  if (!isUuid(materialId)) return false;
+  const { data, error } = await client.rpc("record_material_open", {
+    target_material_id: materialId,
+  });
+  return !error && data === true;
 }
 
 /** What a trainer may ask to look at, in place of the whole course. */
@@ -184,6 +210,17 @@ export async function fetchCourseContent(
     !scope ||
     ((row.edition_id === null || row.edition_id === scope.editionId) && !scope.hidden.has(row.id));
 
+  // What the learner has opened. (A trainer has no progress of their own.)
+  const done = new Set<string>();
+  if (viewer.role !== "trainer") {
+    const { data: opened, error: openedError } = await client
+      .from("material_progress")
+      .select("material_id, completed_at")
+      .eq("user_id", viewer.id);
+    if (openedError) throw new Error(`progress: ${openedError.message}`);
+    for (const row of opened) if (row.completed_at) done.add(row.material_id);
+  }
+
   const modules: ModuleWithMaterials[] = [...moduleRows].sort(bySortOrder).map((module) => ({
     id: module.id,
     title: pickLocalized(module, "title", locale),
@@ -191,10 +228,17 @@ export async function fetchCourseContent(
     materials: [...module.materials]
       .filter(inScope)
       .sort(bySortOrder)
-      .map((row) => toMaterialItem(row, locale)),
+      .map((row) => toMaterialItem(row, locale, done.has(row.id))),
   }));
 
-  return { course, modules, edition, editions };
+  // Counted over the very list that is shown, so the bar always agrees with the ticks.
+  const shown = modules.flatMap((module) => module.materials);
+  const progress =
+    viewer.role === "trainer" || shown.length === 0
+      ? null
+      : { done: shown.filter((material) => material.isDone).length, total: shown.length };
+
+  return { course, modules, edition, editions, progress };
 }
 
 /** One material with its course, module and neighbours, or null when it is out of reach. */
@@ -269,4 +313,24 @@ export async function fetchMaterialFile(
     fileName: data.file_name,
     mimeType: data.mime_type ?? "application/octet-stream",
   };
+}
+
+/**
+ * The address a "link" material points to, for the route that sends the browser there. Row
+ * Level Security on `materials` decides whether the caller gets a row at all; the address is
+ * checked again as it was when it was saved.
+ */
+export async function fetchMaterialLink(
+  client: Client,
+  materialId: string,
+): Promise<string | null> {
+  if (!isUuid(materialId)) return null;
+  const { data, error } = await client
+    .from("materials")
+    .select("kind, url")
+    .eq("id", materialId)
+    .maybeSingle();
+  if (error) throw new Error(`material: ${error.message}`);
+  if (!data || data.kind !== "link" || !data.url) return null;
+  return parseExternalLink(data.url);
 }

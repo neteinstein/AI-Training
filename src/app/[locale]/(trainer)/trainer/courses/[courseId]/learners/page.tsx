@@ -4,6 +4,7 @@ import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { ActionButton } from "@/components/trainer/action-button";
 import { Chip } from "@/components/trainer/chips";
 import { CourseFrame } from "@/components/trainer/course-frame";
+import { actionLooks } from "@/components/trainer/looks";
 import { RowMenu, type MenuEntry } from "@/components/trainer/row-menu";
 import { EmptyState, Row, RowList } from "@/components/trainer/rows";
 import { buttonClass } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { getTrainerCourse } from "@/lib/dal/trainer";
 import {
   fetchCourseEditions,
   fetchCourseLearners,
+  fetchCourseProgress,
   fetchPeopleNotEnrolled,
   type CourseLearner,
 } from "@/lib/dal/trainer-queries";
@@ -39,12 +41,13 @@ export default async function CourseLearnersPage({ params }: Props) {
   const locale = await getLocale();
   await requireTrainer(locale);
   const supabase = await createSupabaseServerClient();
-  const [t, format, learners, others, editions] = await Promise.all([
+  const [t, format, learners, others, editions, progress] = await Promise.all([
     getTranslations("Trainer"),
     getFormatter(),
     fetchCourseLearners(supabase, courseId),
     fetchPeopleNotEnrolled(supabase, courseId),
     fetchCourseEditions(supabase, courseId),
+    fetchCourseProgress(supabase, courseId),
   ]);
   const other = locale === "pt" ? "en" : "pt";
   const named = editions.map((edition) => ({
@@ -64,6 +67,7 @@ export default async function CourseLearnersPage({ params }: Props) {
   const personRow = (person: CourseLearner) => {
     const name = person.fullName || person.email;
     const ids = { course_id: courseId, user_id: person.id };
+    const reached = progress.get(person.id);
     const entries: MenuEntry[] = [
       { type: "heading", label: t("learners.moveTo") },
       ...named
@@ -102,12 +106,38 @@ export default async function CourseLearnersPage({ params }: Props) {
                 date: format.dateTime(new Date(person.enrolledAt), { dateStyle: "medium" }),
               })}
             </span>
+            {reached?.lastActivityAt ? (
+              <>
+                {" · "}
+                <span className="whitespace-nowrap">
+                  {t("learners.lastActivity", {
+                    date: format.dateTime(new Date(reached.lastActivityAt), {
+                      dateStyle: "medium",
+                    }),
+                  })}
+                </span>
+              </>
+            ) : null}
           </span>
         </span>
         <span className="flex flex-wrap items-center gap-2">
           {person.role === "trainer" ? <Chip tone="good">{t("learners.trainer")}</Chip> : null}
           {person.isPending ? <Chip tone="attention">{t("learners.pending")}</Chip> : null}
         </span>
+        {/* How far they are, and the way to what they opened. Nothing to count: no link. */}
+        {reached && reached.total > 0 ? (
+          <Link
+            href={routes.trainerLearnerProgress(courseId, person.id)}
+            aria-label={t("learners.progressNamed", {
+              name,
+              done: reached.done,
+              total: reached.total,
+            })}
+            className={`${actionLooks.text} whitespace-nowrap no-underline`}
+          >
+            {t("learners.progressShort", { done: reached.done, total: reached.total })}
+          </Link>
+        ) : null}
         {several ? (
           <RowMenu label={t("common.moreActions", { name })} entries={entries} />
         ) : (
