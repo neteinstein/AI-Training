@@ -22,6 +22,7 @@ test.describe("progress through a course", () => {
     const service = admin();
     try {
       // A course open to its learners, with two pages and a link, and one learner of its own.
+      // (A material is hidden until it is published: a learner would have nothing to open.)
       const moduleId = await course.addModule("Módulo um");
       const materials = await service
         .from("materials")
@@ -32,6 +33,7 @@ test.describe("progress through a course", () => {
             title_pt: "Página um",
             body_pt: "Texto",
             url: null,
+            is_published: true,
             sort_order: 10,
           },
           {
@@ -40,6 +42,7 @@ test.describe("progress through a course", () => {
             title_pt: "Leitura",
             body_pt: null,
             url: "https://example.org/leitura",
+            is_published: true,
             sort_order: 20,
           },
           {
@@ -48,6 +51,7 @@ test.describe("progress through a course", () => {
             title_pt: "Página três",
             body_pt: "Texto",
             url: null,
+            is_published: true,
             sort_order: 30,
           },
         ])
