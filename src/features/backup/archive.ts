@@ -10,9 +10,9 @@ import type { ZipEntry } from "./zip";
  *   manifest.json         when, by whom, what was included, row counts, and which material
  *                         each file belongs to (written last, once the files are known)
  *
- * Restoring is not built in. The rows are exactly what the database holds, so they can be put
- * back table by table in the order of `data/`, and each file uploaded again under its
- * `storagePath` from the manifest.
+ * The rows are exactly what the database holds, so they go back table by table in the order of
+ * `data/`, and each file is uploaded again under its `storagePath` from the manifest: see
+ * restore.ts, run by the operator as `npm run restore-backup`.
  */
 
 export const BACKUP_FORMAT = "ai-training-backup";
