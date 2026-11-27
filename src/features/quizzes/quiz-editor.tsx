@@ -371,6 +371,7 @@ export function QuizEditor({
                   }
                   maxLength={QUIZ_EXPLANATION_MAX}
                   multiline
+                  rows={3}
                 />
               </div>
             </li>
@@ -412,6 +413,7 @@ function TextPair({
   onChange,
   maxLength,
   multiline = false,
+  rows = 2,
   placeholders = false,
 }: {
   heading?: string;
@@ -425,6 +427,8 @@ function TextPair({
   onChange: (value: Texts) => void;
   maxLength: number;
   multiline?: boolean;
+  /** Lines a text area starts with. An explanation is often a sentence or two longer. */
+  rows?: number;
   placeholders?: boolean;
 }) {
   const active = useActiveLanguage();
@@ -468,7 +472,7 @@ function TextPair({
               {multiline ? (
                 <textarea
                   {...shared}
-                  rows={2}
+                  rows={rows}
                   onChange={(event) => onChange({ ...value, [language]: event.target.value })}
                   className={cn(controlClass, "min-h-[4.5rem] resize-y py-2.5 leading-normal")}
                 />
