@@ -14,7 +14,7 @@ values
 
 insert into public.courses
   (id, slug, area_id, level_id, status, title_pt, title_en, summary_pt, summary_en,
-   description_pt, description_en, duration_hours, sort_order, published_at)
+   description_pt, description_en, duration_hours, starts_on, location, sort_order, published_at)
 values
   ('c1000000-0000-4000-8000-000000000001', 'ai-in-the-classroom',
    'a1000000-0000-4000-8000-000000000001',
@@ -24,7 +24,7 @@ values
    'First steps with AI assistants to prepare lessons, worksheets and materials adapted to your students.',
    E'## O que vai aprender\n\n- Perceber o que um assistente de IA faz bem e onde falha.\n- Escrever pedidos claros para obter planos de aula e fichas de trabalho.\n- Adaptar um mesmo material a diferentes níveis e necessidades.\n- Usar a IA respeitando a privacidade dos alunos.\n\n## A quem se destina\n\nProfessores do ensino básico e secundário que nunca usaram IA no seu trabalho, ou que a experimentaram sem método.\n\n## Programa\n\n1. Introdução: o que é (e o que não é) a IA generativa\n2. Planificar aulas com um assistente\n3. Criar e adaptar materiais\n4. Avaliação, ética e proteção de dados',
    E'## What you will learn\n\n- Understand what an AI assistant does well and where it fails.\n- Write clear requests to get lesson plans and worksheets.\n- Adapt the same material to different levels and needs.\n- Use AI while respecting student privacy.\n\n## Who it is for\n\nPrimary and secondary school teachers who have never used AI in their work, or who have tried it without a method.\n\n## Programme\n\n1. Introduction: what generative AI is (and is not)\n2. Planning lessons with an assistant\n3. Creating and adapting materials\n4. Assessment, ethics and data protection',
-   8, 10, now()),
+   8, '2027-02-13', 'Lisboa', 10, now()),
   ('c1000000-0000-4000-8000-000000000002', 'assessment-and-feedback-with-ai',
    'a1000000-0000-4000-8000-000000000001',
    (select id from public.levels where slug = 'advanced'),
@@ -33,7 +33,7 @@ values
    'Build rubrics, give formative feedback and analyse results, keeping professional judgement at the centre.',
    E'## O que vai aprender\n\n- Construir rubricas e critérios de avaliação com apoio da IA.\n- Preparar feedback formativo mais rápido, sem perder o tom pessoal.\n- Analisar resultados de turma e identificar dificuldades comuns.',
    E'## What you will learn\n\n- Build rubrics and assessment criteria with the help of AI.\n- Prepare formative feedback faster without losing the personal tone.\n- Analyse class results and spot common difficulties.',
-   12, 20, now()),
+   12, '2027-03-20', 'Porto', 20, now()),
   ('c1000000-0000-4000-8000-000000000003', 'ai-in-clinical-practice',
    'a1000000-0000-4000-8000-000000000002',
    (select id from public.levels where slug = 'introductory'),
@@ -42,7 +42,7 @@ values
    'How to use AI assistants safely to summarise literature, draft reports and prepare patient information.',
    E'## O que vai aprender\n\n- Conhecer os limites dos assistentes de IA em contexto clínico.\n- Resumir e comparar literatura científica com sentido crítico.\n- Redigir rascunhos de relatórios e de informação para doentes.\n- Proteger dados de saúde ao usar estas ferramentas.',
    E'## What you will learn\n\n- Know the limits of AI assistants in a clinical setting.\n- Summarise and compare scientific literature critically.\n- Draft reports and patient information.\n- Protect health data when using these tools.',
-   6, 30, now()),
+   6, '2027-01-30', 'Coimbra', 30, now()),
   ('c1000000-0000-4000-8000-000000000004', 'ai-for-clinical-research',
    'a1000000-0000-4000-8000-000000000002',
    (select id from public.levels where slug = 'advanced'),
@@ -51,20 +51,20 @@ values
    'From the research question to writing the paper: where AI helps, where it gets in the way and how to use it rigorously.',
    E'## O que vai aprender\n\n- Apoiar a revisão de literatura e a extração de dados.\n- Usar a IA na análise exploratória e na redação científica.\n- Documentar o uso de IA de acordo com as normas das revistas.',
    E'## What you will learn\n\n- Support literature review and data extraction.\n- Use AI in exploratory analysis and scientific writing.\n- Document the use of AI in line with journal policies.',
-   10, 40, now()),
+   10, '2027-04-17', 'Online', 40, now()),
   -- One draft (trainers only) and one unlisted course (enrolled learners only) to show the statuses.
   ('c1000000-0000-4000-8000-000000000005', 'ai-for-school-leaders',
    'a1000000-0000-4000-8000-000000000001',
    (select id from public.levels where slug = 'introductory'),
    'draft', 'IA para direções escolares', 'AI for school leaders',
-   null, null, null, null, null, 50, null),
+   null, null, null, null, null, '2027-05-08', 'Braga', 50, null),
   ('c1000000-0000-4000-8000-000000000006', 'ai-in-the-classroom-private-edition',
    'a1000000-0000-4000-8000-000000000001',
    (select id from public.levels where slug = 'introductory'),
    'unlisted', 'IA na sala de aula (edição interna)', 'AI in the classroom (private edition)',
    'Edição à medida para uma escola, visível apenas para os formandos inscritos.',
    'A tailored edition for one school, visible only to its enrolled learners.',
-   null, null, 8, 60, null);
+   null, null, 8, '2027-02-06', 'Setúbal', 60, null);
 
 insert into public.modules (id, course_id, title_pt, title_en, sort_order)
 values

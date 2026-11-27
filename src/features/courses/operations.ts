@@ -8,6 +8,7 @@ import {
   type Direction,
 } from "@/lib/dal/mutations";
 import type { Client, CourseStatus } from "@/lib/dal/types";
+import { isIsoDate } from "@/lib/dates";
 import { isUuid } from "@/lib/ids";
 import { isSlug } from "@/lib/slug";
 
@@ -25,6 +26,9 @@ export type CourseInput = {
   /** Markdown. */
   description: Bilingual;
   durationHours: number | null;
+  /** The day it takes place (or starts), as YYYY-MM-DD. */
+  startsOn: string;
+  location: string;
 };
 
 export type CourseSaveResult =
@@ -56,6 +60,7 @@ function saveFailure(error: { code?: string; message?: string }): CourseSaveResu
 function courseColumns(input: CourseInput) {
   if (!isSlug(input.slug) || !isUuid(input.areaId) || !isUuid(input.levelId)) return null;
   if (input.title.pt.trim() === "" || input.title.en.trim() === "") return null;
+  if (!isIsoDate(input.startsOn) || input.location.trim() === "") return null;
   const hours = input.durationHours;
   if (hours !== null && !(Number.isFinite(hours) && hours > 0 && hours < 10_000)) return null;
   return {
@@ -69,6 +74,8 @@ function courseColumns(input: CourseInput) {
     description_pt: blankToNull(input.description.pt),
     description_en: blankToNull(input.description.en),
     duration_hours: hours === null ? null : Math.round(hours * 10) / 10,
+    starts_on: input.startsOn,
+    location: input.location.trim(),
   };
 }
 

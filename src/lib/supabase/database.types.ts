@@ -55,9 +55,11 @@ export type Database = {
           duration_hours: number | null;
           id: string;
           level_id: string;
+          location: string | null;
           published_at: string | null;
           slug: string;
           sort_order: number;
+          starts_on: string | null;
           status: Database["public"]["Enums"]["course_status"];
           summary_en: string | null;
           summary_pt: string | null;
@@ -74,9 +76,11 @@ export type Database = {
           duration_hours?: number | null;
           id?: string;
           level_id: string;
+          location?: string | null;
           published_at?: string | null;
           slug: string;
           sort_order?: number;
+          starts_on?: string | null;
           status?: Database["public"]["Enums"]["course_status"];
           summary_en?: string | null;
           summary_pt?: string | null;
@@ -92,9 +96,11 @@ export type Database = {
           duration_hours?: number | null;
           id?: string;
           level_id?: string;
+          location?: string | null;
           published_at?: string | null;
           slug?: string;
           sort_order?: number;
+          starts_on?: string | null;
           status?: Database["public"]["Enums"]["course_status"];
           summary_en?: string | null;
           summary_pt?: string | null;

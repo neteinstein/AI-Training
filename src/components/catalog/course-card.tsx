@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import type { CourseCard as Course } from "@/lib/dal/types";
 import { cn } from "@/lib/utils";
 import { AreaChip } from "./area-chip";
+import { CourseWhenWhere } from "./course-when-where";
 import { LevelGlyph } from "./level-glyph";
 
 /** Level and duration, as shown at the bottom of a card and in a course header. */
@@ -54,7 +55,10 @@ export function CourseCard({
           </span>
         ) : null}
       </span>
-      <CourseFacts course={course} className="border-border mt-auto border-t pt-4" />
+      <span className="border-border mt-auto flex flex-col gap-2.5 border-t pt-4">
+        <CourseWhenWhere course={course} />
+        <CourseFacts course={course} />
+      </span>
     </Link>
   );
 }
