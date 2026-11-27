@@ -823,7 +823,15 @@ describe("editions in the back-office", () => {
     const editions = await fetchCourseEditions(ana.client, published);
     expect(sorted(editions.map((edition) => edition.id))).toEqual(sorted([general, january, past]));
     expect(editions.every((edition) => edition.hiddenMaterials === 0)).toBe(true);
-    expect(await fetchCourseBuilder(ana.client, published)).toEqual([]);
+
+    // The content: for Ana what her edition shows, with nothing about what other editions
+    // hide; for someone outside the course, nothing at all.
+    const [module] = await fetchCourseBuilder(ana.client, published);
+    expect(sorted(module.materials.map((material) => material.id))).toEqual(
+      await seenMaterials(ana.client),
+    );
+    expect(module.materials.every((material) => material.hiddenIn.length === 0)).toBe(true);
+    expect(await fetchCourseBuilder(outsider.client, published)).toEqual([]);
   });
 });
 
