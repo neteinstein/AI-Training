@@ -133,6 +133,38 @@ test.describe("areas", () => {
   });
 });
 
+test.describe("areas: a save that is refused", () => {
+  test("the colour and the icon chosen before it are the ones saved after it", async ({ page }) => {
+    const name = unique("Arquitetos");
+    try {
+      await signInAsTrainer(page);
+      await page.goto("/pt/trainer/areas/new");
+      // Chosen first; then the save is refused, because the name is missing.
+      await page.locator("label").filter({ hasText: "Rosa" }).click();
+      await page.getByTitle("Balança").click();
+      await page.getByRole("button", { name: "Criar" }).click();
+      await expect(alertWith(page, "Verifique os campos assinalados.")).toBeVisible();
+      // The form still holds the choice, and does not merely show it: a form is reset when
+      // its handler has run, which once put these two back to where they started while the
+      // screen went on showing what had been chosen.
+      await expect(page.getByRole("radio", { name: "Rosa" })).toBeChecked();
+      await expect(page.getByRole("radio", { name: "Balança" })).toBeChecked();
+
+      await fillBoth(page, "Nome", name, `${name} EN`);
+      await page.getByRole("button", { name: "Criar" }).click();
+      await expectNotice(page, "Área criada.");
+      const { data: saved } = await admin()
+        .from("areas")
+        .select("color, icon")
+        .eq("name_pt", name)
+        .single();
+      expect(saved).toEqual({ color: "rose", icon: "scale" });
+    } finally {
+      await admin().from("areas").delete().like("name_pt", "Arquitetos %");
+    }
+  });
+});
+
 test.describe("levels", () => {
   test("a trainer creates a level with its own address, and addresses stay unique", async ({
     page,
