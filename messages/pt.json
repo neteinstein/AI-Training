@@ -723,10 +723,15 @@
   },
   "Home": {
     "eyebrow": "Formação em inteligência artificial",
-    "title": "A Inteligência Artificial ao seu serviço",
+    "title": "A Inteligência Artificial <accent>ao seu serviço</accent>",
     "lead": "Cursos práticos de inteligência artificial, pensados para a sua profissão. Sem jargão, com exemplos do seu dia a dia e todos os materiais num só lugar.",
     "seeCourses": "Ver cursos",
     "requestInfo": "Pedir informações",
+    "orbit": {
+      "assistant": "Assistente de IA",
+      "prompt": "Transforma os meus apontamentos num teste de 10 perguntas para o 8.º ano.",
+      "reply": "Aqui está o teste, com as soluções e os critérios de correção."
+    },
     "areas": {
       "title": "Para a sua área",
       "lead": "Cada curso parte dos desafios concretos de uma profissão.",

@@ -112,13 +112,22 @@
   /* Shadows: menus, dialogs and raised cards; and a sheet of paper on the PDF backdrop */
   --shadow-raised: 0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.08);
   --shadow-page: 0 1px 3px rgb(15 23 42 / 0.18);
+
+  /* Landing page art: how strong the glows are, and the film grain over them */
+  --aurora-strength: 26%;
+  --grain-opacity: 0.05;
 }
 
 /*
  * Dark theme: the same tokens on deep slate. Text and the brand colours become light, so a
  * solid button carries dark text here. <html data-theme> is set before the page is drawn by
  * the script in src/lib/theme.ts: the person's choice, or else what their device asks for.
+ * A part of a page can also be dark on its own, in either theme, with data-theme="dark"
+ * (the landing page's contact panel); it must then set its own text and background colour.
+ * Keep every dark value in this one block: with a second `[data-theme="dark"]` rule further
+ * down, the Next.js build dropped that selector from this list, and the panel stayed light.
  */
+[data-theme="dark"],
 :root[data-theme="dark"] {
   color-scheme: dark;
 
@@ -210,6 +219,9 @@
 
   --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.45);
   --shadow-page: 0 1px 3px rgb(0 0 0 / 0.5);
+
+  --aurora-strength: 30%;
+  --grain-opacity: 0.08;
 }
 
 @theme inline {
@@ -345,6 +357,180 @@
   --tw-prose-pre-bg: var(--muted);
   --tw-prose-th-borders: var(--border);
   --tw-prose-td-borders: var(--border);
+}
+
+/*
+ * Landing page art: the glow behind the hero, the orbit around the sphere, and the small
+ * flourishes that give the page its own look. All of it is decoration, drawn from the theme's
+ * colours, so it follows light and dark on its own. Movement stops for people who ask for less.
+ */
+@layer components {
+  /* Three soft lights drifting behind a section. The section needs `relative isolate`. */
+  .aurora {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .aurora > span {
+    position: absolute;
+    width: min(56rem, 120vw);
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, var(--blob), transparent);
+    animation: aurora-drift 26s ease-in-out infinite alternate;
+  }
+  .aurora > span:nth-child(1) {
+    --blob: color-mix(in oklab, var(--primary) var(--aurora-strength), transparent);
+    top: -45%;
+    right: -18%;
+  }
+  .aurora > span:nth-child(2) {
+    --blob: color-mix(in oklab, var(--art-accent) var(--aurora-strength), transparent);
+    bottom: -55%;
+    left: -22%;
+    animation-duration: 32s;
+    animation-direction: alternate-reverse;
+  }
+  .aurora > span:nth-child(3) {
+    --blob: color-mix(in oklab, var(--art-sun) calc(var(--aurora-strength) * 0.7), transparent);
+    width: min(30rem, 80vw);
+    top: 10%;
+    left: 38%;
+    animation-duration: 21s;
+  }
+
+  /* A fine grid of dots that fades out towards the edges. */
+  .dot-grid {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--foreground) 16%, transparent) 1px,
+      transparent 1.4px
+    );
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse 65% 70% at 70% 45%, black, transparent 78%);
+  }
+
+  /* Film grain over a section, so the gradients do not look flat. */
+  .grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Words in a heading painted with the brand gradient. Both ends meet AA for large text. */
+  .text-gradient {
+    background: linear-gradient(100deg, var(--primary) 10%, var(--art-accent) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Big step numbers drawn as an outline only. */
+  .numeral-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--primary);
+  }
+
+  /* The orbit: rings turn, and what rides on them turns back so it stays upright. */
+  .orbit-spin {
+    animation: orbit-turn var(--orbit-duration, 70s) linear infinite;
+  }
+  .orbit-spin-reverse {
+    animation: orbit-turn var(--orbit-duration, 70s) linear infinite reverse;
+  }
+
+  /* The hero comes in once, a line at a time. */
+  .rise {
+    animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--rise-step, 0) * 90ms);
+  }
+  .draw-in {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-in 1.1s 0.55s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+  .twinkle {
+    animation: twinkle 3.2s ease-in-out infinite;
+  }
+  .caret {
+    animation: caret 1.1s steps(1) infinite;
+  }
+  .float-slow {
+    animation: float-slow 7s ease-in-out infinite alternate;
+  }
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--muted) 0%,
+      color-mix(in oklab, var(--primary) 18%, var(--muted)) 50%,
+      var(--muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2.4s linear infinite;
+  }
+  .pulse-dot {
+    animation: pulse-dot 2.4s ease-out infinite;
+  }
+}
+
+@keyframes aurora-drift {
+  to {
+    transform: translate3d(-6%, 8%, 0) scale(1.12);
+  }
+}
+@keyframes orbit-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes draw-in {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes twinkle {
+  50% {
+    opacity: 0.25;
+    scale: 0.6;
+  }
+}
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes float-slow {
+  to {
+    translate: 0 -10px;
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--art-accent) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
 }
 
 /*
