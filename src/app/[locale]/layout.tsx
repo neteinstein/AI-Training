@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ThemeScript } from "@/components/layout/theme-script";
 import { htmlLang, locales, ogLocale, siteConfig, siteUrl } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
@@ -64,7 +65,12 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
     <html
       lang={htmlLang[locale]}
       className={`${inter.variable} ${manrope.variable} h-full antialiased`}
+      // The script below adds data-theme before React starts: that difference is expected.
+      suppressHydrationWarning
     >
+      <head>
+        <ThemeScript />
+      </head>
       <body className="flex min-h-full flex-col">
         <a
           href="#content"

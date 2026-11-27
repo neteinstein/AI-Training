@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { Logo } from "@/components/layout/logo";
+import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { routes } from "@/lib/routes";
@@ -15,7 +16,10 @@ export default async function NotFoundPage() {
         <Link href={routes.home} className="text-foreground no-underline">
           <Logo />
         </Link>
-        <LocaleSwitcher />
+        <span className="flex items-center gap-1">
+          <LocaleSwitcher />
+          <ThemeSwitch />
+        </span>
       </header>
       <main
         id="content"

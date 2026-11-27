@@ -2,14 +2,15 @@ import { ChevronRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 export type Crumb = { label: string; href?: string };
 
 /**
- * The shape every back-office page shares: a bar with where you are and the language switch,
- * then the page's heading, then its content.
+ * The shape every back-office page shares: a bar with where you are, the language switch and
+ * (on wide screens) the theme switch, then the page's heading, then its content.
  */
 export async function PageFrame({
   crumbs,
@@ -59,7 +60,11 @@ export async function PageFrame({
         </nav>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
           {barActions}
-          <LocaleSwitcher />
+          <span className="flex items-center gap-1">
+            <LocaleSwitcher />
+            {/* On a phone the bar has no room to spare: there the choice is in the menu. */}
+            <ThemeSwitch className="max-md:hidden" />
+          </span>
         </div>
       </div>
 

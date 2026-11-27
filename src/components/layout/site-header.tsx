@@ -8,6 +8,7 @@ import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 import { NavLink } from "./nav-link";
+import { ThemeSwitch } from "./theme-switch";
 
 /** Header of the public site. Everything in it is the same for every visitor, so it caches. */
 export async function SiteHeader() {
@@ -22,23 +23,25 @@ export async function SiteHeader() {
 
   return (
     <header className="border-border border-b">
-      <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center justify-between gap-x-8 gap-y-3 py-2 pr-2.5 pl-5 md:px-6 md:py-3.5">
+      {/* Between a phone and a laptop the bar holds everything on one line only just: the
+          logo stays small and the gaps tight until there is room (lg). */}
+      <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center justify-between gap-x-5 gap-y-3 py-2 pr-2.5 pl-5 md:px-6 md:py-3.5 lg:gap-x-8">
         <Link
           href={routes.home}
           // Starts with the name on screen, so voice control finds it by what is shown.
           aria-label={`${siteConfig.name}: ${t("home")}`}
           className="text-foreground flex min-h-11 items-center no-underline"
         >
-          <Logo className="max-md:[&>span]:text-xl max-md:[&>svg]:size-[30px]" />
+          <Logo className="max-lg:[&>span]:text-xl max-lg:[&>svg]:size-[30px]" />
         </Link>
 
-        <nav aria-label={t("main")} className="hidden items-center gap-x-7 md:flex">
+        <nav aria-label={t("main")} className="hidden items-center gap-x-5 md:flex lg:gap-x-7">
           {items.map((item) => (
             <NavLink
               key={item.href}
               href={item.href}
               className={cn(
-                "text-foreground hover:text-primary flex min-h-11 items-center font-medium no-underline transition-colors",
+                "text-foreground hover:text-primary flex min-h-11 items-center font-medium whitespace-nowrap no-underline transition-colors",
                 item.wideOnly && "hidden lg:flex",
               )}
             >
@@ -47,8 +50,11 @@ export async function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <LocaleSwitcher />
+        <div className="hidden items-center gap-3 md:flex lg:gap-4">
+          <span className="flex items-center gap-1">
+            <LocaleSwitcher />
+            <ThemeSwitch />
+          </span>
           <Link href={routes.login} className={buttonClass({ variant: "outline", size: "sm" })}>
             {t("signIn")}
           </Link>
@@ -64,6 +70,7 @@ export async function SiteHeader() {
                 {t("signIn")}
               </Link>
               <LocaleSwitcher className="self-start" />
+              <ThemeSwitch inline className="self-start" />
             </>
           }
         />

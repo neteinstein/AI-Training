@@ -4,7 +4,8 @@ import { admin, demoCourses, demoMaterials, demoUsers, signIn, signInAsTrainer }
 
 /**
  * Checks that apply to every screen: the automated accessibility rules (WCAG 2.1 A and AA,
- * plus the 2.2 additions), and no sideways scrolling on the narrowest phones.
+ * plus the 2.2 additions) in the light and the dark theme, and no sideways scrolling on the
+ * narrowest phones.
  *
  * Automated rules find perhaps a third of accessibility problems. The rest is covered by the
  * tests that use each screen through roles and names, as assistive technology does, and by
@@ -94,23 +95,32 @@ async function overflowing(page: Page, paths: string[]): Promise<string[]> {
   return wide;
 }
 
-test.describe("accessibility rules", () => {
-  test("public pages", async ({ page }) => {
-    expect(await accessibilityProblems(page, publicPages)).toEqual([]);
-  });
+for (const scheme of ["light", "dark"] as const) {
+  test.describe(`accessibility rules, ${scheme} theme`, () => {
+    // Colours do not depend on the size of the screen: the dark pass runs once.
+    test.skip(
+      ({ isMobile }) => scheme === "dark" && isMobile,
+      "the dark theme is checked in the desktop project",
+    );
+    test.use({ colorScheme: scheme });
 
-  test("learner area", async ({ page }) => {
-    await signIn(page, demoUsers.ana.email);
-    await expect(page).toHaveURL(/\/pt\/learn$/);
-    expect(await accessibilityProblems(page, learnerPages)).toEqual([]);
-  });
+    test("public pages", async ({ page }) => {
+      expect(await accessibilityProblems(page, publicPages)).toEqual([]);
+    });
 
-  test("back-office", async ({ page }) => {
-    test.slow();
-    await signInAsTrainer(page);
-    expect(await accessibilityProblems(page, trainerPages)).toEqual([]);
+    test("learner area", async ({ page }) => {
+      await signIn(page, demoUsers.ana.email);
+      await expect(page).toHaveURL(/\/pt\/learn$/);
+      expect(await accessibilityProblems(page, learnerPages)).toEqual([]);
+    });
+
+    test("back-office", async ({ page }) => {
+      test.slow();
+      await signInAsTrainer(page);
+      expect(await accessibilityProblems(page, trainerPages)).toEqual([]);
+    });
   });
-});
+}
 
 test.describe("on the narrowest phones", () => {
   // One pass is enough: the page's width does not depend on the device being emulated.
@@ -131,6 +141,29 @@ test.describe("on the narrowest phones", () => {
     test.slow();
     await signInAsTrainer(page);
     expect(await overflowing(page, trainerPages)).toEqual([]);
+  });
+});
+
+test.describe("between a phone and a laptop", () => {
+  // The narrowest screen that gets the full header instead of the phone's menu button.
+  test.skip(({ isMobile }) => isMobile, "checked in the desktop project");
+  test.use({ viewport: { width: 768, height: 800 } });
+
+  test("the public header keeps to one line, in both languages", async ({ page }) => {
+    for (const path of ["/pt", "/en"]) {
+      await settle(page, path);
+      // Every link and button of the header is one line of text in a 44px control. A name
+      // or a menu item that wraps onto a second line makes its control taller.
+      const tallest = await page.evaluate(() =>
+        Math.max(
+          ...[...document.querySelectorAll("header a, header button")]
+            .filter((element) => element.getClientRects().length > 0)
+            .map((element) => element.getBoundingClientRect().height),
+        ),
+      );
+      expect(tallest, path).toBeLessThanOrEqual(48);
+    }
+    expect(await overflowing(page, ["/pt", "/en"])).toEqual([]);
   });
 });
 

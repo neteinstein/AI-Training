@@ -3,14 +3,18 @@
 @import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
+/* `dark:` utilities follow the theme chosen on <html>, see src/lib/theme.ts. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /*
- * Design tokens: the one place to change the look.
- * Every text/background pair used in the interface is checked for contrast in
- * tests/unit/design-tokens.test.ts.
+ * Design tokens: the one place to change the look. The light theme is here; the dark theme
+ * below gives every colour a second value. Every text/background pair used in the interface
+ * is checked for contrast, in both themes, in tests/unit/design-tokens.test.ts.
  */
 :root {
+  /* Native controls, scrollbars and autofill follow the theme too. */
+  color-scheme: light;
+
   /* Surfaces */
   --background: #ffffff; /* page */
   --card: #ffffff; /* cards and the back-office work surface */
@@ -36,8 +40,10 @@
   --highlight: #0f766e; /* teal: badges and small labels; dark enough to carry white text */
   --highlight-foreground: #0f766e;
   --highlight-tint: #ddf4f1;
+  --on-highlight: #ffffff; /* text on a solid teal badge */
   --destructive: #b91c1c;
   --destructive-tint: #fdecec; /* behind error messages */
+  --on-destructive: #ffffff; /* text on a solid red button */
 
   /* Footer of the public site */
   --footer: #0f172a;
@@ -54,8 +60,9 @@
   --glyph-rest: #cbd5e1;
   --glyph-rest-on-tint: #b3c3ea;
 
-  /* Behind the pages of the PDF viewer */
+  /* The PDF viewer: what lies behind the pages, and the paper itself (white in both themes) */
   --pdf-backdrop: #e2e8f0;
+  --pdf-page: #ffffff;
 
   /* Lines */
   --border: #dde3ec; /* card outlines, dividers (decorative) */
@@ -101,6 +108,108 @@
 
   /* Shape: 10px controls; cards use the 2xl step (16px) */
   --radius: 0.625rem;
+
+  /* Shadows: menus, dialogs and raised cards; and a sheet of paper on the PDF backdrop */
+  --shadow-raised: 0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.08);
+  --shadow-page: 0 1px 3px rgb(15 23 42 / 0.18);
+}
+
+/*
+ * Dark theme: the same tokens on deep slate. Text and the brand colours become light, so a
+ * solid button carries dark text here. <html data-theme> is set before the page is drawn by
+ * the script in src/lib/theme.ts: the person's choice, or else what their device asks for.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces: a raised surface is a little lighter than what it lies on */
+  --background: #0b1220;
+  --card: #111a2c;
+  --popover: #111a2c;
+  --muted: #172238;
+  --secondary: #172238;
+  --accent: #1c2c4f;
+  --sidebar: #0f1828;
+
+  /* Text */
+  --foreground: #e6ebf4;
+  --card-foreground: #e6ebf4;
+  --popover-foreground: #e6ebf4;
+  --secondary-foreground: #e6ebf4;
+  --muted-foreground: #a5b3c9;
+  --accent-foreground: #a9c4ff;
+  --sidebar-foreground: #e6ebf4;
+
+  /* Brand */
+  --primary: #8fb3ff;
+  --primary-hover: #a9c4ff;
+  --primary-foreground: #0b1220;
+  --highlight: #5eead4;
+  --highlight-foreground: #5eead4;
+  --highlight-tint: #11302f;
+  --on-highlight: #0b1220;
+  --destructive: #fca5a5;
+  --destructive-tint: #3a1618;
+  --on-destructive: #0b1220;
+
+  /* Footer of the public site */
+  --footer: #070d18;
+  --footer-foreground: #e6ebf4;
+
+  /* The logo and the illustrations */
+  --art-accent: #2dd4bf;
+  --art-accent-on-dark: #5eead4;
+  --art-sun: #fbbf24;
+  --art-leaf: #14b8a6;
+  --art-leaf-light: #5eead4;
+
+  /* Level glyph: the bars that are not filled */
+  --glyph-rest: #33415c;
+  --glyph-rest-on-tint: #3a4c78;
+
+  /* The PDF viewer */
+  --pdf-backdrop: #070d18;
+  --pdf-page: #ffffff;
+
+  /* Lines */
+  --border: #26334d;
+  --input: #7889a6;
+  --ring: #8fb3ff;
+
+  /* Area palette: a light tone for icon and text on its own dark tint */
+  --area-forest: #86d39a;
+  --area-forest-tint: #12301d;
+  --area-terracotta: #f2a57e;
+  --area-terracotta-tint: #3a1d10;
+  --area-ocean: #7fd0e6;
+  --area-ocean-tint: #0f2f3a;
+  --area-plum: #e39be9;
+  --area-plum-tint: #371338;
+  --area-ochre: #e6be6a;
+  --area-ochre-tint: #33260a;
+  --area-indigo: #aab0ff;
+  --area-indigo-tint: #1d1f4d;
+  --area-rose: #f59bb0;
+  --area-rose-tint: #3b1220;
+  --area-olive: #b9d77a;
+  --area-olive-tint: #222e0d;
+
+  /* Sidebar (back-office) */
+  --sidebar-primary: #8fb3ff;
+  --sidebar-primary-foreground: #0b1220;
+  --sidebar-accent: #1c2c4f;
+  --sidebar-accent-foreground: #a9c4ff;
+  --sidebar-border: #26334d;
+  --sidebar-ring: #8fb3ff;
+
+  --chart-1: #8fb3ff;
+  --chart-2: #2dd4bf;
+  --chart-3: #7fd0e6;
+  --chart-4: #e6be6a;
+  --chart-5: #e39be9;
+
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.45);
+  --shadow-page: 0 1px 3px rgb(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -122,8 +231,10 @@
   --color-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
   --color-highlight-tint: var(--highlight-tint);
+  --color-on-highlight: var(--on-highlight);
   --color-destructive: var(--destructive);
   --color-destructive-tint: var(--destructive-tint);
+  --color-on-destructive: var(--on-destructive);
   --color-footer: var(--footer);
   --color-footer-foreground: var(--footer-foreground);
   --color-border: var(--border);
@@ -131,6 +242,7 @@
   --color-ring: var(--ring);
 
   --color-pdf-backdrop: var(--pdf-backdrop);
+  --color-pdf-page: var(--pdf-page);
   --color-glyph-rest: var(--glyph-rest);
   --color-glyph-rest-on-tint: var(--glyph-rest-on-tint);
 
@@ -176,10 +288,6 @@
   --radius-2xl: calc(var(--radius) * 1.6);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-
-  --shadow-raised: 0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.08);
-  /* A sheet of paper lying on the PDF viewer's backdrop */
-  --shadow-page: 0 1px 3px rgb(15 23 42 / 0.18);
 }
 
 @layer base {
@@ -213,6 +321,30 @@
     background: var(--accent);
     color: var(--foreground);
   }
+}
+
+/*
+ * Long text written in Markdown: the typography plugin brings its own greys, which know
+ * nothing of the theme. Here they are tied to the tokens, so they follow it.
+ */
+.prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-kbd: var(--foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--muted);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
 }
 
 /*

@@ -103,7 +103,7 @@ export function AreaForm({ area }: { area?: TrainerArea }) {
                 className="flex size-5 items-center justify-center rounded-full bg-current"
               >
                 {color === option ? (
-                  <Check className="size-3.5 text-white" strokeWidth={3} />
+                  <Check className="text-background size-3.5" strokeWidth={3} />
                 ) : null}
               </span>
               {t(`areas.colors.${option}`)}

@@ -114,7 +114,8 @@ src/lib/dal/            what reads data, for the public site, learners and train
 src/lib/embeds/         turns a pasted YouTube, Vimeo or Google link into a safe frame address
 src/lib/security/       security headers, route rules, safe redirects
 src/config/site.ts      the name of the platform, area colours and icons
-src/app/globals.css     colours, heading weight, radii and shadows: the one place to change the look
+src/app/globals.css     colours (light and dark), heading weight, radii and shadows: the one place to change the look
+src/lib/theme.ts        light or dark: the person's choice, else the device's, set before the page is drawn
 src/app/fonts/          the typefaces (Manrope for headings, Inter for text), served by the site itself
 ```
 
@@ -220,7 +221,7 @@ and Google hosts, and the site can never be shown inside another site.
 ## Tests
 
 - `npm test`: unit tests for the pieces that need no database (address parsing, Markdown
-  safety, form validation in both languages, colour contrast of the theme, security headers),
+  safety, form validation in both languages, colour contrast of both themes, security headers),
   and checks that read the source: every form handler has its access check, the secret key is
   used only where decided, the validation library stays out of the browser.
 - `npm run test:integration`: every access rule and every data change, run against the local
@@ -232,7 +233,8 @@ and Google hosts, and the site can never be shown inside another site.
   from the local mail catcher. Run `npm run build` first. Besides the journeys (building a
   course, uploading a file, inviting someone who then activates the account and reads the
   materials, a request becoming an invitation) they include:
-  - the automated accessibility rules (WCAG 2.1 A and AA) on every main screen;
+  - the automated accessibility rules (WCAG 2.1 A and AA) on every main screen, in the light
+    and in the dark theme;
   - the back-office used with the keyboard alone (menus, dialogs, switches, reordering);
   - no sideways scrolling at 320 px;
   - the security policy blocking nothing the pages need, and back-office form handlers
@@ -252,8 +254,9 @@ The pictures in the [README](README.md) live in `docs/screenshots/`. They are th
 of the app, captured against the demo data and then framed in a browser window or a phone.
 
 The captures come from `e2e/screens.spec.ts`, which is not a test of behaviour: with
-`SCREENS=1` it saves a picture of every main screen, at desktop and phone size, into
-`e2e-screens/` (ignored by Git). CI does this on every run and keeps the pictures for a week.
+`SCREENS=1` it saves a picture of every main screen, at desktop and phone size and in both
+themes, into `e2e-screens/` (ignored by Git). CI does this on every run and keeps the pictures
+for a week.
 
 To refresh the README's pictures, first put the captures in `e2e-screens/`, either by saving
 them yourself:
