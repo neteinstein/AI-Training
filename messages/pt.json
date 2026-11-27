@@ -99,7 +99,10 @@
     "emails": "Verifique {count, plural, one {este endereço} other {estes endereços}}: {invalid}",
     "tooManyEmails": "Convide no máximo {max} pessoas de cada vez.",
     "passwordSame": "A nova palavra-passe tem de ser diferente da atual.",
-    "consent": "Assinale esta caixa para podermos responder ao seu pedido."
+    "consent": "Assinale esta caixa para podermos responder ao seu pedido.",
+    "startNeeded": "Indique o primeiro dia, ou apague o último.",
+    "startToList": "Indique o primeiro dia para mostrar a edição no site público.",
+    "endBeforeStart": "O último dia não pode ser anterior ao primeiro."
   },
   "Learn": {
     "title": "Os meus cursos",
@@ -121,7 +124,12 @@
     "firstMaterial": "Primeiro material",
     "lastMaterial": "Último material",
     "materialsNav": "Materiais do curso",
-    "backToCourses": "Os meus cursos"
+    "backToCourses": "Os meus cursos",
+    "edition": "Edição",
+    "previewEdition": "Ver o que cada edição vê",
+    "wholeCourse": "Todo o curso",
+    "previewNoteEdition": "Está a ver este curso como um formando da edição «{name}». Os materiais marcados como ocultos só aparecem aos formadores.",
+    "onlyIn": "Só: {name}"
   },
   "Trainer": {
     "title": "Back-office",
@@ -282,6 +290,7 @@
         "label": "Secções do curso",
         "details": "Detalhes",
         "content": "Conteúdo",
+        "editions": "Edições",
         "learners": "Formandos ({count})"
       },
       "viewAsLearner": "Ver como formando",
@@ -425,7 +434,52 @@
         "missing": "O ficheiro carregado já não está disponível. Carregue-o novamente."
       },
       "addMaterialTo": "Adicionar material a {name}",
-      "viewAsLearner": "Ver como formando"
+      "viewAsLearner": "Ver como formando",
+      "editionView": "Mostrar",
+      "wholeCourse": "Todo o curso",
+      "editionNote": "Está a ver o que a edição «{name}» mostra. Use o interruptor para ocultar um material do curso só nesta edição, e acrescente os materiais que só ela deve ver. A ordem e os módulos mudam-se em «Todo o curso».",
+      "shownIn": "Visível nesta edição: {name}",
+      "onlyThisEdition": "Só nesta edição",
+      "onlyIn": "Só: {name}",
+      "hiddenInCount": "{count, plural, one {Oculto em # edição} other {Oculto em # edições}}",
+      "hiddenForAll": "Oculto para todos",
+      "addToEdition": "Adicionar só a esta edição",
+      "editionSummary": "{total, plural, one {# material} other {# materiais}} · {visible, plural, =0 {nenhum visível nesta edição} one {# visível nesta edição} other {# visíveis nesta edição}}",
+      "shownTo": "Quem vê este material",
+      "allEditions": "Todas as edições do curso",
+      "shownToHelp": "Um material de uma só edição não aparece aos formandos das outras."
+    },
+    "editions": {
+      "title": "Edições",
+      "lead": "Uma edição é uma realização do curso, com os seus próprios formandos e, se quiser, datas. Todas as edições mostram os materiais do curso; em cada uma pode ocultar alguns e acrescentar materiais só dela.",
+      "leadDefault": "Quem é adicionado ao curso sem escolher edição entra na edição predefinida.",
+      "listLabel": "Edições do curso",
+      "new": "Nova edição",
+      "edit": "Editar edição",
+      "name": "Nome da edição",
+      "nameHelp": "Por exemplo, «Turma de janeiro de 2027». É necessário nos dois idiomas, porque uma edição pode aparecer no site público.",
+      "startsOn": "Primeiro dia",
+      "endsOn": "Último dia",
+      "datesHelp": "As datas são apenas informação para as pessoas: não abrem nem fecham o acesso aos materiais.",
+      "listed": "Mostrar na página pública do curso",
+      "listedHelp": "A edição aparece em «Próximas edições» enquanto o curso estiver publicado e ainda não tiver começado. Precisa de um primeiro dia.",
+      "default": "Predefinida",
+      "public": "No site público",
+      "noDates": "Sem datas",
+      "learners": "{count, plural, =0 {Sem formandos} one {# formando} other {# formandos}}",
+      "own": "{count, plural, one {# material só desta edição} other {# materiais só desta edição}}",
+      "hidden": "{count, plural, one {# material do curso oculto} other {# materiais do curso ocultos}}",
+      "makeDefault": "Tornar predefinida",
+      "madeDefault": "Edição predefinida alterada.",
+      "viewContent": "Ver o conteúdo desta edição",
+      "viewLearners": "Ver os formandos",
+      "delete": "Eliminar edição",
+      "deleteTitle": "Eliminar a edição «{name}»?",
+      "deleteText": "Os materiais que só esta edição mostra, e os ficheiros carregados para eles, também são eliminados. Não pode ser desfeito.",
+      "created": "Edição criada.",
+      "deleted": "Edição eliminada.",
+      "hasLearners": "Esta edição tem formandos. Mova-os para outra edição, ou retire-os do curso, antes de a eliminar.",
+      "lastOne": "Um curso tem sempre pelo menos uma edição."
     },
     "learners": {
       "empty": "Ainda ninguém está inscrito neste curso.",
@@ -447,7 +501,13 @@
       "removeTitle": "Retirar {name} deste curso?",
       "removeText": "A pessoa deixa de ter acesso aos materiais do curso. A conta mantém-se.",
       "confirmRemove": "Sim, retirar",
-      "removed": "Pessoa retirada do curso."
+      "removed": "Pessoa retirada do curso.",
+      "edition": "Edição",
+      "editionHelp": "As pessoas escolhidas entram nesta edição.",
+      "emptyEdition": "Ainda ninguém nesta edição.",
+      "editionCount": "{count, plural, =0 {sem formandos} one {# formando} other {# formandos}}",
+      "moveTo": "Mover para outra edição",
+      "moved": "Pessoa movida para «{name}»."
     },
     "users": {
       "title": "Utilizadores",
@@ -534,7 +594,9 @@
       "removeText": "A pessoa perde o acesso de imediato. Para voltar, terá de ser convidada outra vez.",
       "removed": "Conta eliminada.",
       "removeSelf": "Não pode eliminar a sua própria conta.",
-      "you": "É a sua conta."
+      "you": "É a sua conta.",
+      "edition": "Edição",
+      "editionOf": "Edição do curso {course}"
     },
     "requests": {
       "title": "Pedidos de informação",
@@ -577,7 +639,7 @@
       "title": "Cópia de segurança",
       "intro": "Descarregue uma cópia de tudo o que está na plataforma, num ficheiro ZIP, para guardar num lugar seguro.",
       "contentsTitle": "O que inclui",
-      "catalogue": "{courses, plural, one {# curso} other {# cursos}}, {modules, plural, one {# módulo} other {# módulos}} e {materials, plural, one {# material} other {# materiais}}, com as áreas e os níveis: títulos, descrições, páginas de texto, ligações e os endereços dos vídeos e dos documentos Google.",
+      "catalogue": "{courses, plural, one {# curso} other {# cursos}}, {modules, plural, one {# módulo} other {# módulos}} e {materials, plural, one {# material} other {# materiais}}, com as áreas, os níveis e as edições: títulos, descrições, páginas de texto, ligações e os endereços dos vídeos e dos documentos Google.",
       "notIncluded": "Nunca inclui as palavras-passe, nem o conteúdo dos vídeos e dos documentos Google, que fica no YouTube, no Vimeo ou no Google. O ficheiro README.txt, dentro do ZIP, explica o que lá está.",
       "optionsTitle": "Incluir também",
       "includeFiles": "Ficheiros carregados ({count, plural, one {# ficheiro} other {# ficheiros}}, {size})",
@@ -730,7 +792,8 @@
     "onlyIn": {
       "pt": "Este texto só está disponível em português.",
       "en": "Este texto só está disponível em inglês."
-    }
+    },
+    "upcoming": "Próximas edições"
   },
   "Request": {
     "formLabel": "Pedido de informações",

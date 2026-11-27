@@ -15,17 +15,20 @@ export async function MaterialNav({
   slug,
   previous,
   next,
+  previewEdition,
 }: {
   slug: string;
   previous: Neighbour;
   next: Neighbour;
+  /** For a trainer looking at one edition's view of the course: the links stay in it. */
+  previewEdition?: string;
 }) {
   const t = await getTranslations("Learn");
 
   return (
     <nav aria-label={t("materialsNav")} className="mt-auto grid grid-cols-2 gap-3 pt-4">
       {previous ? (
-        <Link href={routes.learnMaterial(slug, previous.id)} className={cardClass}>
+        <Link href={routes.learnMaterial(slug, previous.id, previewEdition)} className={cardClass}>
           <span className="text-muted-foreground flex items-center gap-1 text-[0.8125rem]">
             <ChevronLeft aria-hidden="true" className="size-4" />
             {t("previous")}
@@ -37,7 +40,7 @@ export async function MaterialNav({
       )}
       {next ? (
         <Link
-          href={routes.learnMaterial(slug, next.id)}
+          href={routes.learnMaterial(slug, next.id, previewEdition)}
           className={`${cardClass} items-end text-right`}
         >
           <span className="text-muted-foreground flex items-center gap-1 text-[0.8125rem]">

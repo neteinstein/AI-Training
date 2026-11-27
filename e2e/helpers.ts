@@ -6,6 +6,7 @@ import { DEMO_PASSWORD } from "../tests/fixtures/demo-data";
 export {
   DEMO_PASSWORD,
   demoCourses,
+  demoEditions,
   demoMaterials,
   demoModules,
   demoUsers,

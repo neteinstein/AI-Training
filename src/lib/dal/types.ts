@@ -49,11 +49,26 @@ export type CourseCard = {
   level: LevelSummary;
 };
 
+/** A run of a course, as people see it. Days are written "2027-01-31". */
+export type EditionSummary = {
+  id: string;
+  name: string;
+  startsOn: string | null;
+  endsOn: string | null;
+  /**
+   * True for the edition a course starts with while nobody has named or dated it. It says
+   * nothing a learner needs to read: a course that does not use editions shows none.
+   */
+  isPlain: boolean;
+};
+
 export type CourseDetail = CourseCard & {
   /** Markdown. */
   description: string;
   /** Language the description is written in (it may be the fallback language). */
   descriptionLang: Locale;
+  /** The editions a trainer marked as public that have not started yet, soonest first. */
+  upcomingEditions: EditionSummary[];
 };
 
 export type Catalog = {
@@ -78,6 +93,8 @@ export type MaterialItem = {
   embed: ParsedEmbed | null;
   /** File details, for uploads. The storage location is never exposed. */
   file: { name: string; mimeType: string; sizeBytes: number } | null;
+  /** The one edition that shows this material; null when every edition of the course does. */
+  editionId: string | null;
 };
 
 export type ModuleWithMaterials = {
@@ -90,10 +107,19 @@ export type ModuleWithMaterials = {
 export type CourseContent = {
   course: CourseCard;
   modules: ModuleWithMaterials[];
+  /**
+   * The edition the course is being followed in: a learner's own, or the one a trainer chose
+   * to preview. Null when a trainer looks at the whole course.
+   */
+  edition: EditionSummary | null;
+  /** For trainers: every edition of the course, to preview each. Empty for learners. */
+  editions: EditionSummary[];
 };
 
 export type MaterialPage = {
   course: CourseCard;
+  /** As in `CourseContent`. */
+  edition: EditionSummary | null;
   /** `number` is the module's position in the course, starting at 1. */
   module: { id: string; title: string; number: number };
   material: MaterialItem & {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { parseDocumentUrl, parseExternalLink, parseVideoUrl } from "@/lib/embeds/parse";
-import { longText, optionalLocale, optionalText } from "@/lib/validation/rules";
+import { longText, optionalId, optionalLocale, optionalText } from "@/lib/validation/rules";
 import { BODY_MAX, TITLE_MAX } from "./constants";
 import type { FileMaterialInput, MaterialInput, ModuleInput } from "./operations";
 
@@ -35,6 +35,7 @@ export const detailFields = [
   "description_pt",
   "description_en",
   "content_language",
+  "edition_id",
 ] as const;
 
 const details = {
@@ -43,6 +44,8 @@ const details = {
   description_pt: optionalText(1000),
   description_en: optionalText(1000),
   content_language: optionalLocale,
+  // "" means every edition of the course; otherwise the one edition that shows the material.
+  edition_id: optionalId,
   is_published: z.boolean("required"),
 };
 
@@ -52,6 +55,7 @@ type Details = {
   description_pt: string;
   description_en: string;
   content_language: "pt" | "en" | null;
+  edition_id: string | null;
   is_published: boolean;
 };
 
@@ -59,6 +63,7 @@ const toDetails = (value: Details) => ({
   title: { pt: value.title_pt, en: value.title_en },
   description: { pt: value.description_pt, en: value.description_en },
   contentLanguage: value.content_language,
+  editionId: value.edition_id,
   isPublished: value.is_published,
 });
 

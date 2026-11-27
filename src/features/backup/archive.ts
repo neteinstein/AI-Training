@@ -168,6 +168,8 @@ o que inclui e quantas linhas tem cada tabela.
 data/     Uma lista JSON por tabela da base de dados, com todas as colunas, tal como estão.
           areas, levels, courses, modules, materials: o catálogo e os conteúdos (as páginas
           de texto em Markdown, as ligações, os endereços dos vídeos e dos documentos Google).
+          editions, edition_hidden_materials: as edições de cada curso e os materiais que
+          cada edição esconde.
           profiles, enrollments, info_requests: as pessoas, as inscrições e os pedidos de
           informação, quando foram incluídos. São dados pessoais: guarde a cópia num lugar
           seguro e apague-a quando já não for precisa.
@@ -188,6 +190,8 @@ what it includes and how many rows each table has.
 data/     One JSON list per database table, with every column, exactly as stored.
           areas, levels, courses, modules, materials: the catalogue and the content (text
           pages in Markdown, links, and the addresses of videos and Google documents).
+          editions, edition_hidden_materials: the editions of each course and the
+          materials each edition hides.
           profiles, enrollments, info_requests: people, enrolments and information
           requests, when they were included. This is personal data: keep the backup
           somewhere safe and delete it once it is no longer needed.

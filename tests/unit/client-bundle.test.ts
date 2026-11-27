@@ -45,6 +45,19 @@ describe("browser bundle", () => {
     expect(offenders.map((file) => relative(root, file))).toEqual([]);
   });
 
+  /**
+   * A browser does not always write a date or a number as the server does (other spaces in a
+   * range of days, for one). When a text differs between the two, React throws that part of
+   * the page away and draws it again, and whatever was typed in the meantime is lost. So
+   * dates and numbers are written out where the page is made, and a Client Component is
+   * handed the finished text.
+   */
+  test("no Client Component writes out dates or numbers itself", () => {
+    const formats = /\buseFormatter\b|\bIntl\.\w+Format\b|\.toLocale(?:Date|Time)?String\(/;
+    const offenders = clientFiles.filter((file) => formats.test(readFileSync(file, "utf8")));
+    expect(offenders.map((file) => relative(root, file))).toEqual([]);
+  });
+
   test("constants files stay free of the validation library", () => {
     const constants = sourceFiles(root).filter((file) => file.endsWith("constants.ts"));
     expect(constants.length).toBeGreaterThanOrEqual(2);

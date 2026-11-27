@@ -141,12 +141,18 @@ export function RoleForm({ userId, role }: { userId: string; role: UserRole }) {
 export function UserCoursesForm({
   userId,
   courses,
+  editionLines,
   selected,
+  selectedEditions,
   isTrainer,
 }: {
   userId: string;
   courses: CourseOption[];
+  /** Each edition written out as one line, by edition id (made with the page, on the server). */
+  editionLines: Record<string, string>;
   selected: string[];
+  /** The edition the person is in, by course id. */
+  selectedEditions: Record<string, string>;
   isTrainer: boolean;
 }) {
   const t = useTranslations("Trainer");
@@ -163,13 +169,19 @@ export function UserCoursesForm({
       <input type="hidden" name="user_id" value={userId} />
       <CourseChecklist
         // Shown again from what the database holds after each save.
-        key={selected.join(",")}
+        key={`${selected.join(",")}|${Object.values(selectedEditions).join(",")}`}
         legend={t("users.coursesOf")}
         hideLegend
         help={isTrainer ? t("users.trainerCourses") : undefined}
         courses={courses}
         selected={selected}
+        selectedEditions={selectedEditions}
         statusLabels={statusLabels}
+        editionLabels={{
+          label: t("users.edition"),
+          of: (course) => t("users.editionOf", { course }),
+          lines: editionLines,
+        }}
         emptyText={t("users.noCourses")}
       />
       {courses.length > 0 ? (

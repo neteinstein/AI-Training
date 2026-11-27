@@ -16,16 +16,17 @@ import { buildSamplePdf } from "../fixtures/sample-pdf";
 import {
   admin,
   BUCKET,
+  type Catalogue,
   createCatalogue,
   createUser,
+  defaultEdition,
   deleteCatalogue,
   deleteUsers,
   ensureKeeperTrainer,
   runId,
   subjectsSentTo,
-  visitor,
-  type Catalogue,
   type TestUser,
+  visitor,
 } from "./helpers";
 
 const pdf = buildSamplePdf(1, "Operations test");
@@ -306,9 +307,12 @@ describe("access links and removal", () => {
       .from(BUCKET)
       .upload(path, pdf, { contentType: "application/pdf" });
     expect(upload.error).toBeNull();
-    await other.client
-      .from("enrollments")
-      .upsert({ user_id: learner.id, course_id: catalogue.courses.other, created_by: other.id });
+    await other.client.from("enrollments").upsert({
+      user_id: learner.id,
+      course_id: catalogue.courses.other,
+      edition_id: await defaultEdition(catalogue.courses.other),
+      created_by: other.id,
+    });
 
     expect(await removeUser(admin(), trainer.client, trainer.id, other.id)).toBe("removed");
 

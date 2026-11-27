@@ -1,4 +1,6 @@
 import { areaColors, type AreaColor, type Locale } from "@/config/site";
+import { FIRST_EDITION_NAME } from "@/features/editions/constants";
+import { today } from "@/lib/dates";
 import { localized, pickLocalized } from "@/lib/i18n/localized";
 import type {
   AreaSummary,
@@ -6,6 +8,7 @@ import type {
   Client,
   CourseCard,
   CourseDetail,
+  EditionSummary,
   LevelSummary,
   Tables,
 } from "./types";
@@ -13,6 +16,27 @@ import type {
 type AreaRow = Tables["areas"]["Row"];
 type LevelRow = Tables["levels"]["Row"];
 type CourseRow = Tables["courses"]["Row"];
+type EditionRow = Tables["editions"]["Row"];
+
+/** The columns of an edition that people are shown. */
+export const EDITION_SUMMARY = "id, name_pt, name_en, starts_on, ends_on, is_default" as const;
+
+export function toEditionSummary(
+  row: Pick<EditionRow, "id" | "name_pt" | "name_en" | "starts_on" | "ends_on" | "is_default">,
+  locale: Locale,
+): EditionSummary {
+  return {
+    id: row.id,
+    name: pickLocalized(row, "name", locale),
+    startsOn: row.starts_on,
+    endsOn: row.ends_on,
+    isPlain:
+      row.is_default &&
+      row.starts_on === null &&
+      row.name_pt === FIRST_EDITION_NAME.pt &&
+      row.name_en === FIRST_EDITION_NAME.en,
+  };
+}
 
 export function toAreaSummary(row: AreaRow, locale: Locale): AreaSummary {
   return {
@@ -120,11 +144,15 @@ export async function fetchCatalog(client: Client, locale: Locale): Promise<Cata
   };
 }
 
-/** One published course with its description, or null. */
+/**
+ * One published course with its description and its coming editions, or null. `onDay` is the
+ * day that counts as today ("2027-01-31"): an edition is coming while it has not started.
+ */
 export async function fetchPublishedCourse(
   client: Client,
   slug: string,
   locale: Locale,
+  onDay: string = today(),
 ): Promise<CourseDetail | null> {
   const { data: row, error } = await client
     .from("courses")
@@ -135,7 +163,19 @@ export async function fetchPublishedCourse(
   if (error) throw new Error(`course: ${error.message}`);
   if (!row) return null;
 
-  const { areaById, levelById } = await fetchTaxonomy(client, locale);
+  const [{ areaById, levelById }, editions] = await Promise.all([
+    fetchTaxonomy(client, locale),
+    client
+      .from("editions")
+      .select(EDITION_SUMMARY)
+      .eq("course_id", row.id)
+      // Explicit, so the result is the same whoever asks (a trainer's client sees them all).
+      .eq("is_listed", true)
+      .gte("starts_on", onDay)
+      .order("starts_on")
+      .order("created_at"),
+  ]);
+  if (editions.error) throw new Error(`editions: ${editions.error.message}`);
   const area = areaById.get(row.area_id);
   const level = levelById.get(row.level_id);
   if (!area || !level) return null;
@@ -145,5 +185,6 @@ export async function fetchPublishedCourse(
     ...toCourseCard(row, area, level, locale),
     description: description.value,
     descriptionLang: description.lang,
+    upcomingEditions: editions.data.map((edition) => toEditionSummary(edition, locale)),
   };
 }

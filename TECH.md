@@ -38,6 +38,7 @@ and how it looks, see the [README](README.md).
 | Learner area: my courses, materials, PDF and document viewers    | Done, tested in the browser     |
 | Back-office: courses, content, users, invitations, requests      | Done, tested in the browser     |
 | Back-office backup: ZIP download of content, files and people    | Done, tested in the browser     |
+| Editions of a course: own learners, own view of the content      | Done, tested in the browser     |
 
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
@@ -65,6 +66,10 @@ npm run dev
 `npm run db:start` applies the migrations in `supabase/migrations` and loads the demo catalogue
 from `supabase/seed.sql`. `npm run db:reset` rebuilds the database from scratch; run
 `npm run seed:dev` again afterwards.
+
+The demo course "IA na sala de aula" has two editions: the general one, and a public "Turma
+presencial" that starts six weeks after the day the database was built, with a page of its own
+and one of the course's materials hidden.
 
 Demo accounts (local only, password `demo-password-123`):
 
@@ -147,7 +152,17 @@ Trainers sign in at the same address as learners and land on the back-office (`/
 - **Content**: modules and their materials, with a switch that shows or hides each material
   for learners, "make everything visible" per module, and a menu to edit, move to another
   module or delete. A new material is visible unless the trainer unticks that option.
+- **Editions** of a course: its runs, each with a name in both languages, optional dates, and
+  whether it shows on the public page. One is the default, where new learners go when no
+  other is chosen. An edition with learners cannot be deleted, nor can a course's last one.
+  Once a course has two, the content tab offers a view per edition: a switch hides one of the
+  course's materials in that edition only, and materials added there are that edition's own.
+  Order, modules and deleting stay in the "whole course" view. "View as learner" follows the
+  view, so a trainer sees exactly what each edition gets.
 - **Learners** of a course: add people who have an account, remove them, or invite new ones.
+  With several editions the list is grouped by edition, people are added to the one chosen,
+  and a menu moves a person to another. Dates are information: they never open or close
+  access; being in the course does.
 - **Areas and levels**: the two lists courses are organised by. One in use cannot be deleted.
 - **Users**: everyone with an account or a pending invitation; a person's page holds their
   details, role, courses, a new access link, and removal.
@@ -214,8 +229,8 @@ manifest.json          when and by whom, what was included, rows per table, and 
                        its material and storage path (plus any file storage did not have)
 ```
 
-- **Always in it:** areas, levels, courses, modules and materials (so text pages, links and
-  the addresses of videos and Google documents).
+- **Always in it:** areas, levels, courses and their editions, modules and materials (so text
+  pages, links and the addresses of videos and Google documents), and what each edition hides.
 - **Ticked by default:** the uploaded files. Untick them for a small, text-only backup.
 - **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`). It is personal
   data, and the page says so.
@@ -243,10 +258,16 @@ How it works, and what follows from it:
   backup without files. On the Free plan, storage holds 1 GB.
 
 There is no restore button. The rows are exactly what the database holds, so a restore inserts
-the tables in the order of `data/` above (areas, levels, courses, modules, materials, then
-profiles once the accounts exist again, enrolments and requests) and uploads each file back to
-the `course-materials` bucket under its `storagePath`. On a paid Supabase plan, the project's own
-daily database backups cover the database as well; they do not cover stored files.
+the tables in the order of `data/` above (areas, levels, courses, editions, modules, materials,
+what each edition hides, then profiles once the accounts exist again, enrolments and requests)
+and uploads each file back to the `course-materials` bucket under its `storagePath`. On a paid
+Supabase plan, the project's own daily database backups cover the database as well; they do not
+cover stored files.
+
+**A new table** goes into one of the two lists in `src/lib/dal/backup.ts`: the content, or the
+people when it holds personal data. A table that should stay out is named there too, with the
+reason. A unit test compares the three with the tables of the database and fails for a table
+nobody has decided about, so a backup cannot go on leaving out something new unnoticed.
 
 ## Database and access rules
 
@@ -254,8 +275,14 @@ All access rules live in the database, in `supabase/migrations`:
 
 - Nothing in the `public` schema is reachable through the API without an explicit grant, and
   every table has Row Level Security.
-- Visitors read areas, levels and published courses. Learners also read the modules and
-  published materials of the courses they are enrolled in. Trainers manage everything.
+- Visitors read areas, levels, published courses and the editions of those courses that a
+  trainer marked as public. Learners also read the modules of the courses they are enrolled
+  in, and the published materials their edition shows. Trainers manage everything.
+- Which materials a learner may see is defined once, in two views of the `private` schema
+  that no API role can read (`edition_materials`: what an edition shows; `learner_materials`:
+  what each learner gets). The rule on materials and the rule on stored files both read them,
+  so a page and a download can never disagree. A learner is in one edition of a course at a
+  time; moving them changes what they see at once.
 - A course is a draft (trainers only), published (public site and enrolled learners) or
   unlisted (off the public site; enrolled learners keep access). A course with learners cannot
   be deleted, only unlisted.

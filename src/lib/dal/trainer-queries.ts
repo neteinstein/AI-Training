@@ -4,7 +4,7 @@ import { isUuid } from "@/lib/ids";
 import { pickLocalized, translationGaps } from "@/lib/i18n/localized";
 import { levelStep } from "./catalog-queries";
 import type { Bilingual } from "./mutations";
-import { bySortOrder } from "./order";
+import { byEditionOrder, bySortOrder } from "./order";
 import type { Client, CourseStatus, MaterialKind, RequestStatus, Tables, UserRole } from "./types";
 
 /**
@@ -14,6 +14,7 @@ import type { Client, CourseStatus, MaterialKind, RequestStatus, Tables, UserRol
  * Editing screens get both languages; lists get the interface language.
  */
 
+type EditionRow = Tables["editions"]["Row"];
 type MaterialRow = Tables["materials"]["Row"];
 type ProfileRow = Tables["profiles"]["Row"];
 
@@ -211,21 +212,129 @@ export async function fetchTrainerCourse(
   };
 }
 
-export type CourseOption = { id: string; title: string; status: CourseStatus; areaName: string };
+/** An edition to choose from. Days are written "2027-01-31". */
+export type EditionOption = {
+  id: string;
+  name: string;
+  startsOn: string | null;
+  endsOn: string | null;
+  /** Where the course's new learners go when nothing else is chosen. */
+  isDefault: boolean;
+};
 
-/** Courses to choose from when inviting or enrolling someone. */
+const toEditionOption = (row: EditionRow, locale: Locale): EditionOption => ({
+  id: row.id,
+  name: pickLocalized(row, "name", locale),
+  startsOn: row.starts_on,
+  endsOn: row.ends_on,
+  isDefault: row.is_default,
+});
+
+export type CourseOption = {
+  id: string;
+  title: string;
+  status: CourseStatus;
+  areaName: string;
+  /** In display order. A course always has at least one. */
+  editions: EditionOption[];
+};
+
+/** Courses to choose from when inviting or enrolling someone, each with its editions. */
 export async function fetchCourseOptions(client: Client, locale: Locale): Promise<CourseOption[]> {
-  const { data, error } = await client
-    .from("courses")
-    .select("id, status, title_pt, title_en, sort_order, slug, areas(name_pt, name_en)")
-    .order("sort_order")
-    .order("slug");
-  check("courses", error);
-  return (data ?? []).map((row) => ({
+  const [courses, editions] = await Promise.all([
+    client
+      .from("courses")
+      .select("id, status, title_pt, title_en, sort_order, slug, areas(name_pt, name_en)")
+      .order("sort_order")
+      .order("slug"),
+    client.from("editions").select("*"),
+  ]);
+  check("courses", courses.error);
+  check("editions", editions.error);
+
+  const byCourse = new Map<string, EditionRow[]>();
+  for (const row of [...(editions.data ?? [])].sort(byEditionOrder)) {
+    byCourse.set(row.course_id, [...(byCourse.get(row.course_id) ?? []), row]);
+  }
+  return (courses.data ?? []).map((row) => ({
     id: row.id,
     status: row.status,
     title: pickLocalized(row, "title", locale),
     areaName: pickLocalized(row.areas, "name", locale),
+    editions: (byCourse.get(row.id) ?? []).map((edition) => toEditionOption(edition, locale)),
+  }));
+}
+
+// ---------------------------------------------------------------------------------------------
+// Editions
+// ---------------------------------------------------------------------------------------------
+
+export type TrainerEdition = {
+  id: string;
+  name: Bilingual;
+  /** Days as "2027-01-31". */
+  startsOn: string | null;
+  endsOn: string | null;
+  /** Shown on the public page of the course. */
+  isListed: boolean;
+  /** Where the course's new learners go when no edition is named. */
+  isDefault: boolean;
+  /** An edition with learners cannot be deleted. */
+  learnerCount: number;
+  /** Materials only this edition shows. */
+  ownMaterials: number;
+  /** Materials of the course this edition does not show. */
+  hiddenMaterials: number;
+};
+
+/** A course's editions, in display order, with what each holds. */
+export async function fetchCourseEditions(
+  client: Client,
+  courseId: string,
+): Promise<TrainerEdition[]> {
+  if (!isUuid(courseId)) return [];
+  const [editions, enrolled] = await Promise.all([
+    client
+      .from("editions")
+      .select("*, edition_hidden_materials(material_id)")
+      .eq("course_id", courseId),
+    client.from("enrollments").select("edition_id").eq("course_id", courseId),
+  ]);
+  check("editions", editions.error);
+  check("enrollments", enrolled.error);
+  const rows = [...(editions.data ?? [])].sort(byEditionOrder);
+
+  // Materials are counted apart: an edition relates to materials in two ways (its own, and
+  // the ones it hides), and a query that embeds one in the other would have to choose.
+  const own = new Map<string, number>();
+  if (rows.length > 0) {
+    const { data, error } = await client
+      .from("materials")
+      .select("edition_id")
+      .in(
+        "edition_id",
+        rows.map((row) => row.id),
+      );
+    check("materials", error);
+    for (const row of data ?? []) {
+      if (row.edition_id) own.set(row.edition_id, (own.get(row.edition_id) ?? 0) + 1);
+    }
+  }
+  const learners = new Map<string, number>();
+  for (const row of enrolled.data ?? []) {
+    learners.set(row.edition_id, (learners.get(row.edition_id) ?? 0) + 1);
+  }
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: both(row, "name"),
+    startsOn: row.starts_on,
+    endsOn: row.ends_on,
+    isListed: row.is_listed,
+    isDefault: row.is_default,
+    learnerCount: learners.get(row.id) ?? 0,
+    ownMaterials: own.get(row.id) ?? 0,
+    hiddenMaterials: row.edition_hidden_materials.length,
   }));
 }
 
@@ -247,6 +356,10 @@ export type BuilderMaterial = {
   file: { name: string; mimeType: string; sizeBytes: number } | null;
   /** Languages the title, description or text has not been translated into. */
   gaps: Locale[];
+  /** The one edition that shows the material; null when every edition of the course does. */
+  editionId: string | null;
+  /** Editions that do not show this material of the course. */
+  hiddenIn: string[];
 };
 
 export type BuilderModule = {
@@ -257,7 +370,7 @@ export type BuilderModule = {
   materials: BuilderMaterial[];
 };
 
-function toBuilderMaterial(row: MaterialRow): BuilderMaterial {
+function toBuilderMaterial(row: MaterialRow, hiddenIn: string[] = []): BuilderMaterial {
   return {
     id: row.id,
     kind: row.kind,
@@ -280,26 +393,44 @@ function toBuilderMaterial(row: MaterialRow): BuilderMaterial {
           }
         : null,
     gaps: translationGaps(row, ["title", "description", "body"]),
+    editionId: row.edition_id,
+    hiddenIn,
   };
 }
 
-/** A course's modules with all their materials, hidden ones included, in order. */
+/**
+ * A course's modules with all their materials, in order: hidden ones included, and those of
+ * every edition, each saying which edition shows it and which ones hide it.
+ */
 export async function fetchCourseBuilder(
   client: Client,
   courseId: string,
 ): Promise<BuilderModule[]> {
   if (!isUuid(courseId)) return [];
-  const { data, error } = await client
-    .from("modules")
-    .select("*, materials(*)")
-    .eq("course_id", courseId);
-  check("modules", error);
-  return [...(data ?? [])].sort(bySortOrder).map((module) => ({
+  const [modules, editions] = await Promise.all([
+    client.from("modules").select("*, materials(*)").eq("course_id", courseId),
+    client
+      .from("editions")
+      .select("id, edition_hidden_materials(material_id)")
+      .eq("course_id", courseId),
+  ]);
+  check("modules", modules.error);
+  check("editions", editions.error);
+
+  const hiddenIn = new Map<string, string[]>();
+  for (const edition of editions.data ?? []) {
+    for (const { material_id } of edition.edition_hidden_materials) {
+      hiddenIn.set(material_id, [...(hiddenIn.get(material_id) ?? []), edition.id]);
+    }
+  }
+  return [...(modules.data ?? [])].sort(bySortOrder).map((module) => ({
     id: module.id,
     title: both(module, "title"),
     description: both(module, "description"),
     gaps: translationGaps(module, ["title", "description"]),
-    materials: [...module.materials].sort(bySortOrder).map(toBuilderMaterial),
+    materials: [...module.materials]
+      .sort(bySortOrder)
+      .map((row) => toBuilderMaterial(row, hiddenIn.get(row.id))),
   }));
 }
 
@@ -355,7 +486,7 @@ const toPerson = (
 const byName = (a: Person, b: Person) =>
   (a.fullName || a.email).localeCompare(b.fullName || b.email, "pt", { sensitivity: "base" });
 
-export type CourseLearner = Person & { role: UserRole; enrolledAt: string };
+export type CourseLearner = Person & { role: UserRole; enrolledAt: string; editionId: string };
 
 /** The people enrolled in a course, by name. */
 export async function fetchCourseLearners(
@@ -366,7 +497,7 @@ export async function fetchCourseLearners(
   const { data, error } = await client
     .from("enrollments")
     .select(
-      "created_at, profiles!enrollments_user_id_fkey(id, email, full_name, role, email_confirmed_at)",
+      "created_at, edition_id, profiles!enrollments_user_id_fkey(id, email, full_name, role, email_confirmed_at)",
     )
     .eq("course_id", courseId);
   check("enrollments", error);
@@ -375,6 +506,7 @@ export async function fetchCourseLearners(
       ...toPerson(row.profiles),
       role: row.profiles.role,
       enrolledAt: row.created_at,
+      editionId: row.edition_id,
     }))
     .sort(byName);
 }
@@ -428,20 +560,26 @@ export async function fetchTrainerUsers(client: Client): Promise<TrainerUserRow[
   return (data ?? []).map(toUserRow);
 }
 
-export type TrainerUser = TrainerUserRow & { courseIds: string[] };
+export type TrainerUser = TrainerUserRow & {
+  courseIds: string[];
+  /** The edition the person is in, for each of those courses. */
+  editionByCourse: Record<string, string>;
+};
 
 export async function fetchTrainerUser(client: Client, id: string): Promise<TrainerUser | null> {
   if (!isUuid(id)) return null;
   const [profile, enrollments] = await Promise.all([
     client.from("profiles").select(PROFILE_WITH_COUNT).eq("id", id).maybeSingle(),
-    client.from("enrollments").select("course_id").eq("user_id", id),
+    client.from("enrollments").select("course_id, edition_id").eq("user_id", id),
   ]);
   check("profile", profile.error);
   check("enrollments", enrollments.error);
   if (!profile.data) return null;
+  const rows = enrollments.data ?? [];
   return {
     ...toUserRow(profile.data),
-    courseIds: (enrollments.data ?? []).map((row) => row.course_id),
+    courseIds: rows.map((row) => row.course_id),
+    editionByCourse: Object.fromEntries(rows.map((row) => [row.course_id, row.edition_id])),
   };
 }
 

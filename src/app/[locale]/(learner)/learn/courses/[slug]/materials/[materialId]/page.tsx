@@ -20,12 +20,16 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type Props = PageProps<"/[locale]/learn/courses/[slug]/materials/[materialId]">;
 
-async function loadMaterial(params: Props["params"]) {
+/** `asked` is the page's query: a trainer may name the edition whose view they want. */
+async function loadMaterial(params: Props["params"], asked?: Props["searchParams"]) {
   const { slug, materialId } = await params;
   const locale = await getLocale();
   const user = await requireUser(locale);
   const supabase = await createSupabaseServerClient();
-  const page = await fetchMaterialPage(supabase, user, slug, materialId, locale);
+  const edition = (await asked)?.edition;
+  const page = await fetchMaterialPage(supabase, user, slug, materialId, locale, {
+    editionId: typeof edition === "string" ? edition : null,
+  });
   return { slug, locale, user, supabase, page };
 }
 
@@ -34,13 +38,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: page ? `${page.material.title} · ${page.course.title}` : undefined };
 }
 
-export default async function LearnMaterialPage({ params }: Props) {
-  const { slug, locale, user, supabase, page } = await loadMaterial(params);
+export default async function LearnMaterialPage({ params, searchParams }: Props) {
+  const { slug, locale, user, supabase, page } = await loadMaterial(params, searchParams);
   if (!page) notFound();
 
   const t = await getTranslations("Learn");
   const tm = await getTranslations("Materials");
   const { course, module, material, previous, next } = page;
+  // A trainer's links keep the edition being previewed; a learner's never name one.
+  const previewEdition = user.role === "trainer" ? page.edition?.id : undefined;
 
   const meta = materialMeta(
     material,
@@ -70,7 +76,10 @@ export default async function LearnMaterialPage({ params }: Props) {
 
   return (
     <>
-      <AppHeader user={user} back={{ href: routes.learnCourse(slug), label: course.title }} />
+      <AppHeader
+        user={user}
+        back={{ href: routes.learnCourse(slug, previewEdition), label: course.title }}
+      />
       <main
         id="content"
         className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 px-5 pt-5 pb-6 sm:pt-8"
@@ -165,7 +174,7 @@ export default async function LearnMaterialPage({ params }: Props) {
           )
         ) : null}
 
-        <MaterialNav slug={slug} previous={previous} next={next} />
+        <MaterialNav slug={slug} previous={previous} next={next} previewEdition={previewEdition} />
       </main>
     </>
   );

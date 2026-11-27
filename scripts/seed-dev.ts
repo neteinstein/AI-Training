@@ -69,12 +69,21 @@ async function main() {
     }
 
     if (user.courseIds.length > 0) {
+      // Everyone joins the default edition of their courses.
+      const { data: editions, error: editionsError } = await supabase
+        .from("editions")
+        .select("id, course_id")
+        .in("course_id", [...user.courseIds])
+        .eq("is_default", true);
+      if (editionsError) fail(`Editions for ${user.email}`, editionsError.message);
+      const editionOf = new Map((editions ?? []).map((row) => [row.course_id, row.id]));
+
       const { error } = await supabase.from("enrollments").upsert(
-        user.courseIds.map((course_id) => ({
-          user_id: user.id,
-          course_id,
-          created_by: demoUsers.trainer.id,
-        })),
+        user.courseIds.map((course_id) => {
+          const edition_id = editionOf.get(course_id);
+          if (!edition_id) fail(`Enrolling ${user.email}`, `course ${course_id} has no edition`);
+          return { user_id: user.id, course_id, edition_id, created_by: demoUsers.trainer.id };
+        }),
         { onConflict: "user_id,course_id", ignoreDuplicates: true },
       );
       if (error) fail(`Enrolling ${user.email}`, error.message);

@@ -125,11 +125,94 @@ export type Database = {
           },
         ];
       };
+      edition_hidden_materials: {
+        Row: {
+          created_at: string;
+          edition_id: string;
+          material_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          edition_id: string;
+          material_id: string;
+        };
+        Update: {
+          created_at?: string;
+          edition_id?: string;
+          material_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "edition_hidden_materials_edition_id_fkey";
+            columns: ["edition_id"];
+            isOneToOne: false;
+            referencedRelation: "editions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "edition_hidden_materials_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      editions: {
+        Row: {
+          course_id: string;
+          created_at: string;
+          ends_on: string | null;
+          id: string;
+          is_default: boolean;
+          is_listed: boolean;
+          name_en: string;
+          name_pt: string;
+          starts_on: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          course_id: string;
+          created_at?: string;
+          ends_on?: string | null;
+          id?: string;
+          is_default?: boolean;
+          is_listed?: boolean;
+          name_en: string;
+          name_pt: string;
+          starts_on?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          course_id?: string;
+          created_at?: string;
+          ends_on?: string | null;
+          id?: string;
+          is_default?: boolean;
+          is_listed?: boolean;
+          name_en?: string;
+          name_pt?: string;
+          starts_on?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "editions_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       enrollments: {
         Row: {
           course_id: string;
           created_at: string;
           created_by: string | null;
+          edition_id: string;
           user_id: string;
         };
         ComputedFields: never;
@@ -137,12 +220,14 @@ export type Database = {
           course_id: string;
           created_at?: string;
           created_by?: string | null;
+          edition_id: string;
           user_id: string;
         };
         Update: {
           course_id?: string;
           created_at?: string;
           created_by?: string | null;
+          edition_id?: string;
           user_id?: string;
         };
         Relationships: [
@@ -159,6 +244,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "enrollments_edition_fkey";
+            columns: ["edition_id", "course_id"];
+            isOneToOne: false;
+            referencedRelation: "editions";
+            referencedColumns: ["id", "course_id"];
           },
           {
             foreignKeyName: "enrollments_user_id_fkey";
@@ -275,6 +367,7 @@ export type Database = {
           created_at: string;
           description_en: string | null;
           description_pt: string | null;
+          edition_id: string | null;
           file_name: string | null;
           id: string;
           is_published: boolean;
@@ -297,6 +390,7 @@ export type Database = {
           created_at?: string;
           description_en?: string | null;
           description_pt?: string | null;
+          edition_id?: string | null;
           file_name?: string | null;
           id?: string;
           is_published?: boolean;
@@ -318,6 +412,7 @@ export type Database = {
           created_at?: string;
           description_en?: string | null;
           description_pt?: string | null;
+          edition_id?: string | null;
           file_name?: string | null;
           id?: string;
           is_published?: boolean;
@@ -333,6 +428,13 @@ export type Database = {
           url?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "materials_edition_id_fkey";
+            columns: ["edition_id"];
+            isOneToOne: false;
+            referencedRelation: "editions";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "materials_module_id_fkey";
             columns: ["module_id"];
@@ -459,6 +561,7 @@ export type Database = {
         Args: { ordered_ids: string[]; target_course_id: string };
         Returns: undefined;
       };
+      set_default_edition: { Args: { target_edition_id: string }; Returns: undefined };
       set_user_role: {
         Args: { new_role: Database["public"]["Enums"]["user_role"]; target: string };
         Returns: undefined;

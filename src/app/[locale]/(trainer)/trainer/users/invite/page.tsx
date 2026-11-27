@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { PageFrame } from "@/components/trainer/page-frame";
+import { editionLines } from "@/features/editions/label";
 import { InviteForm } from "@/features/users/invite-form";
 import { requireTrainer } from "@/lib/dal/session";
 import { fetchCourseOptions } from "@/lib/dal/trainer-queries";
@@ -20,8 +21,9 @@ export default async function InvitePage({ searchParams }: Props) {
   const locale = await getLocale();
   await requireTrainer(locale);
   const supabase = await createSupabaseServerClient();
-  const [t, courses] = await Promise.all([
+  const [t, format, courses] = await Promise.all([
     getTranslations("Trainer"),
+    getFormatter(),
     fetchCourseOptions(supabase, locale),
   ]);
 
@@ -53,6 +55,7 @@ export default async function InvitePage({ searchParams }: Props) {
     >
       <InviteForm
         courses={courses}
+        editionLines={editionLines(courses, format)}
         preselected={preselected}
         defaultLanguage={locale}
         request={request ? { id: request.id, name: request.name, email: request.email } : undefined}

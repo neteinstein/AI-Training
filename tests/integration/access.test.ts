@@ -1,16 +1,17 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import {
   admin,
+  type Catalogue,
+  type Client,
   createCatalogue,
   createUser,
+  defaultEdition,
   deleteCatalogue,
   deleteUsers,
   enroll,
   ensureKeeperTrainer,
-  visitor,
-  type Catalogue,
-  type Client,
   type TestUser,
+  visitor,
 } from "./helpers";
 
 let catalogue: Catalogue;
@@ -265,9 +266,11 @@ describe("enrolments", () => {
   });
 
   test("a learner cannot enrol themselves or drop an enrolment", async () => {
-    const selfEnrol = await outsider.client
-      .from("enrollments")
-      .insert({ user_id: outsider.id, course_id: catalogue.courses.published });
+    const selfEnrol = await outsider.client.from("enrollments").insert({
+      user_id: outsider.id,
+      course_id: catalogue.courses.published,
+      edition_id: await defaultEdition(catalogue.courses.published),
+    });
     expect(selfEnrol.error?.code).toBe("42501");
 
     const drop = await enrolled.client

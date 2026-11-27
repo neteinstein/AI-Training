@@ -1,4 +1,5 @@
 import type { Locale } from "@/config/site";
+import { defaultEditionIds } from "@/features/enrollments/operations";
 import { confirmUrl } from "@/lib/auth/links";
 import { PG } from "@/lib/dal/mutations";
 import type { Client, UserRole } from "@/lib/dal/types";
@@ -37,6 +38,8 @@ export type InviteInput = {
   locale: Locale;
   role: UserRole;
   courseIds: string[];
+  /** The edition to join, per course. A course without one here means its default edition. */
+  editionIds?: Record<string, string>;
   mode: InviteMode;
   invitedBy: string;
 };
@@ -73,6 +76,8 @@ async function inviteOne(
   trainer: Client,
   email: string,
   input: InviteInput,
+  /** course id -> edition id, for every course of the invitation. */
+  editions: Map<string, string>,
 ): Promise<InviteResult> {
   const failed: InviteResult = { email, outcome: "failed", emailSent: false };
 
@@ -145,11 +150,13 @@ async function inviteOne(
     if (error) return { ...result, outcome: "failed" };
   }
 
-  if (input.courseIds.length > 0) {
+  if (editions.size > 0) {
+    // Someone already in a course stays in the edition they are in.
     const { error } = await trainer.from("enrollments").upsert(
-      input.courseIds.map((course_id) => ({
+      [...editions].map(([course_id, edition_id]) => ({
         user_id: userId,
         course_id,
+        edition_id,
         created_by: input.invitedBy,
       })),
       { onConflict: "user_id,course_id", ignoreDuplicates: true },
@@ -167,18 +174,35 @@ export async function inviteUsers(
   input: InviteInput,
 ): Promise<InviteResult[]> {
   const emails = normaliseEmails(input.emails).slice(0, MAX_INVITES_PER_REQUEST);
-  if (!(await isTrainerSession(trainer, input.invitedBy))) {
-    return emails.map((email) => ({ email, outcome: "failed", emailSent: false }));
+  const nothingDone = (): InviteResult[] =>
+    emails.map((email) => ({ email, outcome: "failed", emailSent: false }));
+  if (!(await isTrainerSession(trainer, input.invitedBy))) return nothingDone();
+
+  // Which edition of each course: the one named, or else the course's default. Worked out
+  // once, before anyone is invited, so a course that no longer exists stops everything.
+  const editions = new Map<string, string>();
+  const courseIds = [...new Set(input.courseIds)];
+  const defaults = await defaultEditionIds(
+    trainer,
+    courseIds.filter((id) => !input.editionIds?.[id]),
+  );
+  for (const courseId of courseIds) {
+    const editionId = input.editionIds?.[courseId] ?? defaults.get(courseId);
+    if (!editionId) return nothingDone();
+    editions.set(courseId, editionId);
   }
 
   const single = emails.length === 1;
   const results: InviteResult[] = [];
   for (const email of emails) {
     results.push(
-      await inviteOne(admin, trainer, email, {
-        ...input,
-        fullName: single ? input.fullName : undefined,
-      }),
+      await inviteOne(
+        admin,
+        trainer,
+        email,
+        { ...input, fullName: single ? input.fullName : undefined },
+        editions,
+      ),
     );
   }
   return results;

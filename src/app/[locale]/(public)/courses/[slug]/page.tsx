@@ -11,7 +11,7 @@ import { buttonClass } from "@/components/ui/button";
 import { htmlLang } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { getCatalog, getPublishedCourse } from "@/lib/dal/catalog";
-import { dayToDate } from "@/lib/dates";
+import { dayToDate, formatDays } from "@/lib/dates";
 import { routes } from "@/lib/routes";
 import { localizedAlternates } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -137,6 +137,31 @@ export default async function CoursePage({ params }: PageProps<"/[locale]/course
             <h2 className="font-heading text-2xl leading-tight">{t("joinTitle")}</h2>
             <p className="text-muted-foreground text-[0.9375rem] leading-[1.55]">{t("joinText")}</p>
           </div>
+          {course.upcomingEditions.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-[0.9375rem] font-semibold">{t("upcoming")}</h3>
+              <ul className="flex list-none flex-col gap-2">
+                {course.upcomingEditions.map((edition) => (
+                  <li
+                    key={edition.id}
+                    className="bg-muted flex items-start gap-3 rounded-xl px-3.5 py-2.5"
+                  >
+                    <CalendarDays
+                      aria-hidden="true"
+                      className="text-primary mt-0.5 size-[18px] flex-none"
+                      strokeWidth={1.75}
+                    />
+                    <span className="flex min-w-0 flex-col">
+                      <span className="font-semibold break-words">{edition.name}</span>
+                      <span className="text-muted-foreground text-[0.9375rem]">
+                        {formatDays(format, edition.startsOn, edition.endsOn)}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <Link href={routes.requestInfo(course.id)} className={buttonClass()}>
             {t("joinAction")}
           </Link>

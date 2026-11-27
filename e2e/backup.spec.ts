@@ -1,7 +1,14 @@
 import { readFileSync } from "node:fs";
 import { expect, test, type Download, type Page } from "@playwright/test";
 import { strFromU8, unzipSync } from "fflate";
-import { demoCourses, demoMaterials, demoUsers, signIn, signInAsTrainer } from "./helpers";
+import {
+  demoCourses,
+  demoEditions,
+  demoMaterials,
+  demoUsers,
+  signIn,
+  signInAsTrainer,
+} from "./helpers";
 
 type Row = Record<string, unknown>;
 
@@ -39,6 +46,19 @@ test.describe("backup", () => {
 
     const courses = json<Row[]>(files["data/courses.json"]);
     expect(courses.map((course) => course.slug)).toContain(demoCourses.classroom.slug);
+
+    // The editions of the courses and what an edition hides, before and after the materials.
+    expect(names.indexOf("data/editions.json")).toBeGreaterThan(-1);
+    expect(names.indexOf("data/editions.json")).toBeLessThan(names.indexOf("data/materials.json"));
+    const editions = json<Row[]>(files["data/editions.json"]).map((edition) => edition.id);
+    expect(editions).toContain(demoEditions.classroomInPerson);
+    const hidden = json<Row[]>(files["data/edition_hidden_materials.json"]);
+    expect(hidden).toContainEqual(
+      expect.objectContaining({ edition_id: demoEditions.classroomInPerson }),
+    );
+    for (const material of json<Row[]>(files["data/materials.json"])) {
+      if (material.edition_id !== null) expect(editions).toContain(material.edition_id);
+    }
     const pdf = files[`files/${demoCourses.classroom.slug}/Diapositivos da sessão 1.pdf`];
     expect(strFromU8(pdf.subarray(0, 5))).toBe("%PDF-");
 
@@ -62,6 +82,11 @@ test.describe("backup", () => {
     expect(Object.keys(second)).toEqual(
       expect.arrayContaining(["data/enrollments.json", "data/info_requests.json"]),
     );
+    // Every enrolment names its edition, and that edition is in the same archive.
+    const secondEditions = json<Row[]>(second["data/editions.json"]).map((edition) => edition.id);
+    for (const enrolment of json<Row[]>(second["data/enrollments.json"])) {
+      expect(secondEditions).toContain(enrolment.edition_id);
+    }
     expect(json<Row>(second["manifest.json"]).includes).toEqual({ files: false, people: true });
   });
 

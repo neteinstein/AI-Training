@@ -178,11 +178,24 @@ export async function moveMaterialTo(
   return succeeded(t("content.movedTo", { name: text(formData, "module_name").slice(0, 200) }));
 }
 
-/** Where the form goes back to: the content tab, with the material's module open. */
-async function backToModule(client: Client, materialId: string): Promise<string | null> {
+/**
+ * Where the form goes back to: the content tab, with the material's module open, in the view
+ * (the whole course, or one edition) the form was opened from.
+ */
+async function backToModule(
+  client: Client,
+  materialId: string,
+  view: string | undefined,
+): Promise<string | null> {
   const material = await fetchEditableMaterial(client, materialId);
-  return material ? routes.trainerCourseModule(material.courseId, material.moduleId) : null;
+  return material ? routes.trainerCourseModule(material.courseId, material.moduleId, view) : null;
 }
+
+/** The edition whose view of the content a form was opened from, if any. */
+const viewOf = (formData: FormData): string | undefined => {
+  const view = text(formData, "view");
+  return isUuid(view) ? view : undefined;
+};
 
 /** Saves a video, Google document, link, text page or uploaded file, new or existing. */
 export async function saveMaterial(
@@ -285,7 +298,7 @@ export async function saveMaterial(
     await removeAbandonedUploads(supabase, material.courseId);
     await leaveNotice(id ? t("content.materialSaved") : t("content.materialCreated"));
     return redirect({
-      href: routes.trainerCourseModule(material.courseId, material.moduleId),
+      href: routes.trainerCourseModule(material.courseId, material.moduleId, viewOf(formData)),
       locale,
     });
   }
@@ -322,7 +335,7 @@ export async function saveMaterial(
     }
   }
 
-  const back = await backToModule(supabase, result.id);
+  const back = await backToModule(supabase, result.id, viewOf(formData));
   if (!back) return failed(t("common.gone"), { values });
   await leaveNotice(id ? t("content.materialSaved") : t("content.materialCreated"));
   return redirect({ href: back, locale });
