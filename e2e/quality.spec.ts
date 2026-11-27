@@ -237,6 +237,38 @@ test.describe("between a phone and a laptop", () => {
     }
     expect(await overflowing(page, ["/pt", "/en"])).toEqual([]);
   });
+
+  test("the back-office menu keeps every entry to one line, in both languages", async ({
+    page,
+  }) => {
+    await signInAsTrainer(page);
+    // On the backup page its own entry, the longest of the menu, is bold: the widest it gets.
+    for (const path of ["/pt/trainer/backup", "/en/trainer/backup"]) {
+      await settle(page, path);
+      await expect(page.locator("aside nav a").first()).toBeVisible();
+      // An entry is one line of text in a 44px link; a second line makes the link taller.
+      const entries = await page.evaluate(() =>
+        [...document.querySelectorAll("aside nav a")]
+          .filter((link) => link.getClientRects().length > 0)
+          .map((link) => ({
+            entry: link.textContent,
+            height: Math.round(link.getBoundingClientRect().height),
+          })),
+      );
+      expect(entries.length, path).toBeGreaterThan(5);
+      expect(
+        entries.filter((entry) => entry.height > 48),
+        path,
+      ).toEqual([]);
+    }
+  });
+
+  test("the back-office does not scroll sideways beside its menu", async ({ page }) => {
+    // The narrowest the pages get with the menu beside them rather than behind a button.
+    test.slow();
+    await signInAsTrainer(page);
+    expect(await overflowing(page, trainerPages)).toEqual([]);
+  });
 });
 
 test.describe("with the keyboard alone", () => {
