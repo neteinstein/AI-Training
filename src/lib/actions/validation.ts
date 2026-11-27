@@ -26,7 +26,7 @@ export function fieldErrors(
 }
 
 /** The limit a length or range rule was checked against, for messages like "at most {max}". */
-function limits(issue: ZodError["issues"][number]): Record<string, string | number> {
+export function limits(issue: ZodError["issues"][number]): Record<string, string | number> {
   const found: Record<string, string | number> = {};
   if ("minimum" in issue && typeof issue.minimum === "number") found.min = issue.minimum;
   if ("maximum" in issue && typeof issue.maximum === "number") found.max = issue.maximum;

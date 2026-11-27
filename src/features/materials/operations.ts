@@ -250,7 +250,9 @@ export type MaterialDetails = {
 
 export type MaterialInput =
   | (MaterialDetails & { kind: "video" | "embed" | "link"; url: string })
-  | (MaterialDetails & { kind: "page"; body: Bilingual });
+  | (MaterialDetails & { kind: "page"; body: Bilingual })
+  /** Its questions are saved apart, by `saveQuiz`. */
+  | (MaterialDetails & { kind: "quiz" });
 
 /** "url": the address is not one the platform can show for this kind of material. */
 export type MaterialSaveResult =
@@ -286,6 +288,7 @@ function bodyText(value: string): string | null {
 }
 
 function payloadColumns(input: MaterialInput) {
+  if (input.kind === "quiz") return {};
   if (input.kind === "page") {
     const body_pt = bodyText(input.body.pt);
     const body_en = bodyText(input.body.en);
@@ -306,7 +309,7 @@ async function lastMaterialIn(client: Client, moduleId: string) {
   return data;
 }
 
-/** Adds a video, Google document, link or text page at the end of a module. */
+/** Adds a video, Google document, link, text page or quiz at the end of a module. */
 export async function createMaterial(
   client: Client,
   moduleId: string,

@@ -32,7 +32,7 @@ import { cn } from "@/lib/utils";
 
 type Props = PageProps<"/[locale]/trainer/courses/[courseId]/content">;
 
-const kinds: MaterialKind[] = ["file", "video", "embed", "link", "page"];
+const kinds: MaterialKind[] = ["file", "video", "embed", "link", "page", "quiz"];
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { courseId } = await params;

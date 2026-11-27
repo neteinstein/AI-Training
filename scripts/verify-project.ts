@@ -24,6 +24,10 @@ const PRIVATE_TABLES = [
   "materials",
   "edition_hidden_materials",
   "material_progress",
+  "quiz_questions",
+  "quiz_options",
+  "quiz_question_keys",
+  "quiz_attempts",
   "info_requests",
   "storage_deletions",
 ] as const;

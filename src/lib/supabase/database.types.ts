@@ -563,6 +563,164 @@ export type Database = {
         };
         Relationships: [];
       };
+      quiz_attempts: {
+        Row: {
+          correct_count: number;
+          detail: NonNullable<Json>;
+          detail_version: number;
+          edition_id: string | null;
+          id: string;
+          material_id: string;
+          question_count: number;
+          submitted_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          correct_count: number;
+          detail: NonNullable<Json>;
+          detail_version?: number;
+          edition_id?: string | null;
+          id?: string;
+          material_id: string;
+          question_count: number;
+          submitted_at?: string;
+          user_id: string;
+        };
+        Update: {
+          correct_count?: number;
+          detail?: NonNullable<Json>;
+          detail_version?: number;
+          edition_id?: string | null;
+          id?: string;
+          material_id?: string;
+          question_count?: number;
+          submitted_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_edition_id_fkey";
+            columns: ["edition_id"];
+            isOneToOne: false;
+            referencedRelation: "editions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "quiz_attempts_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "quiz_attempts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      quiz_options: {
+        Row: {
+          id: string;
+          label_en: string | null;
+          label_pt: string | null;
+          question_id: string;
+          sort_order: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: string;
+          label_en?: string | null;
+          label_pt?: string | null;
+          question_id: string;
+          sort_order: number;
+        };
+        Update: {
+          id?: string;
+          label_en?: string | null;
+          label_pt?: string | null;
+          question_id?: string;
+          sort_order?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "quiz_options_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: false;
+            referencedRelation: "quiz_questions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      quiz_question_keys: {
+        Row: {
+          correct_option_ids: string[];
+          explanation_en: string | null;
+          explanation_pt: string | null;
+          question_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          correct_option_ids: string[];
+          explanation_en?: string | null;
+          explanation_pt?: string | null;
+          question_id: string;
+        };
+        Update: {
+          correct_option_ids?: string[];
+          explanation_en?: string | null;
+          explanation_pt?: string | null;
+          question_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "quiz_question_keys_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: true;
+            referencedRelation: "quiz_questions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      quiz_questions: {
+        Row: {
+          allows_multiple: boolean;
+          id: string;
+          material_id: string;
+          prompt_en: string | null;
+          prompt_pt: string | null;
+          sort_order: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          allows_multiple?: boolean;
+          id?: string;
+          material_id: string;
+          prompt_en?: string | null;
+          prompt_pt?: string | null;
+          sort_order: number;
+        };
+        Update: {
+          allows_multiple?: boolean;
+          id?: string;
+          material_id?: string;
+          prompt_en?: string | null;
+          prompt_pt?: string | null;
+          sort_order?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       storage_deletions: {
         Row: {
           bucket_id: string;
@@ -613,6 +771,33 @@ export type Database = {
           },
         ];
       };
+      quiz_results: {
+        Row: {
+          attempt_count: number | null;
+          best_score: number | null;
+          last_score: number | null;
+          last_submitted_at: string | null;
+          material_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "quiz_attempts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Functions: {
       course_progress: {
@@ -646,15 +831,17 @@ export type Database = {
         Args: { ordered_ids: string[]; target_course_id: string };
         Returns: undefined;
       };
+      save_quiz: { Args: { questions: Json; target_material_id: string }; Returns: number };
       set_default_edition: { Args: { target_edition_id: string }; Returns: undefined };
       set_user_role: {
         Args: { new_role: Database["public"]["Enums"]["user_role"]; target: string };
         Returns: undefined;
       };
+      submit_quiz: { Args: { answers: Json; target_material_id: string }; Returns: Json };
     };
     Enums: {
       course_status: "draft" | "published" | "unlisted";
-      material_kind: "file" | "video" | "embed" | "link" | "page";
+      material_kind: "file" | "video" | "embed" | "link" | "page" | "quiz";
       request_status: "new" | "contacted" | "invited" | "archived";
       user_role: "learner" | "trainer";
     };
@@ -769,7 +956,7 @@ export const Constants = {
   public: {
     Enums: {
       course_status: ["draft", "published", "unlisted"],
-      material_kind: ["file", "video", "embed", "link", "page"],
+      material_kind: ["file", "video", "embed", "link", "page", "quiz"],
       request_status: ["new", "contacted", "invited", "archived"],
       user_role: ["learner", "trainer"],
     },

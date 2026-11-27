@@ -120,3 +120,58 @@ values
 
 insert into public.edition_hidden_materials (edition_id, material_id)
 values ('ed100000-0000-4000-8000-000000000001', 'e1000000-0000-4000-8000-000000000003');
+
+-- A short quiz at the end of the second module, to show how quizzes look: one question with a
+-- single right answer, one with two, and explanations. Nobody has handed it in.
+insert into public.materials
+  (id, module_id, kind, title_pt, title_en, description_pt, description_en, is_published, sort_order)
+values
+  ('e1000000-0000-4000-8000-000000000008', 'd1000000-0000-4000-8000-000000000002', 'quiz',
+   'Verifique o que aprendeu', 'Check what you learned',
+   'Três perguntas rápidas sobre o uso responsável da IA.',
+   'Three quick questions about using AI responsibly.', true, 20);
+
+insert into public.quiz_questions (id, material_id, sort_order, prompt_pt, prompt_en, allows_multiple)
+values
+  ('91000000-0000-4000-8000-000000000001', 'e1000000-0000-4000-8000-000000000008', 1,
+   'O que deve fazer antes de usar numa aula um texto gerado por IA?',
+   'What should you do before using an AI-generated text in class?', false),
+  ('91000000-0000-4000-8000-000000000002', 'e1000000-0000-4000-8000-000000000008', 2,
+   'Que informações não deve colocar numa ferramenta de IA pública?',
+   'Which information should you not put into a public AI tool?', true),
+  ('91000000-0000-4000-8000-000000000003', 'e1000000-0000-4000-8000-000000000008', 3,
+   'Um bom pedido a um assistente de IA costuma incluir…',
+   'A good request to an AI assistant usually includes…', false);
+
+insert into public.quiz_options (id, question_id, sort_order, label_pt, label_en)
+values
+  ('92000000-0000-4000-8000-000000000101', '91000000-0000-4000-8000-000000000001', 1,
+   'Lê-lo e confirmar os factos', 'Read it and check the facts'),
+  ('92000000-0000-4000-8000-000000000102', '91000000-0000-4000-8000-000000000001', 2,
+   'Nada: a IA não se engana', 'Nothing: AI does not make mistakes'),
+  ('92000000-0000-4000-8000-000000000103', '91000000-0000-4000-8000-000000000001', 3,
+   'Traduzi-lo para inglês', 'Translate it into English'),
+  ('92000000-0000-4000-8000-000000000201', '91000000-0000-4000-8000-000000000002', 1,
+   'Nomes e notas dos alunos', 'Students'' names and grades'),
+  ('92000000-0000-4000-8000-000000000202', '91000000-0000-4000-8000-000000000002', 2,
+   'Dados de saúde de alguém', 'Someone''s health data'),
+  ('92000000-0000-4000-8000-000000000203', '91000000-0000-4000-8000-000000000002', 3,
+   'O programa da disciplina, que é público', 'The syllabus, which is public'),
+  ('92000000-0000-4000-8000-000000000301', '91000000-0000-4000-8000-000000000003', 1,
+   'O contexto, a tarefa e o formato da resposta',
+   'The context, the task and the format of the answer'),
+  ('92000000-0000-4000-8000-000000000302', '91000000-0000-4000-8000-000000000003', 2,
+   'O maior número de palavras possível', 'As many words as possible');
+
+insert into public.quiz_question_keys (question_id, correct_option_ids, explanation_pt, explanation_en)
+values
+  ('91000000-0000-4000-8000-000000000001',
+   array['92000000-0000-4000-8000-000000000101']::uuid[],
+   'A IA pode afirmar com toda a segurança coisas que não são verdade. Quem usa o material responde por ele.',
+   'AI can state with full confidence things that are not true. Whoever uses the material answers for it.'),
+  ('91000000-0000-4000-8000-000000000002',
+   array['92000000-0000-4000-8000-000000000201', '92000000-0000-4000-8000-000000000202']::uuid[],
+   'Dados pessoais, e os de saúde acima de todos, não devem sair da escola ou do serviço para uma ferramenta pública.',
+   'Personal data, and health data above all, should not leave the school or the service for a public tool.'),
+  ('91000000-0000-4000-8000-000000000003',
+   array['92000000-0000-4000-8000-000000000301']::uuid[], null, null);

@@ -9,6 +9,7 @@ export {
   demoEditions,
   demoMaterials,
   demoModules,
+  demoQuiz,
   demoUsers,
 } from "../tests/fixtures/demo-data";
 

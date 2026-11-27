@@ -10,8 +10,15 @@ import {
   trainerAction,
   trainerContext,
 } from "@/lib/actions/trainer";
-import { checked, fieldErrors, fields, text } from "@/lib/actions/validation";
+import {
+  parseQuestions,
+  quizProblems,
+  quizSchema,
+  sameQuestions,
+} from "@/features/quizzes/schemas";
+import { checked, fieldErrors, fields, text, type ValidationKey } from "@/lib/actions/validation";
 import type { Direction } from "@/lib/dal/mutations";
+import { fetchQuizForEdit, saveQuiz } from "@/lib/dal/quiz-queries";
 import { fetchEditableMaterial } from "@/lib/dal/trainer-queries";
 import type { Client } from "@/lib/dal/types";
 import { publicEnv } from "@/lib/env/public";
@@ -197,7 +204,7 @@ const viewOf = (formData: FormData): string | undefined => {
   return isUuid(view) ? view : undefined;
 };
 
-/** Saves a video, Google document, link, text page or uploaded file, new or existing. */
+/** Saves a video, Google document, link, text page, quiz or uploaded file, new or existing. */
 export async function saveMaterial(
   _previous: ActionState,
   formData: FormData,
@@ -306,12 +313,26 @@ export async function saveMaterial(
   if (!isEditableKind(kind)) return failed(t("common.failed"));
   const values: Record<string, string> = {
     ...fields(formData, detailFields),
-    ...(kind === "page" ? fields(formData, ["body_pt", "body_en"]) : fields(formData, ["url"])),
+    ...(kind === "page"
+      ? fields(formData, ["body_pt", "body_en"])
+      : kind === "quiz"
+        ? {}
+        : fields(formData, ["url"])),
     is_published: isPublished ? "on" : "",
   };
   const parsed = materialSchemas[kind].safeParse({ ...values, is_published: isPublished });
-  if (!parsed.success) {
-    return failed(t("common.checkFields"), { fieldErrors: fieldErrors(parsed.error, tv), values });
+  // A quiz also sends its questions, as one value its editor keeps (so it is not in `values`).
+  const quiz =
+    kind === "quiz" ? quizSchema.safeParse(parseQuestions(text(formData, "questions"))) : null;
+  if (!parsed.success || (quiz && !quiz.success)) {
+    const problems: Record<string, string> = parsed.success ? {} : fieldErrors(parsed.error, tv);
+    if (quiz && !quiz.success) {
+      for (const problem of quizProblems(quiz.error)) {
+        const name = problem.question === null ? "questions" : `question_${problem.question}`;
+        problems[name] = tv(problem.message as ValidationKey, problem.values);
+      }
+    }
+    return failed(t("common.checkFields"), { fieldErrors: problems, values });
   }
 
   const result = id
@@ -332,6 +353,22 @@ export async function saveMaterial(
         return failed(t("common.gone"), { values });
       default:
         return failed(t("common.failed"), { values });
+    }
+  }
+
+  if (quiz?.success) {
+    // Saving gives every question a new id, and anyone answering at that moment has to start
+    // again: so the questions are only written when they have changed.
+    const stored = id ? await fetchQuizForEdit(supabase, result.id) : [];
+    if (!sameQuestions(stored, quiz.data)) {
+      const saved = await saveQuiz(supabase, result.id, quiz.data);
+      if (!saved.ok) {
+        // A quiz that was just created would be left behind, empty, with the form still open.
+        if (!id) await deleteMaterial(supabase, result.id);
+        return failed(t(saved.reason === "not_found" ? "common.gone" : "common.failed"), {
+          values,
+        });
+      }
     }
   }
 

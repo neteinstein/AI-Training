@@ -11,7 +11,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type Props = PageProps<"/[locale]/trainer/courses/[courseId]/content/materials/new">;
 
-const kinds: readonly MaterialKind[] = ["file", "video", "embed", "link", "page"];
+const kinds: readonly MaterialKind[] = ["file", "video", "embed", "link", "page", "quiz"];
 const toKind = (value: unknown): MaterialKind | null =>
   kinds.find((kind) => kind === value) ?? null;
 

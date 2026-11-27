@@ -13,6 +13,8 @@ import { TextField } from "@/components/forms/text-field";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { idleState } from "@/lib/actions/state";
+import { QuizEditor } from "@/features/quizzes/quiz-editor";
+import type { EditableQuestion } from "@/lib/dal/quiz-queries";
 import type { EditableMaterial } from "@/lib/dal/trainer-queries";
 import type { MaterialKind } from "@/lib/dal/types";
 import { routes } from "@/lib/routes";
@@ -31,6 +33,7 @@ export function MaterialForm({
   editions = [],
   editionId = null,
   viewEdition = null,
+  questions = [],
 }: {
   courseId: string;
   kind: MaterialKind;
@@ -45,6 +48,8 @@ export function MaterialForm({
   editionId?: string | null;
   /** The edition whose view of the content the form was opened from, to go back to it. */
   viewEdition?: string | null;
+  /** For editing a quiz: its questions, with the answer key. */
+  questions?: EditableQuestion[];
 }) {
   const t = useTranslations("Trainer");
   const locale = useLocale();
@@ -158,10 +163,13 @@ export function MaterialForm({
           }}
           errors={{ pt: errors?.description_pt, en: errors?.description_en }}
         />
+        {kind === "quiz" ? (
+          <QuizEditor initial={questions} languages={languages} errors={errors} />
+        ) : null}
       </LanguageTabs>
 
-      {/* A page is written here in both languages, so it has no single language of its own. */}
-      {kind === "page" ? (
+      {/* A page or a quiz is written here in both languages: it has no one language of its own. */}
+      {kind === "page" || kind === "quiz" ? (
         <input type="hidden" name="content_language" value="" />
       ) : (
         <SelectField

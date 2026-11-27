@@ -102,7 +102,14 @@
     "consent": "Assinale esta caixa para podermos responder ao seu pedido.",
     "startNeeded": "Indique o primeiro dia, ou apague o último.",
     "startToList": "Indique o primeiro dia para mostrar a edição no site público.",
-    "endBeforeStart": "O último dia não pode ser anterior ao primeiro."
+    "endBeforeStart": "O último dia não pode ser anterior ao primeiro.",
+    "quizOneQuestion": "Acrescente pelo menos uma pergunta.",
+    "quizTooManyQuestions": "Use no máximo {max} perguntas.",
+    "quizQuestionText": "Escreva a pergunta em pelo menos um dos idiomas.",
+    "quizOptionText": "Escreva cada resposta em pelo menos um dos idiomas.",
+    "quizTwoOptions": "Cada pergunta precisa de pelo menos duas respostas.",
+    "quizTooManyOptions": "Use no máximo {max} respostas por pergunta.",
+    "quizRightAnswer": "Assinale pelo menos uma resposta certa."
   },
   "Learn": {
     "title": "Os meus cursos",
@@ -131,7 +138,8 @@
     "previewNoteEdition": "Está a ver este curso como um formando da edição «{name}». Os materiais marcados como ocultos só aparecem aos formadores.",
     "onlyIn": "Só: {name}",
     "progress": "{done} de {total, plural, one {# material aberto} other {# materiais abertos}}",
-    "opened": "Aberto"
+    "opened": "Aberto",
+    "handedIn": "Entregue"
   },
   "Trainer": {
     "title": "Back-office",
@@ -362,21 +370,24 @@
         "video": "Vídeo",
         "embed": "Documento Google",
         "link": "Ligação",
-        "page": "Página"
+        "page": "Página",
+        "quiz": "Questionário"
       },
       "new": {
         "file": "Novo ficheiro",
         "video": "Novo vídeo",
         "embed": "Novo documento Google",
         "link": "Nova ligação",
-        "page": "Nova página"
+        "page": "Nova página",
+        "quiz": "Novo questionário"
       },
       "edit": {
         "file": "Editar ficheiro",
         "video": "Editar vídeo",
         "embed": "Editar documento Google",
         "link": "Editar ligação",
-        "page": "Editar página"
+        "page": "Editar página",
+        "quiz": "Editar questionário"
       },
       "inModule": "No módulo «{name}»",
       "visible": "Visível",
@@ -448,7 +459,34 @@
       "editionSummary": "{total, plural, one {# material} other {# materiais}} · {visible, plural, =0 {nenhum visível nesta edição} one {# visível nesta edição} other {# visíveis nesta edição}}",
       "shownTo": "Quem vê este material",
       "allEditions": "Todas as edições do curso",
-      "shownToHelp": "Um material de uma só edição não aparece aos formandos das outras."
+      "shownToHelp": "Um material de uma só edição não aparece aos formandos das outras.",
+      "quiz": {
+        "questions": "Perguntas",
+        "help": "Os formandos respondem a todas as perguntas, entregam e veem logo o que acertaram e porquê. Podem tentar as vezes que quiserem.",
+        "question": "Pergunta {number}",
+        "prompt": "Texto da pergunta",
+        "options": "Respostas",
+        "optionsHelp": "Assinale a resposta certa. Se assinalar mais do que uma, o formando tem de as escolher todas.",
+        "option": "Resposta {number}",
+        "correct": "Certa",
+        "correctNamed": "A resposta {number} é certa",
+        "explanation": "Explicação",
+        "explanationHelp": "Aparece ao formando depois de entregar.",
+        "addOption": "Adicionar resposta",
+        "removeOption": "Remover a resposta {number}",
+        "addQuestion": "Adicionar pergunta",
+        "removeQuestion": "Remover a pergunta {number}",
+        "moveQuestionUp": "Mover a pergunta {number} para cima",
+        "moveQuestionDown": "Mover a pergunta {number} para baixo",
+        "problemIn": "Pergunta {number}: {problem}",
+        "results": "Resultados",
+        "resultsLead": "O melhor resultado, o número de tentativas e a última tentativa de cada formando.",
+        "resultsEmpty": "Ainda ninguém entregou este questionário.",
+        "best": "Melhor: {score}",
+        "attempts": "{count, plural, one {# tentativa} other {# tentativas}}",
+        "lastAttempt": "Última: {date}",
+        "moved": "A pergunta passou para a posição {number}."
+      }
     },
     "editions": {
       "title": "Edições",
@@ -519,7 +557,9 @@
       "openedOn": "Aberto a {date}",
       "notOpened": "Por abrir",
       "nothingToOpen": "A edição desta pessoa ainda não mostra nenhum material.",
-      "inEdition": "Edição: {name}"
+      "inEdition": "Edição: {name}",
+      "handedIn": "Entregue a {date} · melhor {best} · {attempts, plural, one {# tentativa} other {# tentativas}}",
+      "notHandedIn": "Por entregar"
     },
     "users": {
       "title": "Utilizadores",
@@ -820,7 +860,7 @@
       },
       "data": {
         "title": "Que dados recolhemos",
-        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido, os cursos em que está inscrito e que materiais desses cursos abriu, e quando. Os formadores veem essa informação, para acompanharem o curso. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
+        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido, os cursos em que está inscrito que materiais desses cursos abriu, e quando, e os questionários que entregou, com os resultados. Os formadores veem essa informação, para acompanharem o curso. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
       },
       "purpose": {
         "title": "Para que os usamos",
@@ -854,7 +894,8 @@
       "video": "Vídeo",
       "embed": "Documento Google",
       "link": "Ligação externa",
-      "page": "Página"
+      "page": "Página",
+      "quiz": "Questionário"
     },
     "provider": {
       "youtube": "YouTube",
@@ -903,6 +944,31 @@
       "pages": "Páginas do documento",
       "loading": "A carregar o documento…",
       "failed": "Não foi possível mostrar o documento aqui. Pode descarregá-lo."
+    },
+    "quiz": {
+      "intro": "Responda a todas as perguntas e entregue. Vê logo o que acertou, e pode tentar as vezes que quiser.",
+      "chooseOne": "Escolha uma resposta.",
+      "chooseSeveral": "Pode haver mais do que uma resposta certa: escolha todas.",
+      "submit": "Entregar",
+      "answerAll": "Responda a todas as perguntas antes de entregar.",
+      "score": "Acertou {correct} de {total}.",
+      "right": "Certa",
+      "wrong": "Errada",
+      "yours": "A sua resposta",
+      "rightAnswer": "Resposta certa",
+      "why": "Porquê",
+      "retry": "Tentar de novo",
+      "changed": "O questionário foi alterado entretanto. As perguntas foram atualizadas: responda de novo.",
+      "failed": "Não foi possível entregar. Tente novamente.",
+      "standing": "Melhor resultado: {best} · {attempts, plural, one {# tentativa} other {# tentativas}}",
+      "empty": "Este questionário ainda não tem perguntas.",
+      "trial": "Como formador, pode experimentar o questionário: nada fica registado.",
+      "questionOf": "Pergunta {number} de {total}",
+      "gone": "Este questionário já não está disponível.",
+      "questions": "Perguntas",
+      "missing": "Falta responder a esta pergunta.",
+      "scoreNote": "Em baixo vê, pergunta a pergunta, o que escolheu e o que estava certo.",
+      "count": "{count, plural, one {# pergunta} other {# perguntas}}"
     }
   },
   "Account": {

@@ -203,7 +203,7 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
                         material.titleLang === locale ? undefined : htmlLang[material.titleLang]
                       }
                       hiddenLabel={t("hidden")}
-                      openedLabel={t("opened")}
+                      openedLabel={material.kind === "quiz" ? t("handedIn") : t("opened")}
                       downloadLabel={t("download", { title: material.title })}
                       newTabLabel={tm("newTab")}
                     />

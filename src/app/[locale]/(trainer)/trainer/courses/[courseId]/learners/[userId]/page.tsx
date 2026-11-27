@@ -8,6 +8,7 @@ import { ProgressBar } from "@/components/materials/progress-bar";
 import { Chip } from "@/components/trainer/chips";
 import { CourseFrame } from "@/components/trainer/course-frame";
 import { EmptyState, Row, RowList } from "@/components/trainer/rows";
+import { fetchQuizStandings } from "@/lib/dal/quiz-queries";
 import { requireTrainer } from "@/lib/dal/session";
 import {
   fetchCourseBuilder,
@@ -79,6 +80,16 @@ export default async function LearnerProgressPage({ params }: Props) {
     .sort()
     .at(-1);
   const day = (moment: string) => format.dateTime(new Date(moment), { dateStyle: "medium" });
+  // A quiz is done when it is handed in: its line says so, with the best result.
+  const quizzes = await fetchQuizStandings(
+    supabase,
+    person.id,
+    shown.flatMap((module) =>
+      module.materials.filter((material) => material.kind === "quiz").map(({ id }) => id),
+    ),
+  );
+  const percent = (score: number) =>
+    format.number(score, { style: "percent", maximumFractionDigits: 0 });
 
   return (
     <CourseFrame courseId={courseId} tab="learners" trail={[{ label: name }]} narrow>
@@ -122,6 +133,7 @@ export default async function LearnerProgressPage({ params }: Props) {
           <RowList label={module.heading}>
             {module.materials.map((material) => {
               const state = progress.get(material.id);
+              const quiz = quizzes.get(material.id);
               return (
                 <Row key={material.id} className="pr-5">
                   <MaterialIcon material={material} size="sm" className="rounded-[10px]" />
@@ -133,7 +145,20 @@ export default async function LearnerProgressPage({ params }: Props) {
                       {materialMeta(material, labels, locale)}
                     </span>
                   </span>
-                  {state?.isDone && state.openedAt ? (
+                  {material.kind === "quiz" ? (
+                    quiz ? (
+                      <Chip tone="good" className="max-w-full whitespace-normal">
+                        <CircleCheck aria-hidden="true" className="size-3.5 flex-none" />
+                        {t("learners.handedIn", {
+                          date: day(quiz.lastAt),
+                          best: percent(quiz.best),
+                          attempts: quiz.attempts,
+                        })}
+                      </Chip>
+                    ) : (
+                      <Chip>{t("learners.notHandedIn")}</Chip>
+                    )
+                  ) : state?.isDone && state.openedAt ? (
                     <Chip tone="good">
                       <CircleCheck aria-hidden="true" className="size-3.5" />
                       {t("learners.openedOn", { date: day(state.openedAt) })}

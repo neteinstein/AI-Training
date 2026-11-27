@@ -168,6 +168,7 @@ language.
 |   🗂️   | **Google document** | Slides, Docs, Sheets or a Drive file, embedded from the sharing link |
 |   🔗   | **Link**            | Opens the other site in a new tab                                    |
 |   📝   | **Text page**       | Written in Markdown, with copyable prompts and call-out boxes        |
+|   ✅   | **Quiz**            | Questions to practise with; the result and the reasons come at once  |
 
 ### Light or dark
 
@@ -199,7 +200,17 @@ page as upcoming dates.
 Learners see how far along they are in each course, and a tick on what they have already
 opened. Trainers see the same for every learner of a course, with the day each was last active,
 and can open one person's page to see what they opened and when. A material counts once its
-page, its download or its link has been opened; a trainer looking around is never counted.
+page, its download or its link has been opened, and a quiz once it has been handed in; a
+trainer looking around is never counted.
+
+### Quizzes for practice
+
+A trainer writes questions in Portuguese, English or both: two or more answers each, one or
+several of them right, and an explanation if they like. A learner answers them all, hands the
+quiz in and sees at once what was right and why, then tries again as often as they want. Every
+attempt is kept: the quiz's page in the back-office lists each learner's best result, number
+of attempts and last attempt. What is right is not sent to the browser before a quiz is handed
+in.
 
 ## 🔐 Built to be trusted
 

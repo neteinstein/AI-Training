@@ -69,6 +69,8 @@ test.describe("security headers", () => {
     const course = `/pt/learn/courses/${demoCourses.classroom.slug}`;
     await page.goto(course);
     await page.goto(`${course}/materials/${demoMaterials.promptGuide}`);
+    await page.goto(`${course}/materials/${demoMaterials.quiz}`);
+    await page.waitForLoadState("networkidle");
     await page.goto(`${course}/materials/${demoMaterials.slidesPdf}`);
     await expect(page.getByLabel("Página 1 de 6")).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('[data-page="1"] canvas')).toBeVisible();
@@ -96,6 +98,7 @@ test.describe("security headers", () => {
       `${course}/editions/new`,
       `${course}/learners`,
       `${course}/learners/${demoUsers.ana.id}`,
+      `${course}/content/materials/${demoMaterials.quiz}`,
       "/pt/trainer/areas/new",
       "/pt/trainer/users/invite",
       "/pt/trainer/requests",

@@ -1,7 +1,7 @@
 import { Download, ExternalLink, EyeOff } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { AppHeader } from "@/components/layout/app-header";
 import { Markdown } from "@/components/markdown/markdown";
 import { EmbedFrame } from "@/components/materials/embed-frame";
@@ -11,12 +11,14 @@ import { materialMeta } from "@/components/materials/meta";
 import { PdfViewer } from "@/components/materials/pdf-viewer-loader";
 import { buttonClass } from "@/components/ui/button";
 import { htmlLang } from "@/config/site";
+import { QuizForm } from "@/features/quizzes/quiz-form";
 import { FILE_LINK_SECONDS, signedFileUrl } from "@/lib/dal/files";
 import {
   fetchMaterialFile,
   fetchMaterialPage,
   recordMaterialOpen,
 } from "@/lib/dal/learner-queries";
+import { fetchMyQuizStanding, fetchQuiz } from "@/lib/dal/quiz-queries";
 import { requireUser } from "@/lib/dal/session";
 import type { MaterialItem } from "@/lib/dal/types";
 import { routes } from "@/lib/routes";
@@ -83,6 +85,20 @@ export default async function LearnMaterialPage({ params, searchParams }: Props)
   const downloadHref = routes.materialDownload(material.id);
   const openHref = `${downloadHref}?inline=1`;
 
+  // A quiz: its questions, without what is right (that only comes back with a graded attempt),
+  // and how this person has done so far. A trainer only tries it out, so has no results.
+  const isQuiz = material.kind === "quiz";
+  const [questions, standing] = isQuiz
+    ? await Promise.all([
+        fetchQuiz(supabase, material.id, locale),
+        user.role === "trainer" ? null : fetchMyQuizStanding(supabase, user.id, material.id),
+      ])
+    : [[], null];
+  // Written out here, on the server: the browser is handed the finished text.
+  const best = standing
+    ? (await getFormatter()).number(standing.best, { style: "percent", maximumFractionDigits: 0 })
+    : "";
+
   return (
     <>
       <AppHeader
@@ -107,7 +123,13 @@ export default async function LearnMaterialPage({ params, searchParams }: Props)
           >
             {material.title}
           </h1>
-          {reading ? null : <p className="text-muted-foreground text-sm">{meta}</p>}
+          {reading ? null : (
+            <p className="text-muted-foreground text-sm">
+              {isQuiz && questions.length > 0
+                ? `${meta} · ${tm("quiz.count", { count: questions.length })}`
+                : meta}
+            </p>
+          )}
           {material.isPublished ? null : (
             <p className="bg-highlight-tint text-highlight-foreground mt-1 inline-flex min-h-7 items-center gap-1.5 self-start rounded-full px-3 text-[0.8125rem] font-semibold">
               <EyeOff aria-hidden="true" className="size-4" />
@@ -163,6 +185,31 @@ export default async function LearnMaterialPage({ params, searchParams }: Props)
               {tm("openLink")}
               <ExternalLink aria-hidden="true" />
             </a>
+          </div>
+        ) : null}
+
+        {isQuiz ? (
+          <div className="flex flex-col gap-4">
+            {user.role === "trainer" ? (
+              <p className="bg-muted text-muted-foreground rounded-xl px-4 py-3 text-[0.9375rem]">
+                {tm("quiz.trial")}
+              </p>
+            ) : null}
+            {standing ? (
+              <p className="bg-highlight-tint text-highlight-foreground self-start rounded-xl px-4 py-2.5 text-[0.9375rem] font-semibold">
+                {tm("quiz.standing", { best, attempts: standing.attempts })}
+              </p>
+            ) : null}
+            {questions.length > 0 ? (
+              <>
+                <p className="text-muted-foreground text-[0.9375rem] leading-[1.55]">
+                  {tm("quiz.intro")}
+                </p>
+                <QuizForm materialId={material.id} questions={questions} />
+              </>
+            ) : (
+              <p className="bg-muted rounded-2xl p-5">{tm("quiz.empty")}</p>
+            )}
           </div>
         ) : null}
 
