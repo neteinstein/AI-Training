@@ -201,14 +201,17 @@ test.describe("course details", () => {
       await page.getByRole("link", { name: "Novo curso" }).click();
       await expect(page.getByRole("heading", { level: 1, name: "Novo curso" })).toBeVisible();
 
-      // The area and the level are required.
+      // The area, the level, the date and the place are required.
       await fillBoth(page, "Título", title, `${title} EN`);
       await page.getByRole("button", { name: "Criar" }).click();
       await expect(alertWith(page, "Verifique os campos assinalados.")).toBeVisible();
       await expect(page.getByText("Escolha uma opção.").filter({ visible: true })).toHaveCount(2);
+      await expect(page.getByText("Preencha este campo.").filter({ visible: true })).toHaveCount(2);
 
       await field(page, "Área").selectOption({ label: "Médicos" });
       await field(page, "Nível").selectOption({ label: "Avançado" });
+      await field(page, "Data").fill("2027-03-06");
+      await field(page, "Local").fill("Porto");
       await page.getByRole("button", { name: "Criar" }).click();
       await expect(page).toHaveURL(/\/pt\/trainer\/courses\/[0-9a-f-]{36}\/content$/);
       await expectNotice(page, "Curso criado. Pode agora adicionar o conteúdo.");
@@ -273,20 +276,32 @@ test.describe("course details", () => {
 
       await fillBoth(page, "Resumo", "Resumo de teste.", "Test summary.");
       await field(page, "Duração em horas (opcional)").fill("7,5");
+      await field(page, "Data").fill("2027-10-09");
+      await field(page, "Local").fill("  Online  ");
       await page.getByRole("button", { name: "Guardar" }).click();
       await expect(confirmation(page, "Alterações guardadas.")).toBeVisible();
 
       await page.reload();
       await expect(field(page, "Duração em horas (opcional)")).toHaveValue("7,5");
+      await expect(field(page, "Data")).toHaveValue("2027-10-09");
+      await expect(field(page, "Local")).toHaveValue("Online");
       const { data: after } = await service.from("courses").select("*").eq("id", id).single();
       expect(after?.summary_pt).toBe("Resumo de teste.");
       expect(after?.summary_en).toBe("Test summary.");
       expect(after?.duration_hours).toBe(7.5);
+      expect(after?.starts_on).toBe("2027-10-09");
+      expect(after?.location).toBe("Online");
 
       // A number that is not a duration is refused, with the reason.
       await field(page, "Duração em horas (opcional)").fill("muitas");
       await page.getByRole("button", { name: "Guardar" }).click();
       await expect(page.getByText("Indique as horas com um número entre 0,5 e 999")).toBeVisible();
+
+      // The place cannot be emptied.
+      await field(page, "Duração em horas (opcional)").fill("7,5");
+      await field(page, "Local").fill(" ");
+      await page.getByRole("button", { name: "Guardar" }).click();
+      await expect(page.getByText("Preencha este campo.").filter({ visible: true })).toHaveCount(1);
     } finally {
       if (before) {
         await service
@@ -295,6 +310,8 @@ test.describe("course details", () => {
             summary_pt: before.summary_pt,
             summary_en: before.summary_en,
             duration_hours: before.duration_hours,
+            starts_on: before.starts_on,
+            location: before.location,
           })
           .eq("id", id);
       }

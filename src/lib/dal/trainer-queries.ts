@@ -173,6 +173,9 @@ export type TrainerCourse = {
   /** Markdown. */
   description: Bilingual;
   durationHours: number | null;
+  /** YYYY-MM-DD. Null only for courses created before the field existed. */
+  startsOn: string | null;
+  location: string | null;
   publishedAt: string | null;
   updatedAt: string;
   learnerCount: number;
@@ -200,6 +203,8 @@ export async function fetchTrainerCourse(
     summary: both(row, "summary"),
     description: both(row, "description"),
     durationHours: row.duration_hours,
+    startsOn: row.starts_on,
+    location: row.location,
     publishedAt: row.published_at,
     updatedAt: row.updated_at,
     learnerCount: countOf(row.enrollments),

@@ -64,6 +64,8 @@ export function toCourseCard(
     title: pickLocalized(row, "title", locale),
     summary: pickLocalized(row, "summary", locale),
     durationHours: row.duration_hours,
+    startsOn: row.starts_on,
+    location: row.location,
     area,
     level,
   };

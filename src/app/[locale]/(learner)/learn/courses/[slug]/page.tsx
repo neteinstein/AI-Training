@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AreaChip } from "@/components/catalog/area-chip";
 import { CourseFacts } from "@/components/catalog/course-card";
+import { CourseWhenWhere } from "@/components/catalog/course-when-where";
 import { AppHeader } from "@/components/layout/app-header";
 import { MaterialIcon } from "@/components/materials/kind";
 import { materialMeta } from "@/components/materials/meta";
@@ -53,6 +54,7 @@ export default async function LearnCoursePage({ params }: Props) {
         <div className="mx-auto flex w-full max-w-3xl flex-col items-start gap-3 px-5 py-5 sm:py-8">
           <AreaChip area={course.area} />
           <h1 className="font-heading text-[1.75rem] leading-[1.2] sm:text-4xl">{course.title}</h1>
+          <CourseWhenWhere course={course} />
           <CourseFacts course={course} />
         </div>
       </div>

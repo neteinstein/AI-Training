@@ -1,6 +1,13 @@
 import { z } from "zod";
-import { chosenId, longText, optionalText, requiredText, slug } from "@/lib/validation/rules";
-import { DESCRIPTION_MAX, SUMMARY_MAX } from "./constants";
+import {
+  chosenId,
+  longText,
+  optionalText,
+  requiredDate,
+  requiredText,
+  slug,
+} from "@/lib/validation/rules";
+import { DESCRIPTION_MAX, LOCATION_MAX, SUMMARY_MAX } from "./constants";
 import type { CourseInput } from "./operations";
 
 export const courseFields = [
@@ -14,6 +21,8 @@ export const courseFields = [
   "description_pt",
   "description_en",
   "duration_hours",
+  "starts_on",
+  "location",
 ] as const;
 
 /** Hours as people type them: "8", "7.5" or, in Portuguese, "7,5". Empty means not set. */
@@ -36,6 +45,8 @@ export const courseSchema = z
     description_pt: longText(DESCRIPTION_MAX),
     description_en: longText(DESCRIPTION_MAX),
     duration_hours: durationHours,
+    starts_on: requiredDate,
+    location: requiredText(LOCATION_MAX),
   })
   .transform((value): CourseInput => ({
     slug: value.slug,
@@ -45,6 +56,8 @@ export const courseSchema = z
     summary: { pt: value.summary_pt, en: value.summary_en },
     description: { pt: value.description_pt, en: value.description_en },
     durationHours: value.duration_hours,
+    startsOn: value.starts_on,
+    location: value.location,
   }));
 
 export const courseStatusSchema = z.enum(["draft", "published", "unlisted"], "choose");

@@ -2,8 +2,9 @@ import type { CourseCard as Course } from "@/lib/dal/types";
 import { cn } from "@/lib/utils";
 import { AreaChip } from "./area-chip";
 import { CourseFacts } from "./course-card";
+import { CourseWhenWhere } from "./course-when-where";
 
-/** A course shown for information (not a link): area, title, level and duration. */
+/** A course shown for information (not a link): area, title, date, place, level and duration. */
 export function CourseSummary({ course, className }: { course: Course; className?: string }) {
   return (
     <div
@@ -11,6 +12,7 @@ export function CourseSummary({ course, className }: { course: Course; className
     >
       <AreaChip area={course.area} className="self-start" />
       <span className="font-heading text-[1.375rem] leading-tight">{course.title}</span>
+      <CourseWhenWhere course={course} />
       <CourseFacts course={course} />
     </div>
   );
