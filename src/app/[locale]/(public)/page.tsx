@@ -221,11 +221,16 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-6">
-                    <a href={trainer.linkedin} className={trainerLink}>
+                    {/* Names the trainer for screen readers, which may list the links alone.
+                        A label rather than hidden text: browsers treat a visually hidden span
+                        as a separate block and read "LinkedIn , Name". */}
+                    <a
+                      href={trainer.linkedin}
+                      className={trainerLink}
+                      aria-label={`LinkedIn, ${trainer.name}`}
+                    >
                       <LinkedinLogoIcon aria-hidden="true" weight="duotone" className="size-5" />
                       LinkedIn
-                      {/* Names the trainer for screen readers, which may list the links alone. */}
-                      <span className="sr-only">, {trainer.name}</span>
                     </a>
                     <a href={trainer.website} className={trainerLink}>
                       <GlobeIcon aria-hidden="true" weight="duotone" className="size-5" />
