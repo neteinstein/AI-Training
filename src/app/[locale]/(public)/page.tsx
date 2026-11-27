@@ -209,11 +209,16 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-6">
-                    <a href={trainer.linkedin} className={trainerLink}>
+                    <a
+                      href={trainer.linkedin}
+                      // Names the trainer for screen readers, which may list the links alone.
+                      // (As a label: text hidden inside the link is read as a block of its
+                      // own, which put a space before the comma.)
+                      aria-label={`LinkedIn, ${trainer.name}`}
+                      className={trainerLink}
+                    >
                       <LinkedinLogoIcon aria-hidden="true" weight="duotone" className="size-5" />
                       LinkedIn
-                      {/* Names the trainer for screen readers, which may list the links alone. */}
-                      <span className="sr-only">, {trainer.name}</span>
                     </a>
                     <a href={trainer.website} className={trainerLink}>
                       <GlobeIcon aria-hidden="true" weight="duotone" className="size-5" />

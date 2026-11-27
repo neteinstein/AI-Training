@@ -35,9 +35,10 @@ back-office where trainers build courses and invite people. In Portuguese and En
 
 ## 🎓 What it is
 
-AI Training puts a whole course programme on one site. People find a course, ask for
-information, get an invitation, and then find their slides, videos, readings and notes waiting
-for them, on a laptop or on a phone.
+AI Training is where a course continues after the training sessions. People find a course, ask
+for information and attend the sessions with a trainer. When the course starts, each person gets
+a personal invitation and finds up to a month of slides, videos, readings and notes to
+consolidate what they learned, on a laptop or on a phone.
 
 Trainers run all of it themselves: no spreadsheets, no shared drives, no sending links around.
 
