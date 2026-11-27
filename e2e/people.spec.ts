@@ -229,12 +229,15 @@ test.describe("users", () => {
       await role.selectOption("trainer");
       await page.getByRole("button", { name: "Alterar papel" }).click();
       await expectNotice(page, "Papel alterado.");
+      // Once saved, the list shows the new role, so the old one can be chosen again.
+      await expect(role).toHaveValue("trainer");
       await expect(
         page.getByText("Os formadores têm acesso a todos os cursos. As inscrições"),
       ).toBeVisible();
-      await page.getByRole("combobox", { name: "Papel" }).selectOption("learner");
+      await role.selectOption("learner");
       await page.getByRole("button", { name: "Alterar papel" }).click();
       await expectNotice(page, "Papel alterado.");
+      await expect(role).toHaveValue("learner");
 
       // A link to set a new password, for someone who cannot sign in. Nothing is emailed.
       await page.getByRole("button", { name: "Criar ligação de acesso" }).click();
