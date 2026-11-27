@@ -16,6 +16,10 @@ const CONTENT_TABLES = [
   { name: "modules", order: ["course_id", "sort_order", "id"] },
   { name: "materials", order: ["module_id", "sort_order", "id"] },
   { name: "edition_hidden_materials", order: ["edition_id", "material_id"] },
+  // What a quiz asks: its questions, their options, then which options are right and why.
+  { name: "quiz_questions", order: ["material_id", "sort_order", "id"] },
+  { name: "quiz_options", order: ["question_id", "sort_order", "id"] },
+  { name: "quiz_question_keys", order: ["question_id"] },
 ] as const;
 
 /** The tables about people: personal data, only exported when the trainer asks for it. */
@@ -25,6 +29,8 @@ const PEOPLE_TABLES = [
   { name: "info_requests", order: ["created_at", "id"] },
   // What each person has opened: after the profiles and the materials it points at.
   { name: "material_progress", order: ["user_id", "material_id"] },
+  // Every quiz handed in, each with a copy of what was asked and answered then.
+  { name: "quiz_attempts", order: ["submitted_at", "id"] },
 ] as const;
 
 export type BackupTable =

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { collectBackup, fetchBackupSummary, type BackupRow } from "@/lib/dal/backup";
+import { saveQuiz } from "@/lib/dal/quiz-queries";
 import {
   admin,
   createCatalogue,
@@ -25,6 +26,8 @@ let publishedEdition: string;
 let draftEdition: string;
 /** A second edition of the published course, which hides one of its materials. */
 let secondEdition: string;
+/** A quiz of one question in the published course, handed in once by each learner. */
+let quizId: string;
 
 const ids = (rows: BackupRow[] | undefined) => (rows ?? []).map((row) => row.id as string);
 /** What tells one row from another: its id, or all of it where a table has none. */
@@ -49,6 +52,44 @@ beforeAll(async () => {
       })),
     );
   if (progressError) throw new Error(`Progress failed: ${progressError.message}`);
+
+  const { data: quiz, error: quizError } = await admin()
+    .from("materials")
+    .insert({
+      module_id: catalogue.modules.published,
+      kind: "quiz",
+      title_pt: "Questionário",
+      is_published: true,
+      sort_order: 30,
+    })
+    .select("id")
+    .single();
+  if (quizError || !quiz) throw new Error(`Quiz failed: ${quizError?.message}`);
+  quizId = quiz.id;
+  const saved = await saveQuiz(trainer.client, quizId, [
+    {
+      prompt: { pt: "Quanto é 2 + 2?", en: "What is 2 + 2?" },
+      explanation: { pt: "Dois e dois são quatro.", en: "Two and two make four." },
+      options: [
+        { label: { pt: "4", en: "4" }, correct: true },
+        { label: { pt: "5", en: "5" }, correct: false },
+      ],
+    },
+  ]);
+  if (!saved.ok) throw new Error(`Saving the quiz failed: ${saved.reason}`);
+  const { error: attemptError } = await admin()
+    .from("quiz_attempts")
+    .insert(
+      [learner, otherLearner].map((user) => ({
+        user_id: user.id,
+        material_id: quizId,
+        edition_id: publishedEdition,
+        correct_count: 1,
+        question_count: 1,
+        detail: [],
+      })),
+    );
+  if (attemptError) throw new Error(`Attempts failed: ${attemptError.message}`);
 
   // A file in the draft course, not published: only a trainer's backup should hold it.
   const { data, error } = await admin()
@@ -101,6 +142,9 @@ describe("backup data", () => {
       "modules",
       "materials",
       "edition_hidden_materials",
+      "quiz_questions",
+      "quiz_options",
+      "quiz_question_keys",
     ]);
     expect(ids(backup.tables.areas)).toContain(catalogue.areaId);
     expect(ids(backup.tables.levels)).toContain(catalogue.levelId);
@@ -125,6 +169,23 @@ describe("backup data", () => {
       }),
     );
 
+    // A quiz whole: its question, the options, and which of them is right and why.
+    const questions = backup.tables.quiz_questions!.filter((row) => row.material_id === quizId);
+    expect(questions).toEqual([
+      expect.objectContaining({ prompt_pt: "Quanto é 2 + 2?", prompt_en: "What is 2 + 2?" }),
+    ]);
+    const options = backup.tables.quiz_options!.filter(
+      (row) => row.question_id === questions[0].id,
+    );
+    expect(options.map((row) => row.label_pt)).toEqual(["4", "5"]);
+    expect(backup.tables.quiz_question_keys).toContainEqual(
+      expect.objectContaining({
+        question_id: questions[0].id,
+        correct_option_ids: [options[0].id],
+        explanation_pt: "Dois e dois são quatro.",
+      }),
+    );
+
     // Every row once, in a full copy of its columns.
     for (const rows of Object.values(backup.tables)) {
       expect(new Set(rows.map(keyOf)).size).toBe(rows.length);
@@ -144,7 +205,13 @@ describe("backup data", () => {
     const backup = await collectBackup(trainer.client, { people: true });
 
     expect(Object.keys(backup.tables)).toEqual(
-      expect.arrayContaining(["profiles", "enrollments", "info_requests", "material_progress"]),
+      expect.arrayContaining([
+        "profiles",
+        "enrollments",
+        "info_requests",
+        "material_progress",
+        "quiz_attempts",
+      ]),
     );
     expect(ids(backup.tables.profiles)).toEqual(expect.arrayContaining([trainer.id, learner.id]));
     // An enrolment says which edition it is in, and that edition is in the backup too.
@@ -157,10 +224,13 @@ describe("backup data", () => {
     );
     expect(ids(backup.tables.editions)).toContain(publishedEdition);
 
-    // What each of them has opened.
+    // What each of them has opened, and the quiz each handed in.
     for (const user of [learner, otherLearner]) {
       expect(backup.tables.material_progress).toContainEqual(
         expect.objectContaining({ user_id: user.id, material_id: catalogue.materials.visible }),
+      );
+      expect(backup.tables.quiz_attempts).toContainEqual(
+        expect.objectContaining({ user_id: user.id, material_id: quizId, correct_count: 1 }),
       );
     }
     expect(new Set(backup.tables.material_progress!.map(keyOf)).size).toBe(
@@ -181,10 +251,18 @@ describe("backup data", () => {
     expect(ids(backup.tables.editions)).not.toContain(draftEdition);
     expect(backup.tables.edition_hidden_materials).toEqual([]);
     expect(ids(backup.tables.profiles)).toEqual([learner.id]);
-    // Their own progress, and nobody else's.
+    // Their own progress and their own quiz, and nobody else's.
     expect(backup.tables.material_progress).toEqual([
       expect.objectContaining({ user_id: learner.id, material_id: catalogue.materials.visible }),
     ]);
+    expect(backup.tables.quiz_attempts).toEqual([
+      expect.objectContaining({ user_id: learner.id, material_id: quizId }),
+    ]);
+    // The questions of their course's quiz, but never which answers are right.
+    expect(backup.tables.quiz_questions).toContainEqual(
+      expect.objectContaining({ material_id: quizId }),
+    );
+    expect(backup.tables.quiz_question_keys).toEqual([]);
     expect(backup.tables.info_requests).toEqual([]);
     expect(backup.files.map((entry) => entry.materialId)).not.toContain(fileMaterialId);
   });

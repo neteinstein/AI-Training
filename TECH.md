@@ -40,6 +40,7 @@ and how it looks, see the [README](README.md).
 | Back-office backup: ZIP download of content, files and people     | Done, tested in the browser     |
 | Editions of a course: own learners, own view of the content       | Done, tested in the browser     |
 | Progress: what each learner has opened, for them and for trainers | Done, tested in the browser     |
+| Quizzes: written by trainers, answered and graded, results kept   | Done, tested in the browser     |
 
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
@@ -196,13 +197,14 @@ It prints a one-time activation link to send to that person.
 
 ## Materials
 
-| Kind            | How it is shown                                                                    |
-| --------------- | ---------------------------------------------------------------------------------- |
-| Uploaded file   | Private storage; PDFs open in the built-in viewer, other files download            |
-| Video           | YouTube (cookie-free player) or Vimeo, loaded when the learner presses play        |
-| Google document | Slides, Docs, Sheets or a Drive file, embedded from the normal sharing link        |
-| Link            | Opens the other site in a new tab                                                  |
-| Text page       | Written in Markdown in the back-office; raw HTML and remote images are not allowed |
+| Kind            | How it is shown                                                                        |
+| --------------- | -------------------------------------------------------------------------------------- |
+| Uploaded file   | Private storage; PDFs open in the built-in viewer, other files download                |
+| Video           | YouTube (cookie-free player) or Vimeo, loaded when the learner presses play            |
+| Google document | Slides, Docs, Sheets or a Drive file, embedded from the normal sharing link            |
+| Link            | Opens the other site in a new tab                                                      |
+| Text page       | Written in Markdown in the back-office; raw HTML and remote images are not allowed     |
+| Quiz            | Questions with answers to choose; graded when handed in, as often as the learner likes |
 
 Two things worth knowing:
 
@@ -231,10 +233,12 @@ manifest.json          when and by whom, what was included, rows per table, and 
 ```
 
 - **Always in it:** areas, levels, courses and their editions, modules and materials (so text
-  pages, links and the addresses of videos and Google documents), and what each edition hides.
+  pages, links and the addresses of videos and Google documents), what each edition hides, and
+  the quizzes' questions with their right answers and explanations.
 - **Ticked by default:** the uploaded files. Untick them for a small, text-only backup.
-- **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`) and what each of
-  them has opened (`material_progress`). It is personal data, and the page says so.
+- **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`), what each of
+  them has opened (`material_progress`) and the quizzes they handed in (`quiz_attempts`). It is
+  personal data, and the page says so.
 - **Never in it:** passwords (accounts live in Supabase Auth; after a restore people would be
   invited again) and the content of videos and Google documents, which stays with those
   services.
@@ -260,8 +264,9 @@ How it works, and what follows from it:
 
 There is no restore button. The rows are exactly what the database holds, so a restore inserts
 the tables in the order of `data/` above (areas, levels, courses, editions, modules, materials,
-what each edition hides, then profiles once the accounts exist again, enrolments, requests and
-progress) and uploads each file back to the `course-materials` bucket under its `storagePath`.
+what each edition hides, the quizzes' questions, options and keys, then profiles once the
+accounts exist again, enrolments, requests, progress and quiz attempts) and uploads each file
+back to the `course-materials` bucket under its `storagePath`.
 On a paid Supabase plan, the project's own daily database backups cover the database as well;
 they do not cover stored files.
 
@@ -297,6 +302,15 @@ All access rules live in the database, in `supabase/migrations`:
   the material's page is drawn, where a file is fetched (`/api/materials/[id]/download`) and
   where a link is followed (`/api/materials/[id]/open`, which then sends the browser on).
   Deleting a material deletes what was noted about it.
+- A quiz is a material whose questions and answers are in `quiz_questions` and `quiz_options`,
+  readable by whoever may open the quiz. **Which answers are right, and the explanations, are
+  in a table of their own (`quiz_question_keys`) that only trainers can read.** A learner gets
+  them in one place only: the answer of `submit_quiz`, which grades what was handed in, keeps
+  the attempt (`quiz_attempts`, with a copy of what was asked, chosen and right) and marks the
+  quiz as done. Nothing is kept when a trainer tries a quiz. Quizzes are written through
+  `save_quiz`, which replaces all questions at once; the app only calls it when the questions
+  changed, because a form opened before the change has to be opened again. A quiz without
+  questions is shown to no learner. Deleting a quiz deletes its attempts.
 - A user's role is never taken from data the user can edit, and the last trainer can be neither
   demoted nor deleted.
 

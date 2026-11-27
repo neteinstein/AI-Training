@@ -37,7 +37,38 @@ export const demoMaterials = {
   hiddenNotes: "e1000000-0000-4000-8000-000000000005",
   /** Only the in-person class of the classroom course has it. */
   timetable: "e1000000-0000-4000-8000-000000000007",
+  /** Three questions; the second has two right answers. Last material of the second module. */
+  quiz: "e1000000-0000-4000-8000-000000000008",
 } as const;
+
+/** The demo quiz: its questions in order, each with its options and which of them are right. */
+export const demoQuiz = [
+  {
+    id: "91000000-0000-4000-8000-000000000001",
+    prompt: "O que deve fazer antes de usar numa aula um texto gerado por IA?",
+    options: ["Lê-lo e confirmar os factos", "Nada: a IA não se engana", "Traduzi-lo para inglês"],
+    right: ["Lê-lo e confirmar os factos"],
+  },
+  {
+    id: "91000000-0000-4000-8000-000000000002",
+    prompt: "Que informações não deve colocar numa ferramenta de IA pública?",
+    options: [
+      "Nomes e notas dos alunos",
+      "Dados de saúde de alguém",
+      "O programa da disciplina, que é público",
+    ],
+    right: ["Nomes e notas dos alunos", "Dados de saúde de alguém"],
+  },
+  {
+    id: "91000000-0000-4000-8000-000000000003",
+    prompt: "Um bom pedido a um assistente de IA costuma incluir…",
+    options: [
+      "O contexto, a tarefa e o formato da resposta",
+      "O maior número de palavras possível",
+    ],
+    right: ["O contexto, a tarefa e o formato da resposta"],
+  },
+] as const;
 
 export const demoUsers = {
   trainer: {

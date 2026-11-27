@@ -11,6 +11,13 @@ import {
   materialSchemas,
   moduleSchema,
 } from "@/features/materials/schemas";
+import { QUIZ_MAX_OPTIONS, QUIZ_MAX_QUESTIONS, QUIZ_TEXT_MAX } from "@/features/quizzes/constants";
+import {
+  parseQuestions,
+  quizProblems,
+  quizSchema,
+  sameQuestions,
+} from "@/features/quizzes/schemas";
 import { infoRequestSchema } from "@/features/requests/schemas";
 import { inviteSchema, profileSchema, splitEmails } from "@/features/users/schemas";
 import { checked, fieldErrors, fields, textList } from "@/lib/actions/validation";
@@ -56,6 +63,22 @@ describe("every validation message exists in both languages", () => {
       [materialSchemas.link, { url: "nada", is_published: true }],
       [materialSchemas.page, { is_published: false }],
       [fileMaterialSchema, { is_published: false }],
+      [materialSchemas.quiz, { is_published: "yes" }],
+      [quizSchema, []],
+      [quizSchema, [{}, { prompt: { pt: "", en: "" }, explanation: {}, options: [{}] }]],
+      [
+        quizSchema,
+        [
+          {
+            prompt: { pt: "x".repeat(QUIZ_TEXT_MAX + 1), en: "" },
+            explanation: { pt: "", en: "" },
+            options: [
+              { label: { pt: "", en: "" }, correct: false },
+              { label: { pt: "b", en: "" }, correct: "sim" },
+            ],
+          },
+        ],
+      ],
       [inviteSchema, { emails: "a, b@", locale: "fr", role: "admin", mode: "sms" }],
       [infoRequestSchema, { name: "", email: "x", course_id: "1" }],
       [passwordChangeSchema, { current: "a", password: "a", confirm: "b" }],
@@ -456,5 +479,142 @@ describe("reading forms", () => {
     expect(textList(form, "missing")).toEqual([]);
     expect(checked(form, "is_published")).toBe(true);
     expect(checked(form, "other")).toBe(false);
+  });
+});
+
+describe("quizzes", () => {
+  const text = (pt: string, en = "") => ({ pt, en });
+  const option = (label: string, correct = false) => ({ label: text(label), correct });
+  const question = (prompt: string, options = [option("Sim", true), option("Não")]) => ({
+    prompt: text(prompt),
+    explanation: text(""),
+    options,
+  });
+  // (Any key, with whatever values it needs: the keys are checked by the test at the top.)
+  const say = translate.pt as (key: string, values?: Record<string, string | number>) => string;
+  /** The message for each question a quiz is refused for, in Portuguese. */
+  const refused = (input: unknown) => {
+    const result = quizSchema.safeParse(input);
+    if (result.success) return null;
+    return Object.fromEntries(
+      quizProblems(result.error).map((problem) => [
+        problem.question ?? "quiz",
+        say(problem.message, problem.values),
+      ]),
+    );
+  };
+
+  test("a quiz is questions with a text, two options or more and a right answer", () => {
+    const parsed = quizSchema.safeParse([
+      {
+        prompt: { pt: "  Quanto é 2 + 2?  ", en: "" },
+        explanation: { pt: " Soma simples. ", en: "" },
+        options: [
+          { label: { pt: " 4 ", en: "4" }, correct: true },
+          { label: { pt: "5", en: "" }, correct: false },
+        ],
+      },
+    ]);
+    expect(parsed.success && parsed.data).toEqual([
+      {
+        prompt: { pt: "Quanto é 2 + 2?", en: "" },
+        explanation: { pt: "Soma simples.", en: "" },
+        options: [
+          { label: { pt: "4", en: "4" }, correct: true },
+          { label: { pt: "5", en: "" }, correct: false },
+        ],
+      },
+    ]);
+    // English alone is as good as Portuguese alone, and several answers may be right.
+    expect(
+      refused([
+        {
+          prompt: text("", "Pick the even numbers"),
+          explanation: text(""),
+          options: [
+            { label: text("", "2"), correct: true },
+            { label: text("", "3"), correct: false },
+            { label: text("", "4"), correct: true },
+          ],
+        },
+      ]),
+    ).toBeNull();
+  });
+
+  test("what is missing is said for the question it is missing in", () => {
+    expect(refused([])).toEqual({ quiz: "Acrescente pelo menos uma pergunta." });
+    expect(refused("nada")).toEqual({ quiz: "Preencha este campo." });
+    expect(
+      refused([
+        question("Certa?"),
+        question("  "),
+        question("Só uma resposta", [option("Sim", true)]),
+        question("Nenhuma certa", [option("Sim"), option("Não")]),
+        question("Resposta em branco", [option("Sim", true), option(" ")]),
+      ]),
+    ).toEqual({
+      2: "Escreva a pergunta em pelo menos um dos idiomas.",
+      3: "Cada pergunta precisa de pelo menos duas respostas.",
+      4: "Assinale pelo menos uma resposta certa.",
+      5: "Escreva cada resposta em pelo menos um dos idiomas.",
+    });
+  });
+
+  test("the limits are said with their numbers", () => {
+    const many = Array.from({ length: QUIZ_MAX_OPTIONS + 1 }, (_, index) =>
+      option(`Resposta ${index}`, index === 0),
+    );
+    expect(refused([question("Demasiadas", many)])).toEqual({
+      1: `Use no máximo ${QUIZ_MAX_OPTIONS} respostas por pergunta.`,
+    });
+    expect(
+      refused(Array.from({ length: QUIZ_MAX_QUESTIONS + 1 }, () => question("Outra"))),
+    ).toEqual({ quiz: `Use no máximo ${QUIZ_MAX_QUESTIONS} perguntas.` });
+    expect(refused([question("x".repeat(QUIZ_TEXT_MAX + 1))])?.[1]).toContain(
+      String(QUIZ_TEXT_MAX),
+    );
+  });
+
+  test("the editor's value is read as it was sent, and anything else as no questions", () => {
+    expect(parseQuestions(JSON.stringify([question("Uma")]))).toEqual([question("Uma")]);
+    expect(parseQuestions("")).toEqual([]);
+    expect(parseQuestions("{nope")).toEqual([]);
+  });
+
+  test("two quizzes are the same when they say the same, whatever the spaces", () => {
+    const stored = [question("Uma"), question("Duas")];
+    expect(sameQuestions(stored, [question(" Uma "), question("Duas")])).toBe(true);
+    expect(sameQuestions(stored, [question("Duas"), question("Uma")])).toBe(false);
+    expect(sameQuestions(stored, [question("Uma")])).toBe(false);
+    expect(
+      sameQuestions(stored, [question("Uma", [option("Sim"), option("Não", true)]), stored[1]]),
+    ).toBe(false);
+    expect(
+      sameQuestions(stored, [{ ...stored[0], explanation: text("Porque sim.") }, stored[1]]),
+    ).toBe(false);
+    expect(sameQuestions([], [])).toBe(true);
+  });
+
+  test("a quiz is a material like the others: a title and where it is shown", () => {
+    expect(isEditableKind("quiz")).toBe(true);
+    const details = {
+      title_pt: "Verifique o que aprendeu",
+      title_en: "",
+      description_pt: "",
+      description_en: "",
+      content_language: "",
+      edition_id: "",
+      is_published: true,
+    };
+    expect(problems(materialSchemas.quiz, { ...details, title_pt: " " })).toEqual({
+      title_pt: "Preencha este campo em pelo menos um dos idiomas.",
+    });
+    const parsed = materialSchemas.quiz.safeParse(details);
+    expect(parsed.success && parsed.data).toMatchObject({
+      kind: "quiz",
+      title: { pt: "Verifique o que aprendeu", en: "" },
+      editionId: null,
+      isPublished: true,
+    });
   });
 });

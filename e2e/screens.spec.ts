@@ -7,6 +7,7 @@ import {
   demoCourses,
   demoEditions,
   demoMaterials,
+  demoQuiz,
   demoUsers,
   latestEmailTo,
   signIn,
@@ -105,6 +106,13 @@ for (const scheme of ["light", "dark"] as const) {
       expect(opened.error).toBeNull();
     }
 
+    /** Takes away what Ana handed in of the demo quiz, and that she opened it. */
+    async function removeDemoAttempts() {
+      const hers = { user_id: demoUsers.ana.id, material_id: demoMaterials.quiz };
+      await admin().from("quiz_attempts").delete().match(hers);
+      await admin().from("material_progress").delete().match(hers);
+    }
+
     async function open(page: Page, path: string) {
       await page.goto(path);
       await expect(page.locator("main").first()).toBeVisible();
@@ -140,6 +148,7 @@ for (const scheme of ["light", "dark"] as const) {
         "learner-3-text-page": `${learnCourse}/materials/${demoMaterials.promptGuide}`,
         "learner-4-video": `${learnCourse}/materials/${demoMaterials.video}`,
         "learner-6-account": "/pt/learn/account",
+        "learner-7-quiz": `${learnCourse}/materials/${demoMaterials.quiz}`,
       };
       for (const [name, path] of Object.entries(pages)) {
         await open(page, path);
@@ -155,6 +164,26 @@ for (const scheme of ["light", "dark"] as const) {
       await shootPageOnTallScreen(page, info.project.name, "learner-5-pdf", async () => {
         await expect(drawn).toHaveCount(pageCount, { timeout: 20_000 });
       });
+
+      // A quiz handed in with one answer wrong, to show a result with both kinds. What Ana
+      // hands in here is removed again, so the demo quiz stays untouched for the other tests.
+      try {
+        await open(page, `${learnCourse}/materials/${demoMaterials.quiz}`);
+        const [first, second, third] = demoQuiz;
+        await page.getByRole("radio", { name: first.options[1], exact: true }).check();
+        for (const label of second.right) {
+          await page.getByRole("checkbox", { name: label, exact: true }).check();
+        }
+        await page.getByRole("radio", { name: third.right[0], exact: true }).check();
+        await page.getByRole("button", { name: "Entregar" }).click();
+        await expect(
+          page.getByRole("heading", { level: 2, name: "Acertou 2 de 3." }),
+        ).toBeVisible();
+        await expect(page.getByText(/^Melhor resultado/)).toBeVisible();
+        await shootPage(page, info.project.name, "learner-8-quiz-result");
+      } finally {
+        await removeDemoAttempts();
+      }
     });
 
     test("back-office", async ({ page }, info) => {
@@ -178,6 +207,8 @@ for (const scheme of ["light", "dark"] as const) {
         "office-16-edition-preview": `${learnCourse}?edition=${inPerson}`,
         // What one learner has opened.
         "office-17-learner-progress": `${trainerCourse}/learners/${demoUsers.ana.id}`,
+        // A quiz: its questions, and below them what each learner has handed in.
+        "office-18-quiz-form": `${trainerCourse}/content/materials/${demoMaterials.quiz}`,
       };
       await showSomeProgress();
       // For the pictures only, the demo course's second edition gets a learner too, so that
@@ -187,6 +218,29 @@ for (const scheme of ["light", "dark"] as const) {
         .from("enrollments")
         .upsert({ ...guest, edition_id: inPerson }, { onConflict: "user_id,course_id" });
       expect(joined.error).toBeNull();
+      // And, for the pictures only, Ana has handed in the demo quiz twice.
+      const handedIn = await admin()
+        .from("quiz_attempts")
+        .insert(
+          [2, 3].map((correct_count) => ({
+            user_id: demoUsers.ana.id,
+            material_id: demoMaterials.quiz,
+            correct_count,
+            question_count: 3,
+            detail: [],
+          })),
+        );
+      expect(handedIn.error).toBeNull();
+      // Handing in is what marks a quiz as done; these two were put in directly.
+      const done = await admin().from("material_progress").upsert(
+        {
+          user_id: demoUsers.ana.id,
+          material_id: demoMaterials.quiz,
+          completed_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,material_id" },
+      );
+      expect(done.error).toBeNull();
       try {
         for (const [name, path] of Object.entries(pages)) {
           await open(page, path);
@@ -194,6 +248,7 @@ for (const scheme of ["light", "dark"] as const) {
         }
       } finally {
         await admin().from("enrollments").delete().match(guest);
+        await removeDemoAttempts();
       }
 
       // A menu and the question before deleting are drawn over the page, on the screen.

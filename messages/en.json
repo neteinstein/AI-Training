@@ -102,7 +102,14 @@
     "consent": "Tick this box so that we can reply to your request.",
     "startNeeded": "Give the first day, or clear the last one.",
     "startToList": "Give the first day to show the edition on the public site.",
-    "endBeforeStart": "The last day cannot be before the first."
+    "endBeforeStart": "The last day cannot be before the first.",
+    "quizOneQuestion": "Add at least one question.",
+    "quizTooManyQuestions": "Use at most {max} questions.",
+    "quizQuestionText": "Write the question in at least one of the languages.",
+    "quizOptionText": "Write every answer in at least one of the languages.",
+    "quizTwoOptions": "Every question needs at least two answers.",
+    "quizTooManyOptions": "Use at most {max} answers per question.",
+    "quizRightAnswer": "Mark at least one answer as right."
   },
   "Learn": {
     "title": "My courses",
@@ -131,7 +138,8 @@
     "previewNoteEdition": "You are viewing this course as a learner of the edition “{name}”. Materials marked as hidden are only shown to trainers.",
     "onlyIn": "Only: {name}",
     "progress": "{done} of {total, plural, one {# material opened} other {# materials opened}}",
-    "opened": "Opened"
+    "opened": "Opened",
+    "handedIn": "Handed in"
   },
   "Trainer": {
     "title": "Back-office",
@@ -363,21 +371,24 @@
         "video": "Video",
         "embed": "Google document",
         "link": "Link",
-        "page": "Page"
+        "page": "Page",
+        "quiz": "Quiz"
       },
       "new": {
         "file": "New file",
         "video": "New video",
         "embed": "New Google document",
         "link": "New link",
-        "page": "New page"
+        "page": "New page",
+        "quiz": "New quiz"
       },
       "edit": {
         "file": "Edit file",
         "video": "Edit video",
         "embed": "Edit Google document",
         "link": "Edit link",
-        "page": "Edit page"
+        "page": "Edit page",
+        "quiz": "Edit quiz"
       },
       "inModule": "In the module \"{name}\"",
       "visible": "Visible",
@@ -449,7 +460,34 @@
       "editionSummary": "{total, plural, one {# material} other {# materials}} · {visible, plural, =0 {none visible in this edition} one {# visible in this edition} other {# visible in this edition}}",
       "shownTo": "Who sees this material",
       "allEditions": "Every edition of the course",
-      "shownToHelp": "A material for one edition is not shown to the learners of the others."
+      "shownToHelp": "A material for one edition is not shown to the learners of the others.",
+      "quiz": {
+        "questions": "Questions",
+        "help": "Learners answer every question, hand the quiz in and see at once what they got right and why. They can try as often as they like.",
+        "question": "Question {number}",
+        "prompt": "Text of the question",
+        "options": "Answers",
+        "optionsHelp": "Mark the right answer. If you mark more than one, the learner has to choose all of them.",
+        "option": "Answer {number}",
+        "correct": "Right",
+        "correctNamed": "Answer {number} is right",
+        "explanation": "Explanation",
+        "explanationHelp": "Shown to the learner after handing in.",
+        "addOption": "Add an answer",
+        "removeOption": "Remove answer {number}",
+        "addQuestion": "Add a question",
+        "removeQuestion": "Remove question {number}",
+        "moveQuestionUp": "Move question {number} up",
+        "moveQuestionDown": "Move question {number} down",
+        "problemIn": "Question {number}: {problem}",
+        "results": "Results",
+        "resultsLead": "Each learner's best result, number of attempts and last attempt.",
+        "resultsEmpty": "Nobody has handed in this quiz yet.",
+        "best": "Best: {score}",
+        "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+        "lastAttempt": "Last: {date}",
+        "moved": "The question is now in position {number}."
+      }
     },
     "editions": {
       "title": "Editions",
@@ -520,7 +558,9 @@
       "openedOn": "Opened on {date}",
       "notOpened": "Not opened yet",
       "nothingToOpen": "This person's edition does not show any material yet.",
-      "inEdition": "Edition: {name}"
+      "inEdition": "Edition: {name}",
+      "handedIn": "Handed in on {date} · best {best} · {attempts, plural, one {# attempt} other {# attempts}}",
+      "notHandedIn": "Not handed in"
     },
     "users": {
       "title": "Users",
@@ -652,12 +692,12 @@
       "title": "Backup",
       "intro": "Download a copy of everything on the platform as a ZIP file, to keep somewhere safe.",
       "contentsTitle": "What goes in",
-      "catalogue": "{courses, plural, one {# course} other {# courses}}, {modules, plural, one {# module} other {# modules}} and {materials, plural, one {# material} other {# materials}}, with the fields, the levels and the editions: titles, descriptions, text pages, links and the addresses of videos and Google documents.",
+      "catalogue": "{courses, plural, one {# course} other {# courses}}, {modules, plural, one {# module} other {# modules}} and {materials, plural, one {# material} other {# materials}}, with the fields, the levels and the editions: titles, descriptions, text pages, quizzes, links and the addresses of videos and Google documents.",
       "notIncluded": "Never included: passwords, and the content of videos and Google documents, which stays on YouTube, Vimeo or Google. The README.txt file inside the ZIP explains what is in it.",
       "optionsTitle": "Also include",
       "includeFiles": "Uploaded files ({count, plural, one {# file} other {# files}}, {size})",
       "includeFilesHint": "Untick for a small file with only the text and the structure.",
-      "includePeople": "People: accounts, enrolments, progress and information requests ({people, plural, one {# person} other {# people}}, {requests, plural, one {# request} other {# requests}})",
+      "includePeople": "People: accounts, enrolments, progress, quizzes handed in and information requests ({people, plural, one {# person} other {# people}}, {requests, plural, one {# request} other {# requests}})",
       "includePeopleHint": "This is personal data. Keep the backup somewhere safe and delete it when it is no longer needed.",
       "download": "Download backup",
       "preparing": "Preparing the backup. The download starts in a moment and carries on in your browser.",
@@ -837,7 +877,7 @@
       },
       "data": {
         "title": "What we collect",
-        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language, the courses you are enrolled in and which of their materials you opened, and when. Trainers see this, to follow how the course is going. We do not collect browsing data for advertising and we use no third-party analytics."
+        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language, the courses you are enrolled in which of their materials you opened, and when, and the quizzes you handed in, with their results. Trainers see this, to follow how the course is going. We do not collect browsing data for advertising and we use no third-party analytics."
       },
       "purpose": {
         "title": "What we use it for",
@@ -871,7 +911,8 @@
       "video": "Video",
       "embed": "Google document",
       "link": "External link",
-      "page": "Page"
+      "page": "Page",
+      "quiz": "Quiz"
     },
     "provider": {
       "youtube": "YouTube",
@@ -920,6 +961,31 @@
       "pages": "Document pages",
       "loading": "Loading the document…",
       "failed": "The document could not be shown here. You can download it."
+    },
+    "quiz": {
+      "intro": "Answer every question and hand it in. You see at once what you got right, and you can try as often as you like.",
+      "chooseOne": "Choose one answer.",
+      "chooseSeveral": "There may be more than one right answer: choose them all.",
+      "submit": "Hand in",
+      "answerAll": "Answer every question before handing in.",
+      "score": "You got {correct} of {total} right.",
+      "right": "Right",
+      "wrong": "Wrong",
+      "yours": "Your answer",
+      "rightAnswer": "Right answer",
+      "why": "Why",
+      "retry": "Try again",
+      "changed": "The quiz was changed in the meantime. The questions were updated: please answer again.",
+      "failed": "It could not be handed in. Please try again.",
+      "standing": "Best result: {best} · {attempts, plural, one {# attempt} other {# attempts}}",
+      "empty": "This quiz has no questions yet.",
+      "trial": "As a trainer you can try the quiz: nothing is recorded.",
+      "questionOf": "Question {number} of {total}",
+      "gone": "This quiz is no longer available.",
+      "questions": "Questions",
+      "missing": "This question still needs an answer.",
+      "scoreNote": "Below, question by question, what you chose and what was right.",
+      "count": "{count, plural, one {# question} other {# questions}}"
     }
   },
   "Account": {

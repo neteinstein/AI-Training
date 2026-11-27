@@ -214,6 +214,7 @@ test.describe("materials", () => {
       "Leitura recomendada",
       "Guia de prompts",
       "Plano de aula modelo",
+      "Verifique o que aprendeu",
     ]) {
       await nav.getByRole("link", { name: new RegExp(`Seguinte\\s*${title}`) }).click();
       await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
@@ -223,9 +224,11 @@ test.describe("materials", () => {
     // The last one is in the second module.
     await expect(page.getByText("Módulo 2 · Planificar aulas")).toBeVisible();
 
-    await nav.getByRole("link", { name: /Anterior\s*Guia de prompts/ }).click();
-    await expect(page.getByRole("heading", { level: 1, name: "Guia de prompts" })).toBeVisible();
-    expect(visited).toHaveLength(5);
+    await nav.getByRole("link", { name: /Anterior\s*Plano de aula modelo/ }).click();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Plano de aula modelo" }),
+    ).toBeVisible();
+    expect(visited).toHaveLength(6);
   });
 
   test("a link has a page of its own, for people who arrive there with 'next'", async ({

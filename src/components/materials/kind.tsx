@@ -4,6 +4,7 @@ import {
   ExternalLink,
   FileText,
   HardDrive,
+  ListChecks,
   Presentation,
   Sheet,
   type LucideIcon,
@@ -23,6 +24,7 @@ export const kindTone: Record<MaterialKind, string> = {
   video: "bg-area-plum-tint text-area-plum",
   link: "bg-muted text-muted-foreground",
   page: "bg-area-forest-tint text-area-forest",
+  quiz: "bg-area-indigo-tint text-area-indigo",
 };
 
 const providerIcons: Partial<Record<EmbedProvider, LucideIcon>> = {
@@ -38,6 +40,7 @@ const kindIcons: Record<MaterialKind, LucideIcon> = {
   video: CirclePlay,
   link: ExternalLink,
   page: AlignLeft,
+  quiz: ListChecks,
 };
 
 type KindSource = { kind: MaterialKind; embed?: { provider: EmbedProvider } | null };
@@ -75,6 +78,7 @@ const kindInk: Record<MaterialKind, string> = {
   video: "text-area-plum",
   link: "text-muted-foreground",
   page: "text-area-forest",
+  quiz: "text-area-indigo",
 };
 
 /** The kind's icon alone, in its colour: for buttons such as "add a video". */

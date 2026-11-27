@@ -6,6 +6,7 @@ import {
   demoEditions,
   demoMaterials,
   demoModules,
+  demoQuiz,
   demoUsers,
   signIn,
   signInAsTrainer,
@@ -43,6 +44,7 @@ const learnerPages = [
   `${learnCourse}/materials/${demoMaterials.video}`,
   `${learnCourse}/materials/${demoMaterials.link}`,
   `${learnCourse}/materials/${demoMaterials.slidesPdf}`,
+  `${learnCourse}/materials/${demoMaterials.quiz}`,
   "/pt/learn/account",
 ];
 
@@ -56,6 +58,8 @@ const trainerPages = [
   `${trainerCourse}/content/materials/${demoMaterials.promptGuide}`,
   `${trainerCourse}/content/materials/${demoMaterials.slidesPdf}`,
   `${trainerCourse}/content/materials/${demoMaterials.video}`,
+  `${trainerCourse}/content/materials/${demoMaterials.quiz}`,
+  `${trainerCourse}/content/materials/new?module=${demoModules.classroomIntro}&kind=quiz`,
   `${trainerCourse}/learners`,
   `${trainerCourse}/learners/${demoUsers.ana.id}`,
   `${trainerCourse}/editions`,
@@ -153,6 +157,39 @@ for (const scheme of ["light", "dark"] as const) {
       test.slow();
       await signInAsTrainer(page);
       expect(await accessibilityProblems(page, trainerPages)).toEqual([]);
+    });
+
+    // A graded quiz only exists after handing one in: its right, wrong and chosen answers are
+    // the only place these colours are used together.
+    test("a graded quiz", async ({ page }) => {
+      const quiz = `${learnCourse}/materials/${demoMaterials.quiz}`;
+      const hers = { user_id: demoUsers.ana.id, material_id: demoMaterials.quiz };
+      try {
+        await signIn(page, demoUsers.ana.email);
+        await expect(page).toHaveURL(/\/pt\/learn$/);
+        await settle(page, quiz);
+        const [first, second, third] = demoQuiz;
+        // One right, one half right, one wrong: every kind of line is on the page.
+        await page.getByRole("radio", { name: first.right[0], exact: true }).check();
+        await page.getByRole("checkbox", { name: second.right[0], exact: true }).check();
+        await page.getByRole("checkbox", { name: second.options[2], exact: true }).check();
+        await page.getByRole("radio", { name: third.options[1], exact: true }).check();
+        await page.getByRole("button", { name: "Entregar" }).click();
+        await expect(
+          page.getByRole("heading", { level: 2, name: "Acertou 1 de 3." }),
+        ).toBeVisible();
+        const { violations } = await new AxeBuilder({ page: page as never })
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+          .analyze();
+        expect(
+          violations.flatMap((violation) =>
+            violation.nodes.map((node) => `${violation.id} · ${node.target.join(" ")}`),
+          ),
+        ).toEqual([]);
+      } finally {
+        await admin().from("quiz_attempts").delete().match(hers);
+        await admin().from("material_progress").delete().match(hers);
+      }
     });
   });
 }

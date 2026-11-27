@@ -5,6 +5,7 @@ import {
   demoCourses,
   demoEditions,
   demoMaterials,
+  demoQuiz,
   demoUsers,
   signIn,
   signInAsTrainer,
@@ -44,6 +45,7 @@ test.describe("backup", () => {
     expect(names).toEqual(expect.arrayContaining(["data/courses.json", "data/materials.json"]));
     expect(names).not.toContain("data/profiles.json");
     expect(names).not.toContain("data/material_progress.json");
+    expect(names).not.toContain("data/quiz_attempts.json");
 
     const courses = json<Row[]>(files["data/courses.json"]);
     expect(courses.map((course) => course.slug)).toContain(demoCourses.classroom.slug);
@@ -59,6 +61,21 @@ test.describe("backup", () => {
     );
     for (const material of json<Row[]>(files["data/materials.json"])) {
       if (material.edition_id !== null) expect(editions).toContain(material.edition_id);
+    }
+
+    // The demo quiz whole: its questions, their options, and a key for every question.
+    const questions = json<Row[]>(files["data/quiz_questions.json"]).filter(
+      (question) => question.material_id === demoMaterials.quiz,
+    );
+    expect(questions.map((question) => question.id)).toEqual(demoQuiz.map((entry) => entry.id));
+    const options = json<Row[]>(files["data/quiz_options.json"]);
+    const keys = json<Row[]>(files["data/quiz_question_keys.json"]);
+    for (const [index, question] of questions.entries()) {
+      const labels = options
+        .filter((option) => option.question_id === question.id)
+        .map((option) => option.label_pt);
+      expect(labels).toEqual(demoQuiz[index].options);
+      expect(keys.filter((key) => key.question_id === question.id)).toHaveLength(1);
     }
     const pdf = files[`files/${demoCourses.classroom.slug}/Diapositivos da sessão 1.pdf`];
     expect(strFromU8(pdf.subarray(0, 5))).toBe("%PDF-");
@@ -85,6 +102,7 @@ test.describe("backup", () => {
         "data/enrollments.json",
         "data/info_requests.json",
         "data/material_progress.json",
+        "data/quiz_attempts.json",
       ]),
     );
     expect(Array.isArray(json<Row[]>(second["data/material_progress.json"]))).toBe(true);

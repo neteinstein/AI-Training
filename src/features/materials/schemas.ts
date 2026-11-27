@@ -101,6 +101,11 @@ export const materialSchemas = {
       body: { pt: value.body_pt, en: value.body_en },
       ...toDetails(value),
     })),
+  // The questions of a quiz travel apart and have a schema of their own.
+  quiz: z
+    .object(details)
+    .refine(inOneLanguage("title_pt", "title_en"), titled)
+    .transform((value): MaterialInput => ({ kind: "quiz", ...toDetails(value) })),
 } as const;
 
 export type EditableKind = keyof typeof materialSchemas;
