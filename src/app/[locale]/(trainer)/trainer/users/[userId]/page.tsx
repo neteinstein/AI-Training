@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { ActionButton } from "@/components/trainer/action-button";
 import { Chip } from "@/components/trainer/chips";
 import { PageFrame } from "@/components/trainer/page-frame";
+import { editionLines } from "@/features/editions/label";
 import { deleteUser } from "@/features/users/actions";
 import {
   AccessPanel,
@@ -96,6 +97,7 @@ export default async function UserPage({ params }: Props) {
           <UserCoursesForm
             userId={user.id}
             courses={courses}
+            editionLines={editionLines(courses, format)}
             selected={user.courseIds}
             selectedEditions={user.editionByCourse}
             isTrainer={user.role === "trainer"}

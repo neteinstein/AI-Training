@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { FormMessage } from "@/components/forms/form-message";
 import { LocaleField } from "@/components/forms/locale-field";
@@ -12,7 +12,6 @@ import { Chip } from "@/components/trainer/chips";
 import { CopyField } from "@/components/trainer/copy-field";
 import { buttonClass } from "@/components/ui/button";
 import { locales } from "@/config/site";
-import { editionLabel } from "@/features/editions/label";
 import { editionField } from "@/features/enrollments/fields";
 import { Link } from "@/i18n/navigation";
 import type { CourseOption } from "@/lib/dal/trainer-queries";
@@ -31,11 +30,14 @@ const start: InviteState = { status: "idle" };
  */
 export function InviteForm({
   courses,
+  editionLines,
   preselected,
   defaultLanguage,
   request,
 }: {
   courses: CourseOption[];
+  /** Each edition written out as one line, by edition id (made with the page, on the server). */
+  editionLines: Record<string, string>;
   /** Courses ticked to begin with. */
   preselected: string[];
   defaultLanguage: string;
@@ -43,7 +45,6 @@ export function InviteForm({
 }) {
   const t = useTranslations("Trainer");
   const tLanguages = useTranslations("Languages");
-  const format = useFormatter();
   const [state, formAction] = useActionState(invitePeople, start);
   const values = state.values;
   // The editions last sent, so the form comes back as it was.
@@ -195,7 +196,7 @@ export function InviteForm({
             editionLabels={{
               label: t("users.edition"),
               of: (course) => t("users.editionOf", { course }),
-              option: (edition) => editionLabel(edition, format),
+              lines: editionLines,
             }}
             emptyText={t("users.noCourses")}
           />

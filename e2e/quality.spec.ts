@@ -13,8 +13,8 @@ import {
 
 /**
  * Checks that apply to every screen: the automated accessibility rules (WCAG 2.1 A and AA,
- * plus the 2.2 additions) in the light and the dark theme, and no sideways scrolling on the
- * narrowest phones.
+ * plus the 2.2 additions) in the light and the dark theme, no error while the page loads, and
+ * no sideways scrolling on the narrowest phones.
  *
  * Automated rules find perhaps a third of accessibility problems. The rest is covered by the
  * tests that use each screen through roles and names, as assistive technology does, and by
@@ -80,20 +80,37 @@ async function settle(page: Page, path: string) {
   await page.waitForLoadState("networkidle");
 }
 
-/** The accessibility problems the automated rules find on each page, as readable lines. */
+/**
+ * What is wrong with each page, as readable lines: the accessibility problems the automated
+ * rules find, and any error the page reports while it loads.
+ *
+ * The second catches a text that the server and the browser write differently (a date, say).
+ * React then reports an error, throws that part of the page away and draws it again, and
+ * whatever was typed in the meantime is lost. Nothing looks wrong afterwards, so only the
+ * report gives it away.
+ */
 async function accessibilityProblems(page: Page, paths: string[]): Promise<string[]> {
   const problems: string[] = [];
-  for (const path of paths) {
-    await settle(page, path);
-    // (The cast bridges two copies of Playwright's types; the page object is the same.)
-    const { violations } = await new AxeBuilder({ page: page as never })
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-      .analyze();
-    for (const violation of violations) {
-      for (const node of violation.nodes) {
-        problems.push(`${path} · ${violation.id} · ${node.target.join(" ")}`);
+  let current = "";
+  const reported = (error: Error) =>
+    problems.push(`${current} · error while loading · ${error.message.split(";")[0]}`);
+  page.on("pageerror", reported);
+  try {
+    for (const path of paths) {
+      current = path;
+      await settle(page, path);
+      // (The cast bridges two copies of Playwright's types; the page object is the same.)
+      const { violations } = await new AxeBuilder({ page: page as never })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+        .analyze();
+      for (const violation of violations) {
+        for (const node of violation.nodes) {
+          problems.push(`${path} · ${violation.id} · ${node.target.join(" ")}`);
+        }
       }
     }
+  } finally {
+    page.off("pageerror", reported);
   }
   return problems;
 }

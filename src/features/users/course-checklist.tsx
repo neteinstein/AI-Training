@@ -2,7 +2,7 @@ import { useId, type ReactNode } from "react";
 import { controlClass } from "@/components/forms/field";
 import { Chip, courseStatusTone } from "@/components/trainer/chips";
 import { editionField } from "@/features/enrollments/fields";
-import type { CourseOption, EditionOption } from "@/lib/dal/trainer-queries";
+import type { CourseOption } from "@/lib/dal/trainer-queries";
 import type { CourseStatus } from "@/lib/dal/types";
 import { cn } from "@/lib/utils";
 
@@ -36,8 +36,11 @@ export function CourseChecklist({
     label: string;
     /** The full name of one choice, for screen readers: "Edition of the course …". */
     of: (courseTitle: string) => string;
-    /** One edition written out as a line to choose. */
-    option: (edition: EditionOption) => string;
+    /**
+     * Each edition written out as a line to choose, by edition id. Written where the page is
+     * made (see `editionLines`): dates are never written out here, in the browser.
+     */
+    lines: Record<string, string>;
   };
   emptyText: string;
 }) {
@@ -93,7 +96,7 @@ export function CourseChecklist({
                   >
                     {course.editions.map((edition) => (
                       <option key={edition.id} value={edition.id}>
-                        {editionLabels.option(edition)}
+                        {editionLabels.lines[edition.id] ?? edition.name}
                       </option>
                     ))}
                   </select>

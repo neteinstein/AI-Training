@@ -1,7 +1,7 @@
 "use client";
 
 import { LoaderCircle } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useActionState, useId, useState } from "react";
 import { FormMessage } from "@/components/forms/form-message";
 import { LocaleField } from "@/components/forms/locale-field";
@@ -13,7 +13,6 @@ import { CopyField } from "@/components/trainer/copy-field";
 import { actionLooks } from "@/components/trainer/looks";
 import { useNoticeAction } from "@/components/trainer/use-notice-action";
 import { locales } from "@/config/site";
-import { editionLabel } from "@/features/editions/label";
 import { saveUserCourses } from "@/features/enrollments/actions";
 import { idleState } from "@/lib/actions/state";
 import type { CourseOption } from "@/lib/dal/trainer-queries";
@@ -140,19 +139,21 @@ export function RoleForm({ userId, role }: { userId: string; role: UserRole }) {
 export function UserCoursesForm({
   userId,
   courses,
+  editionLines,
   selected,
   selectedEditions,
   isTrainer,
 }: {
   userId: string;
   courses: CourseOption[];
+  /** Each edition written out as one line, by edition id (made with the page, on the server). */
+  editionLines: Record<string, string>;
   selected: string[];
   /** The edition the person is in, by course id. */
   selectedEditions: Record<string, string>;
   isTrainer: boolean;
 }) {
   const t = useTranslations("Trainer");
-  const format = useFormatter();
   const [formAction] = useNoticeAction(saveUserCourses);
   const statusLabels: Record<CourseStatus, string> = {
     draft: t("courses.status.draft"),
@@ -177,7 +178,7 @@ export function UserCoursesForm({
         editionLabels={{
           label: t("users.edition"),
           of: (course) => t("users.editionOf", { course }),
-          option: (edition) => editionLabel(edition, format),
+          lines: editionLines,
         }}
         emptyText={t("users.noCourses")}
       />

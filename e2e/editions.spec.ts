@@ -253,9 +253,12 @@ test.describe("editions of a course", () => {
       ).toBeVisible();
       await expect(own.getByText("Só: Turma B")).toBeVisible();
 
-      // "View as learner" from an edition's view shows what that edition gets.
+      // "View as learner" from an edition's view shows what that edition gets. The link is
+      // part of the view: until the edition's own has arrived, it still leads to the whole course.
       await views.getByRole("link", { name: "Turma B" }).click();
-      await page.getByRole("link", { name: "Ver como formando" }).click();
+      const preview = page.getByRole("link", { name: "Ver como formando" });
+      await expect(preview).toHaveAttribute("href", new RegExp(`edition=${classB}`));
+      await preview.click();
       await expect(
         page.getByText("Está a ver este curso como um formando da edição «Turma B».", {
           exact: false,
