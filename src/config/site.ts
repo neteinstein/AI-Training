@@ -15,11 +15,15 @@ export const siteConfig = {
   },
 } as const;
 
-/** Trainers shown on the landing page. `role` names a translation in Home.trainers.roles. */
+/**
+ * Trainers shown on the landing page. `role` names a translation in Home.trainers.roles.
+ * `photo` lives in public/trainers: a square 192 × 192 WebP, cropped to head and shoulders.
+ */
 export const trainers = [
   {
     name: "Pedro Vicente",
     role: "lead",
+    photo: "/trainers/pedro-vicente.webp",
     linkedin: "https://www.linkedin.com/in/neteinstein/",
     website: "https://www.pedrovicente.pt",
   },
