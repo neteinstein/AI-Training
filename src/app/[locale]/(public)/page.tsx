@@ -1,3 +1,5 @@
+import { GlobeIcon } from "@phosphor-icons/react/dist/ssr/Globe";
+import { LinkedinLogoIcon } from "@phosphor-icons/react/dist/ssr/LinkedinLogo";
 import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr/PlusCircle";
 import { ArrowRight, Mail } from "lucide-react";
 import type { Metadata } from "next";
@@ -9,7 +11,7 @@ import { LevelGlyph } from "@/components/catalog/level-glyph";
 import { HeroIllustration } from "@/components/illustrations/hero";
 import { container, sectionTitle } from "@/components/layout/container";
 import { buttonClass } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { siteConfig, trainers } from "@/config/site";
 import { RequestForm } from "@/features/requests/request-form";
 import { Link } from "@/i18n/navigation";
 import { getCatalog } from "@/lib/dal/catalog";
@@ -23,6 +25,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const COURSES_ON_HOME = 6;
+
+/** "Pedro Vicente" -> "PV": first and last name. */
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  return [words[0], words.length > 1 ? words.at(-1) : ""].map((word) => word?.[0] ?? "").join("");
+}
+
+/** "https://www.example.org/" -> "example.org", for showing a website's address. */
+function siteLabel(url: string): string {
+  return new URL(url).hostname.replace(/^www\./, "");
+}
+
+const trainerLink =
+  "text-primary hover:text-primary-hover inline-flex min-h-11 items-center gap-2 font-semibold no-underline";
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -164,6 +180,52 @@ export default async function HomePage() {
           </Suspense>
         </div>
       </section>
+
+      {trainers.length > 0 ? (
+        <section className="border-border border-t">
+          <div className={cn(container, "flex flex-col gap-6 py-12 md:gap-8 md:py-18")}>
+            <div className="flex flex-col gap-2">
+              <h2 className={sectionTitle}>{t("trainers.title")}</h2>
+              <p className="text-muted-foreground">{t("trainers.lead")}</p>
+            </div>
+            <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(340px,100%),1fr))] gap-4 md:gap-6">
+              {trainers.map((trainer) => (
+                <li
+                  key={trainer.name}
+                  className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-7"
+                >
+                  <div className="flex items-center gap-4.5">
+                    <span
+                      aria-hidden="true"
+                      className="bg-accent text-accent-foreground font-heading flex size-16 flex-none items-center justify-center rounded-full text-2xl"
+                    >
+                      {initials(trainer.name)}
+                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <h3 className="font-heading text-2xl leading-tight">{trainer.name}</h3>
+                      <p className="text-muted-foreground text-[0.9375rem]">
+                        {t(`trainers.roles.${trainer.role}`)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-6">
+                    <a href={trainer.linkedin} className={trainerLink}>
+                      <LinkedinLogoIcon aria-hidden="true" weight="duotone" className="size-5" />
+                      LinkedIn
+                      {/* Names the trainer for screen readers, which may list the links alone. */}
+                      <span className="sr-only">, {trainer.name}</span>
+                    </a>
+                    <a href={trainer.website} className={trainerLink}>
+                      <GlobeIcon aria-hidden="true" weight="duotone" className="size-5" />
+                      {siteLabel(trainer.website)}
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       <section id={homeSections.howItWorks} className="bg-muted scroll-mt-4">
         <div className={cn(container, "flex flex-col gap-7 py-12 md:gap-9 md:py-18")}>

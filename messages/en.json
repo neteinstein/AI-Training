@@ -597,6 +597,13 @@
       "lead": "Choose by field and by level.",
       "seeAll": "See all courses"
     },
+    "trainers": {
+      "title": "Trainers",
+      "lead": "Who prepares and teaches the courses.",
+      "roles": {
+        "lead": "Lead Trainer"
+      }
+    },
     "how": {
       "title": "How it works",
       "step1Title": "Request information",
