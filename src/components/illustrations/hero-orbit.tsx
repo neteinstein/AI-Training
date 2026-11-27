@@ -15,10 +15,18 @@ const MAX_AREAS = 6;
 /** What AI does for the learner, as small bubbles on the inner ring. */
 const tools = [ChatCircleDotsIcon, FileTextIcon, ImageSquareIcon, ListChecksIcon];
 
+/**
+ * Where the first area sits on the outer ring when the orbit is still (for people who ask for
+ * less motion, and in pictures of the page): the top left. With two areas the second sits at
+ * the bottom right. Those are the corners the two cards leave free; an area at the top right
+ * or the bottom left would be hidden under a card.
+ */
+const FIRST_AREA_ANGLE = -135;
+
 /** Small dots that share the outer ring with the areas, so a short catalogue still looks full. */
 const moons = [
-  { angle: 75, className: "size-2.5 bg-(--art-sun)" },
-  { angle: 205, className: "size-2 bg-(--art-accent)" },
+  { angle: 100, className: "size-2.5 bg-(--art-sun)" },
+  { angle: 170, className: "size-2 bg-(--art-accent)" },
   { angle: 290, className: "size-3 bg-primary/70" },
 ];
 
@@ -75,7 +83,7 @@ export function HeroOrbit({
           <span
             key={area.id}
             className="absolute top-1/2 left-1/2 size-0"
-            style={onRing(-35 + index * step, 46)}
+            style={onRing(FIRST_AREA_ANGLE + index * step, 46)}
           >
             <span
               className="orbit-spin-reverse absolute -translate-1/2"
