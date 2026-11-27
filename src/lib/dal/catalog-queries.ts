@@ -1,4 +1,5 @@
 import { areaColors, type AreaColor, type Locale } from "@/config/site";
+import { FIRST_EDITION_NAME } from "@/features/editions/constants";
 import { today } from "@/lib/dates";
 import { localized, pickLocalized } from "@/lib/i18n/localized";
 import type {
@@ -18,10 +19,10 @@ type CourseRow = Tables["courses"]["Row"];
 type EditionRow = Tables["editions"]["Row"];
 
 /** The columns of an edition that people are shown. */
-export const EDITION_SUMMARY = "id, name_pt, name_en, starts_on, ends_on" as const;
+export const EDITION_SUMMARY = "id, name_pt, name_en, starts_on, ends_on, is_default" as const;
 
 export function toEditionSummary(
-  row: Pick<EditionRow, "id" | "name_pt" | "name_en" | "starts_on" | "ends_on">,
+  row: Pick<EditionRow, "id" | "name_pt" | "name_en" | "starts_on" | "ends_on" | "is_default">,
   locale: Locale,
 ): EditionSummary {
   return {
@@ -29,6 +30,11 @@ export function toEditionSummary(
     name: pickLocalized(row, "name", locale),
     startsOn: row.starts_on,
     endsOn: row.ends_on,
+    isPlain:
+      row.is_default &&
+      row.starts_on === null &&
+      row.name_pt === FIRST_EDITION_NAME.pt &&
+      row.name_en === FIRST_EDITION_NAME.en,
   };
 }
 

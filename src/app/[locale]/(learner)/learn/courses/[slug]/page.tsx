@@ -76,7 +76,8 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
           <h1 className="font-heading text-[1.75rem] leading-[1.2] sm:text-4xl">{course.title}</h1>
           <CourseWhenWhere course={course} />
           <CourseFacts course={course} />
-          {edition ? (
+          {/* Not for the edition a course starts with, left as it was: there is nothing to say. */}
+          {edition && !edition.isPlain ? (
             <p className="text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
               <UsersRound aria-hidden="true" className="size-[18px] flex-none" />
               <span className="sr-only">{t("edition")}: </span>

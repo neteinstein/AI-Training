@@ -55,6 +55,11 @@ export type EditionSummary = {
   name: string;
   startsOn: string | null;
   endsOn: string | null;
+  /**
+   * True for the edition a course starts with while nobody has named or dated it. It says
+   * nothing a learner needs to read: a course that does not use editions shows none.
+   */
+  isPlain: boolean;
 };
 
 export type CourseDetail = CourseCard & {

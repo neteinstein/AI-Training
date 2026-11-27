@@ -307,16 +307,18 @@ test.describe("editions of a course", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.getByText("Próximas edições")).toHaveCount(0);
 
-    // Ana is in the general edition: she is told so, and gets neither the class's own page
-    // nor a way into it.
+    // Ana is in the edition the course started with, which nobody has named or dated: she is
+    // told nothing about editions, and gets neither the class's own page nor a way into it.
     await signIn(page, demoUsers.ana.email);
     await expect(page).toHaveURL(/\/pt\/learn$/);
     await page.goto(course);
-    await expect(page.getByText("Edição geral", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "IA na sala de aula" })).toBeVisible();
+    await expect(page.getByText("Edição geral")).toHaveCount(0);
     await expect(page.getByText("Leitura recomendada")).toBeVisible();
     await expect(page.getByText("Horário das sessões")).toHaveCount(0);
     await page.goto(`${course}?edition=${demoEditions.classroomInPerson}`);
-    await expect(page.getByText("Edição geral", { exact: true })).toBeVisible();
+    await expect(page.getByText("Leitura recomendada")).toBeVisible();
+    await expect(page.getByText("Turma presencial")).toHaveCount(0);
     await expect(page.getByText("Horário das sessões")).toHaveCount(0);
     await page.goto(`${course}/materials/${demoMaterials.timetable}`);
     await expect(

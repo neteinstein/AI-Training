@@ -8,6 +8,7 @@ import {
   updateEdition,
   type EditionInput,
 } from "@/features/editions/operations";
+import { FIRST_EDITION_NAME } from "@/features/editions/constants";
 import { enrollUsers, moveLearner, setUserCourses } from "@/features/enrollments/operations";
 import {
   createFileMaterial,
@@ -222,7 +223,8 @@ describe("editions: what the database allows", () => {
         .select("name_pt, name_en")
         .eq("course_id", courseId)
         .eq("is_default", true);
-      expect(data).toEqual([{ name_pt: "Edição geral", name_en: "General edition" }]);
+      // The app recognises an untouched first edition by these names.
+      expect(data).toEqual([{ name_pt: FIRST_EDITION_NAME.pt, name_en: FIRST_EDITION_NAME.en }]);
     }
   });
 
@@ -589,11 +591,13 @@ describe("editions: what each learner sees", () => {
 
   test("the learner area names the edition, with its dates, and keeps to it", async () => {
     const forAna = await fetchCourseContent(ana.client, asLearner(ana), slug, "en");
+    // Ana's is the edition the course started with, untouched: marked as not worth naming.
     expect(forAna?.edition).toEqual({
       id: general,
       name: "General edition",
       startsOn: null,
       endsOn: null,
+      isPlain: true,
     });
     expect(forAna?.editions).toEqual([]);
 
@@ -603,6 +607,7 @@ describe("editions: what each learner sees", () => {
       name: "Janeiro",
       startsOn: "2099-01-10",
       endsOn: "2099-02-10",
+      isPlain: false,
     });
     expect(forBea?.modules[0].materials.map((material) => material.id)).toEqual([
       catalogue.materials.visible,
@@ -839,7 +844,13 @@ describe("editions on the public course page", () => {
   test("the coming editions a trainer marked as public, soonest first", async () => {
     const before = await fetchPublishedCourse(visitor(), slug, "pt", "2098-12-31");
     expect(before?.upcomingEditions).toEqual([
-      { id: january, name: "Janeiro", startsOn: "2099-01-10", endsOn: "2099-02-10" },
+      {
+        id: january,
+        name: "Janeiro",
+        startsOn: "2099-01-10",
+        endsOn: "2099-02-10",
+        isPlain: false,
+      },
     ]);
 
     // The first day still counts as coming; the day after, the edition has started.
