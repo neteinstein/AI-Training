@@ -124,8 +124,11 @@
     "moduleLabel": "Módulo {number} · {title}",
     "download": "Descarregar {title}",
     "hidden": "Oculto",
+    "draft": "Rascunho",
     "previewNote": "Está a ver este curso como um formando. Os materiais marcados como ocultos só aparecem aos formadores.",
+    "previewNoteAll": "Está a ver a área dos formandos como um formando. Aparecem aqui todos os cursos: cada formando só vê aqueles em que está inscrito, e os rascunhos só aparecem aos formadores.",
     "editCourse": "Editar no back-office",
+    "backToBackOffice": "Voltar ao back-office",
     "previous": "Anterior",
     "next": "Seguinte",
     "firstMaterial": "Primeiro material",
@@ -144,6 +147,7 @@
   "Trainer": {
     "title": "Back-office",
     "loading": "A carregar…",
+    "viewAsLearner": "Ver como formando",
     "nav": {
       "label": "Secções",
       "dashboard": "Painel",
@@ -155,7 +159,6 @@
       "newRequests": "{count, plural, one {# pedido novo} other {# pedidos novos}}",
       "role": "Formador",
       "account": "A minha conta",
-      "learnerArea": "Ver como formando",
       "backup": "Cópia de segurança"
     },
     "breadcrumb": "Localização",
@@ -303,7 +306,6 @@
         "editions": "Edições",
         "learners": "Formandos ({count})"
       },
-      "viewAsLearner": "Ver como formando",
       "viewPublic": "Ver página pública",
       "titleField": "Título",
       "summary": "Resumo",

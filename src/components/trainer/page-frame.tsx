@@ -1,20 +1,27 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Eye } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { Link } from "@/i18n/navigation";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export type Crumb = { label: string; href?: string };
 
+/** A link in the top bar of a back-office page. */
+export const barLink =
+  "text-primary hover:text-primary-hover inline-flex min-h-11 items-center gap-2 font-semibold no-underline";
+
 /**
- * The shape every back-office page shares: a bar with where you are, the language switch and
- * (on wide screens) the theme switch, then the page's heading, then its content.
+ * The shape every back-office page shares: a bar with where you are, "view as learner", the
+ * language switch and (on wide screens) the theme switch, then the page's heading, then its
+ * content.
  */
 export async function PageFrame({
   crumbs,
   barActions,
+  learnerView = routes.learn,
   title,
   meta,
   headerAside,
@@ -23,8 +30,10 @@ export async function PageFrame({
   children,
 }: {
   crumbs: Crumb[];
-  /** Links shown in the top bar, before the language switch. */
+  /** Links shown in the top bar, before "view as learner" and the language switch. */
   barActions?: ReactNode;
+  /** Where "view as learner" leads: the learner area, or the course a page is about. */
+  learnerView?: string;
   title: ReactNode;
   /** A line under the title: chips, counts, a short explanation. */
   meta?: ReactNode;
@@ -60,6 +69,10 @@ export async function PageFrame({
         </nav>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
           {barActions}
+          <Link href={learnerView} className={barLink}>
+            <Eye aria-hidden="true" className="size-[18px]" />
+            {t("viewAsLearner")}
+          </Link>
           <span className="flex items-center gap-1">
             <LocaleSwitcher />
             {/* On a phone the bar has no room to spare: there the choice is in the menu. */}

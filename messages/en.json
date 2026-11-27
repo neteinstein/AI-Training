@@ -124,8 +124,11 @@
     "moduleLabel": "Module {number} · {title}",
     "download": "Download {title}",
     "hidden": "Hidden",
+    "draft": "Draft",
     "previewNote": "You are viewing this course as a learner would. Materials marked as hidden are only shown to trainers.",
+    "previewNoteAll": "You are viewing the learner area as a learner would. Every course is listed here: each learner only sees the ones they are enrolled in, and drafts are only shown to trainers.",
     "editCourse": "Edit in the back-office",
+    "backToBackOffice": "Back to the back-office",
     "previous": "Previous",
     "next": "Next",
     "firstMaterial": "First material",
@@ -144,6 +147,7 @@
   "Trainer": {
     "title": "Back-office",
     "loading": "Loading…",
+    "viewAsLearner": "View as a learner",
     "nav": {
       "label": "Sections",
       "dashboard": "Dashboard",
@@ -155,7 +159,6 @@
       "newRequests": "{count, plural, one {# new request} other {# new requests}}",
       "role": "Trainer",
       "account": "My account",
-      "learnerArea": "View as a learner",
       "backup": "Backup"
     },
     "breadcrumb": "You are here",
@@ -303,7 +306,6 @@
         "editions": "Editions",
         "learners": "Learners ({count})"
       },
-      "viewAsLearner": "View as a learner",
       "viewPublic": "View public page",
       "titleField": "Title",
       "summary": "Summary",

@@ -112,6 +112,21 @@ export async function fetchMyCourses(
 }
 
 /**
+ * Every course, for a trainer looking at the learner area as a learner would. A learner sees
+ * the courses they are enrolled in; a trainer, who has none, is shown them all, drafts
+ * included, in the public site's order. A trainer has no progress of their own.
+ */
+export async function fetchCoursesToPreview(client: Client, locale: Locale): Promise<MyCourse[]> {
+  const { data, error } = await client.from("courses").select("*");
+  if (error) throw new Error(`courses: ${error.message}`);
+  const rows = [...data].sort(
+    (a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug),
+  );
+  const cards = await toCourseCards(client, rows, locale);
+  return cards.map((card) => ({ ...card, progress: null }));
+}
+
+/**
  * Notes that the caller has opened a material. The database decides whether it counts: only
  * for a learner, and only for a material their edition shows. True when it was noted.
  */

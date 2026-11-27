@@ -37,6 +37,32 @@ test.describe("back-office frame", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Áreas" })).toBeVisible();
   });
 
+  test("a trainer looks at the learner area as a learner, and comes back", async ({ page }) => {
+    await signInAsTrainer(page);
+
+    // From any page of the back-office, at the top: the learner area, with every course.
+    await page.getByRole("link", { name: "Ver como formando" }).click();
+    await expect(page).toHaveURL(/\/pt\/learn$/);
+    await expect(
+      page.getByText("Está a ver a área dos formandos como um formando.", { exact: false }),
+    ).toBeVisible();
+    const card = (title: string) => page.getByRole("link").filter({ hasText: title });
+    await expect(card("IA na prática clínica")).toBeVisible();
+    await expect(card("IA na sala de aula (edição interna)")).toBeVisible();
+    // A draft is there too, marked: no learner sees it.
+    await expect(card("IA para direções escolares").getByText("Rascunho")).toBeVisible();
+    await expect(card("IA na prática clínica").getByText("Rascunho")).toHaveCount(0);
+
+    await page.getByRole("link", { name: "Voltar ao back-office" }).click();
+    await expect(page).toHaveURL(/\/pt\/trainer$/);
+
+    // On a course's pages it opens that course.
+    await page.goto(`/pt/trainer/courses/${demoCourses.classroom.id}`);
+    await page.getByRole("link", { name: "Ver como formando" }).click();
+    await expect(page).toHaveURL(new RegExp(`/pt/learn/courses/${demoCourses.classroom.slug}$`));
+    await expect(page.getByRole("heading", { level: 1, name: "IA na sala de aula" })).toBeVisible();
+  });
+
   test("a learner cannot open the back-office", async ({ page }) => {
     await signIn(page, demoUsers.ana.email);
     await expect(page).toHaveURL(/\/pt\/learn$/);

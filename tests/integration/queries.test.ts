@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { fetchCatalog, fetchPublishedCourse, levelStep } from "@/lib/dal/catalog-queries";
 import {
   fetchCourseContent,
+  fetchCoursesToPreview,
   fetchMaterialFile,
   fetchMaterialPage,
   fetchMyCourses,
@@ -104,6 +105,20 @@ describe("learner area", () => {
     expect(await fetchMyCourses(outsider.client, outsider.id, "pt")).toEqual([]);
     // Asking for someone else's list returns nothing: enrolments are private.
     expect(await fetchMyCourses(outsider.client, enrolled.id, "pt")).toEqual([]);
+  });
+
+  test("a trainer looking as a learner gets every course, drafts included, without progress", async () => {
+    const all = await fetchCoursesToPreview(trainer.client, "pt");
+    const ours = all.filter((course) => course.slug.endsWith(runId));
+    expect(ours.map((course) => course.slug).sort()).toEqual(
+      [slug("draft"), slug("other"), slug("published"), slug("unlisted")].sort(),
+    );
+    expect(ours.find((course) => course.slug === slug("draft"))?.status).toBe("draft");
+    expect(ours.every((course) => course.progress === null)).toBe(true);
+
+    // The list is the trainer's view only: a learner asking for it still gets no draft.
+    const asked = await fetchCoursesToPreview(enrolled.client, "pt");
+    expect(asked.some((course) => course.slug === slug("draft"))).toBe(false);
   });
 
   test("course content shows published materials to an enrolled learner", async () => {

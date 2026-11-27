@@ -1,4 +1,4 @@
-import { ExternalLink, Eye } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
@@ -9,10 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { requireTrainer } from "@/lib/dal/session";
 import { getTrainerAreas, getTrainerCourse, getTrainerLevels } from "@/lib/dal/trainer";
 import { routes } from "@/lib/routes";
-import { PageFrame, TabLinks, type Crumb } from "./page-frame";
-
-const barLink =
-  "text-primary hover:text-primary-hover inline-flex min-h-11 items-center gap-2 font-semibold no-underline";
+import { barLink, PageFrame, TabLinks, type Crumb } from "./page-frame";
 
 /**
  * The top of every page of one course: where you are, its name, area, level and status, and
@@ -63,19 +60,15 @@ export async function CourseFrame({
         ...trail,
       ]}
       barActions={
-        <>
-          {course.status === "published" ? (
-            <Link href={routes.course(course.slug)} className={barLink}>
-              <ExternalLink aria-hidden="true" className="size-[18px]" />
-              {t("courses.viewPublic")}
-            </Link>
-          ) : null}
-          <Link href={routes.learnCourse(course.slug, previewEdition)} className={barLink}>
-            <Eye aria-hidden="true" className="size-[18px]" />
-            {t("courses.viewAsLearner")}
+        course.status === "published" ? (
+          <Link href={routes.course(course.slug)} className={barLink}>
+            <ExternalLink aria-hidden="true" className="size-[18px]" />
+            {t("courses.viewPublic")}
           </Link>
-        </>
+        ) : undefined
       }
+      // On a course's pages, "view as learner" opens this course.
+      learnerView={routes.learnCourse(course.slug, previewEdition)}
       title={title}
       meta={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
