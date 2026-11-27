@@ -7,7 +7,23 @@ export const siteConfig = {
   name: "AI Training",
   /** Public contact address shown on the site. Leave empty to hide it. */
   contactEmail: "",
+  /** The company that runs the platform: credited in the footer and named in the privacy notice. */
+  operator: {
+    name: "Mindera",
+    url: "https://mindera.com",
+    privacyEmail: "dpo@mindera.com",
+  },
 } as const;
+
+/** Trainers shown on the landing page. `role` names a translation in Home.trainers.roles. */
+export const trainers = [
+  {
+    name: "Pedro Vicente",
+    role: "lead",
+    linkedin: "https://www.linkedin.com/in/neteinstein/",
+    website: "https://www.pedrovicente.pt",
+  },
+] as const;
 
 export const locales = ["pt", "en"] as const;
 export type Locale = (typeof locales)[number];

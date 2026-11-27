@@ -37,6 +37,17 @@ test.describe("landing page", () => {
     ]) {
       await expect(courses.getByRole("heading", { name: title, exact: true })).toBeVisible();
     }
+    await expect(page.getByRole("heading", { name: "Formadores" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "Pedro Vicente" })).toBeVisible();
+    await expect(page.getByText("Formador principal")).toBeVisible();
+    await expect(page.getByRole("link", { name: "LinkedIn, Pedro Vicente" })).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/neteinstein/",
+    );
+    await expect(page.getByRole("link", { name: "pedrovicente.pt" })).toHaveAttribute(
+      "href",
+      "https://www.pedrovicente.pt",
+    );
     // Drafts and unlisted courses never reach the public site.
     await expect(page.getByText("direções escolares")).toHaveCount(0);
     await expect(page.getByText("edição interna")).toHaveCount(0);

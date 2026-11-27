@@ -157,7 +157,11 @@ for (const scheme of ["light", "dark"] as const) {
       const menuButton = page.getByRole("button", { name: "Abrir menu" });
       if (await menuButton.isVisible()) {
         await menuButton.click();
-        await expect(page.getByRole("group", { name: "Tema" })).toBeVisible();
+        const sheet = page.getByRole("dialog", { name: "Menu" });
+        await expect(sheet.getByRole("group", { name: "Tema" })).toBeVisible();
+        // The sheet starts out see-through and then slides in: a picture taken at once
+        // would show the page with nothing over it.
+        await expect(sheet).toHaveCSS("opacity", "1");
         await shootScreen(page, info.project.name, "office-12-menu");
       }
     });

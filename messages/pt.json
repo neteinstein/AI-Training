@@ -580,6 +580,7 @@
     "footer": "Rodapé",
     "privacy": "Privacidade",
     "memberArea": "Área reservada",
+    "poweredBy": "Powered by <link>Mindera</link>",
     "home": "Página inicial"
   },
   "Home": {
@@ -603,6 +604,13 @@
       "title": "Cursos",
       "lead": "Escolha por área e por nível.",
       "seeAll": "Ver todos os cursos"
+    },
+    "trainers": {
+      "title": "Formadores",
+      "lead": "Quem prepara e dá os cursos.",
+      "roles": {
+        "lead": "Formador principal"
+      }
     },
     "how": {
       "title": "Como funciona",
@@ -673,12 +681,10 @@
   "Privacy": {
     "title": "Política de privacidade",
     "description": "Como a plataforma trata os dados pessoais.",
-    "draftTitle": "Texto provisório",
-    "draftText": "Esta página descreve como a plataforma funciona. O texto definitivo, validado pela entidade responsável, será publicado antes do início dos cursos.",
     "sections": {
       "controller": {
         "title": "Quem é responsável",
-        "text": "A {name} é gerida por [NOME DA ENTIDADE], responsável pelo tratamento dos dados pessoais recolhidos neste sítio. Contacto: [EMAIL DE CONTACTO]."
+        "text": "A {name} é gerida pela <link>Mindera</link> (Mindera Group), responsável pelo tratamento dos dados pessoais recolhidos neste sítio. Para qualquer questão sobre os seus dados, contacte o encarregado de proteção de dados da Mindera através de <email>dpo@mindera.com</email> ou por correio para Rua Gonçalo Cristóvão, 347, 4.º piso, sala 404, 4000-270 Porto."
       },
       "data": {
         "title": "Que dados recolhemos",
@@ -698,11 +704,11 @@
       },
       "storage": {
         "title": "Onde ficam guardados",
-        "text": "Os dados ficam guardados em servidores na União Europeia, com acesso restrito aos formadores. [CONFIRMAR FORNECEDOR E REGIÃO]"
+        "text": "Os dados ficam guardados em servidores da Supabase na Irlanda, na União Europeia, com acesso restrito aos formadores e à equipa da Mindera que gere a plataforma."
       },
       "retention": {
         "title": "Durante quanto tempo",
-        "text": "Guardamos os pedidos de informação pelo tempo necessário para lhes responder, e as contas enquanto durar a sua participação nos cursos. [PRAZOS A DEFINIR]"
+        "text": "Guardamos os pedidos de informação e os dados das contas durante um ano."
       },
       "rights": {
         "title": "Os seus direitos",
