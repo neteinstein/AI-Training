@@ -1,20 +1,19 @@
 // Draws the picture that link previews show (Slack, WhatsApp, LinkedIn, X...) when someone
 // shares a page of the site: the logo and name on the left, the landing page's lightbulb on the
-// right, on the same soft background as the README's pictures. It has no words in either
-// language, so one picture serves both; the page's own title and description go beside it.
+// right, on the same soft background as the README's pictures. The name is the only words on
+// it, so there is one picture per language; the page's own title and description go beside it.
 //
 //   npm run og:image
 //
-// It writes public/og-image.png (the address and size are siteConfig.ogImage), which the
-// layout's metadata names in the og:image tags of every page. Run it again after changing the
-// logo, the name or the colours.
+// It writes public/og-image-pt.png and public/og-image-en.png (the addresses and size are
+// siteConfig.ogImage), which the layout's metadata names in the og:image tags of every page.
+// Run it again after changing the logo, the name or the colours.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
-import { siteConfig } from "../src/config/site";
+import { locales, siteConfig } from "../src/config/site";
 
 const root = join(__dirname, "..");
-const out = join(root, "public", siteConfig.ogImage.path);
 
 /** 1200 x 630: the size every network expects, 1.91 to 1. */
 const { width: WIDTH, height: HEIGHT } = siteConfig.ogImage;
@@ -56,7 +55,10 @@ const lightbulb = (width: number) => `
     <rect x="40" y="388" width="364" height="4" rx="2" fill="${foreground}" />
   </svg>`;
 
-const html = `<!doctype html>
+/** The least space between the name and the lightbulb's box. */
+const NAME_GAP = 24;
+
+const html = (name: string) => `<!doctype html>
 <style>
   @font-face {
     font-family: Manrope;
@@ -81,12 +83,20 @@ const html = `<!doctype html>
     color: ${foreground};
     font-family: Manrope, sans-serif;
   }
-  .brand { display: flex; align-items: center; gap: 20px; white-space: nowrap; }
+  .brand {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+    white-space: nowrap;
+    transform-origin: left center;
+  }
   .brand svg { flex: none; }
   .name { font-size: 92px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
   .art { flex: none; }
 </style>
-<div class="brand">${logoMark(100)}<span class="name">${siteConfig.name}</span></div>
+<div class="brand">${logoMark(100)}<span class="name">${name}</span></div>
 <div class="art">${lightbulb(440)}</div>`;
 
 async function launch() {
@@ -101,10 +111,23 @@ async function main() {
   const browser = await launch();
   try {
     const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
-    await page.setContent(html);
-    await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: out });
-    console.log(`${out.slice(root.length + 1)} (${WIDTH} x ${HEIGHT})`);
+    for (const locale of locales) {
+      const out = join(root, "public", siteConfig.ogImage.path[locale]);
+      await page.setContent(html(siteConfig.name[locale]));
+      await page.evaluate(() => document.fonts.ready);
+      // A long name would run into the lightbulb: the logo and the name shrink together to fit.
+      const brand = await page.locator(".brand").boundingBox();
+      const name = await page.locator(".name").boundingBox();
+      if (brand && name) {
+        const room = brand.width - NAME_GAP;
+        const needed = name.x + name.width - brand.x;
+        if (needed > room) {
+          await page.addStyleTag({ content: `.brand { transform: scale(${room / needed}); }` });
+        }
+      }
+      await page.screenshot({ path: out });
+      console.log(`${out.slice(root.length + 1)} (${WIDTH} x ${HEIGHT})`);
+    }
   } finally {
     await browser.close();
   }

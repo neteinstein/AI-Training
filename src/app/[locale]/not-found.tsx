@@ -14,7 +14,8 @@ export default async function NotFoundPage() {
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between gap-4 px-5 py-4">
         <Link href={routes.home} className="text-foreground no-underline">
-          <Logo />
+          {/* Smaller on phones: the longer of the two names would push the page sideways. */}
+          <Logo className="max-sm:[&>span]:text-xl max-sm:[&>svg]:size-[30px]" />
         </Link>
         <span className="flex items-center gap-1">
           <LocaleSwitcher />

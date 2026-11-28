@@ -2,7 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { LocaleField } from "@/components/forms/locale-field";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -18,6 +18,7 @@ import { isConfirmType } from "./constants";
  */
 export function ConfirmForm() {
   const t = useTranslations("Auth.confirm");
+  const locale = useLocale();
   const params = useSearchParams();
   const tokenHash = params.get("token_hash") ?? "";
   const type = params.get("type") ?? "";
@@ -68,7 +69,7 @@ export function ConfirmForm() {
           {isInvite ? t("inviteTitle") : t("recoveryTitle")}
         </h1>
         <p className="text-muted-foreground">
-          {isInvite ? t("inviteText", { site: siteConfig.name }) : t("recoveryText")}
+          {isInvite ? t("inviteText", { site: siteConfig.name[locale] }) : t("recoveryText")}
         </p>
       </div>
 

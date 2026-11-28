@@ -10,7 +10,7 @@ describe("the wait for the local stack's own emails", () => {
   test("knows the subjects of the project's password-reset email, in both languages", () => {
     expect(ownRecoverySubjects()).toEqual([
       "Set a new password for AI Training",
-      "Defina uma nova palavra-passe na AI Training",
+      "Defina uma nova palavra-passe na Formação em IA",
     ]);
   });
 

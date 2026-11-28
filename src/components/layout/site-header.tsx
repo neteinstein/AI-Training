@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { buttonClass } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { Link } from "@/i18n/navigation";
@@ -12,6 +12,7 @@ import { ThemeSwitch } from "./theme-switch";
 
 /** Header of the public site. Everything in it is the same for every visitor, so it caches. */
 export async function SiteHeader() {
+  const locale = await getLocale();
   const t = await getTranslations("Nav");
   const items = [
     { href: routes.courses, label: t("courses") },
@@ -29,7 +30,7 @@ export async function SiteHeader() {
         <Link
           href={routes.home}
           // Starts with the name on screen, so voice control finds it by what is shown.
-          aria-label={`${siteConfig.name}: ${t("home")}`}
+          aria-label={`${siteConfig.name[locale]}: ${t("home")}`}
           className="text-foreground flex min-h-11 items-center no-underline"
         >
           <Logo className="max-lg:[&>span]:text-xl max-lg:[&>svg]:size-[30px]" />

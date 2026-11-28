@@ -1,10 +1,13 @@
 /**
- * Brand and catalogue settings that are not translated.
+ * Brand and catalogue settings. Only the name changes with the language.
  * Translated copy lives in /messages; colours and fonts live in src/app/globals.css.
  */
 export const siteConfig = {
-  /** Shown in the header, page titles and emails. */
-  name: "AI Training",
+  /**
+   * The platform's name in each language: shown in the header, page titles and link previews.
+   * The emails spell it out themselves, in supabase/config.toml and supabase/templates.
+   */
+  name: { pt: "Formação em IA", en: "AI Training" } satisfies Record<Locale, string>,
   /** Public contact address shown on the site. Leave empty to hide it. */
   contactEmail: "",
   /** The company that runs the platform: credited in the footer and named in the privacy notice. */
@@ -14,11 +17,15 @@ export const siteConfig = {
     privacyEmail: "dpo@mindera.com",
   },
   /**
-   * The picture link previews show (Slack, WhatsApp, LinkedIn...), in /public. Drawn by
-   * `npm run og:image`; change the address when the picture changes, as the networks keep the
-   * old one for a long time.
+   * The pictures link previews show (Slack, WhatsApp, LinkedIn...), in /public: one per
+   * language, as the name is written on them. Drawn by `npm run og:image`; change the address
+   * when a picture changes, as the networks keep the old one for a long time.
    */
-  ogImage: { path: "/og-image.png", width: 1200, height: 630 },
+  ogImage: {
+    path: { pt: "/og-image-pt.png", en: "/og-image-en.png" } satisfies Record<Locale, string>,
+    width: 1200,
+    height: 630,
+  },
 } as const;
 
 /**

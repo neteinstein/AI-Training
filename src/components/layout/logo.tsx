@@ -1,3 +1,4 @@
+import { useLocale } from "next-intl";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -34,10 +35,14 @@ export function Logo({
   size?: number;
   inverted?: boolean;
 }) {
+  const locale = useLocale();
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark size={size} inverted={inverted} />
-      <span className="font-heading text-[1.375rem] leading-none">{siteConfig.name}</span>
+      {/* Where a header is too narrow for the name, it goes on two lines of similar length. */}
+      <span className="font-heading text-[1.375rem] leading-none text-balance">
+        {siteConfig.name[locale]}
+      </span>
     </span>
   );
 }

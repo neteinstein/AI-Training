@@ -100,7 +100,7 @@ Emails sent locally (invitations, password resets) are caught at <http://127.0.0
 | `npm run test:integration`  | Database and API rules against the local Supabase stack    |
 | `npm run e2e`               | End-to-end tests (Playwright) against the production build |
 | `npm run screens:frame`     | Frame the saved screens into the README's pictures         |
-| `npm run og:image`          | Draw the link-preview picture, `public/og-image.png`       |
+| `npm run og:image`          | Draw the link-preview pictures, `public/og-image-*.png`    |
 | `npm run db:start`          | Start the local Supabase stack (`db:stop` stops it)        |
 | `npm run db:reset`          | Rebuild the local database from migrations and seed        |
 | `npm run db:types`          | Regenerate `src/lib/supabase/database.types.ts`            |
