@@ -896,7 +896,8 @@
       "lead": "Cada curso parte dos desafios concretos de uma profissão.",
       "courseCount": "{count, plural, =0 {Cursos em breve} one {# curso} other {# cursos}}",
       "missingTitle": "A sua área não está aqui?",
-      "missingText": "Diga-nos qual é a sua profissão através do pedido de informações."
+      "missingText": "Pode validar se temos planeado uma futura formação na sua área ou se a formação \"Generalista\" será a mais adequada.",
+      "missingAction": "Contacte-nos."
     },
     "levels": {
       "title": "{count, plural, =2 {Dois níveis, ao seu ritmo} other {Um nível para cada etapa}}",
@@ -918,8 +919,8 @@
       "title": "Como funciona",
       "step1Title": "Peça informações",
       "step1Text": "Use o formulário abaixo e indique o curso que lhe interessa.",
-      "step2Title": "Participe nas sessões",
-      "step2Text": "A formação começa com sessões dadas por um formador. Nessa altura, enviamos-lhe por email um convite pessoal para criar a sua conta.",
+      "step2Title": "Sessão presencial",
+      "step2Text": "A formação começa com uma sessão presencial dada por um formador. Nesse dia é-lhe dado o acesso a esta plataforma.",
       "step3Title": "Consolide o que aprendeu",
       "step3Text": "Na plataforma tem até um mês de materiais para rever e pôr em prática o que viu nas sessões. O acesso é individual."
     },
@@ -971,7 +972,7 @@
     },
     "contact": {
       "title": "Pedir informações",
-      "lead": "Indique o curso que lhe interessa e como o podemos contactar. As inscrições são feitas por convite."
+      "lead": "Indique o curso que lhe interessa e como o podemos contactar. Caso se pretenda inscrever contacte-nos também."
     }
   },
   "Catalog": {
@@ -994,7 +995,7 @@
     "breadcrumb": "Localização",
     "joinLabel": "Participar neste curso",
     "joinTitle": "Quer participar?",
-    "joinText": "As inscrições são feitas por convite. Peça informações sobre este curso.",
+    "joinText": "Peça informações sobre este curso. Caso se pretenda inscrever contacte-nos também.",
     "joinAction": "Pedir informações",
     "haveInvite": "Já tem convite?",
     "signIn": "Entrar",

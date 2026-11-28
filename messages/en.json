@@ -896,7 +896,8 @@
       "lead": "Each course starts from the real challenges of a profession.",
       "courseCount": "{count, plural, =0 {Courses coming soon} one {# course} other {# courses}}",
       "missingTitle": "Is your field not here?",
-      "missingText": "Tell us what your profession is through the information request."
+      "missingText": "You can check whether we have a future course planned for your field, or whether the \"Generalist\" course is the best fit.",
+      "missingAction": "Contact us."
     },
     "levels": {
       "title": "{count, plural, =2 {Two levels, at your own pace} other {A level for every stage}}",
@@ -918,8 +919,8 @@
       "title": "How it works",
       "step1Title": "Request information",
       "step1Text": "Use the form below and tell us which course interests you.",
-      "step2Title": "Attend the sessions",
-      "step2Text": "The course starts with sessions led by a trainer. At that point, we email you a personal invitation to create your account.",
+      "step2Title": "In-person session",
+      "step2Text": "The course starts with an in-person session led by a trainer. On that day, you are given access to this platform.",
       "step3Title": "Consolidate what you learned",
       "step3Text": "The platform holds up to a month of materials to review and put into practice what you saw in the sessions. Access is for you alone."
     },
@@ -971,7 +972,7 @@
     },
     "contact": {
       "title": "Request information",
-      "lead": "Tell us which course interests you and how we can reach you. Enrolment is by invitation."
+      "lead": "Tell us which course interests you and how we can reach you. If you would like to enrol, contact us too."
     }
   },
   "Catalog": {
@@ -994,7 +995,7 @@
     "breadcrumb": "You are here",
     "joinLabel": "Take part in this course",
     "joinTitle": "Want to take part?",
-    "joinText": "Enrolment is by invitation. Ask us for information about this course.",
+    "joinText": "Ask us for information about this course. If you would like to enrol, contact us too.",
     "joinAction": "Request information",
     "haveInvite": "Already have an invitation?",
     "signIn": "Sign in",

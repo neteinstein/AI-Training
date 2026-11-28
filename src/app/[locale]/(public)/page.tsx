@@ -163,8 +163,16 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section id={homeSections.courses} className="scroll-mt-4">
+        <div className={cn(container, "pt-4 pb-12 md:pb-20")}>
+          <Suspense fallback={<CourseBrowserFallback {...browser} />}>
+            <CourseBrowser {...browser} />
+          </Suspense>
+        </div>
+      </section>
+
       <section>
-        <div className={cn(container, "flex flex-col gap-6 pt-4 pb-12 md:gap-8 md:pb-18")}>
+        <div className={cn(container, "flex flex-col gap-6 py-12 md:gap-8 md:py-18")}>
           <div className="flex flex-col gap-2">
             <h2 className={sectionTitle}>{t("areas.title")}</h2>
             <p className="text-muted-foreground">{t("areas.lead")}</p>
@@ -189,7 +197,7 @@ export default async function HomePage() {
                 title={t("areas.missingTitle")}
                 description={t("areas.missingText")}
                 icon={<PlusCircleIcon aria-hidden="true" weight="duotone" className="size-9" />}
-                action={t("requestInfo")}
+                action={t("areas.missingAction")}
               />
             </li>
           </ul>
@@ -236,14 +244,6 @@ export default async function HomePage() {
           </div>
         </section>
       ) : null}
-
-      <section id={homeSections.courses} className="scroll-mt-4">
-        <div className={cn(container, "py-12 md:py-20")}>
-          <Suspense fallback={<CourseBrowserFallback {...browser} />}>
-            <CourseBrowser {...browser} />
-          </Suspense>
-        </div>
-      </section>
 
       {trainers.length > 0 ? (
         <section className="border-border border-t">
