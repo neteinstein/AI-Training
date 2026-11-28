@@ -189,7 +189,7 @@ export default async function HomePage() {
                 title={t("areas.missingTitle")}
                 description={t("areas.missingText")}
                 icon={<PlusCircleIcon aria-hidden="true" weight="duotone" className="size-9" />}
-                action={t("requestInfo")}
+                action={t("areas.missingAction")}
               />
             </li>
           </ul>

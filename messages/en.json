@@ -896,7 +896,8 @@
       "lead": "Each course starts from the real challenges of a profession.",
       "courseCount": "{count, plural, =0 {Courses coming soon} one {# course} other {# courses}}",
       "missingTitle": "Is your field not here?",
-      "missingText": "Tell us what your profession is through the information request."
+      "missingText": "You can check whether we have a future course planned for your field, or whether the \"Generalist\" course is the best fit.",
+      "missingAction": "Contact us."
     },
     "levels": {
       "title": "{count, plural, =2 {Two levels, at your own pace} other {A level for every stage}}",

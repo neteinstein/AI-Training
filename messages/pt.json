@@ -896,7 +896,8 @@
       "lead": "Cada curso parte dos desafios concretos de uma profissão.",
       "courseCount": "{count, plural, =0 {Cursos em breve} one {# curso} other {# cursos}}",
       "missingTitle": "A sua área não está aqui?",
-      "missingText": "Diga-nos qual é a sua profissão através do pedido de informações."
+      "missingText": "Pode validar se temos planeado uma futura formação na sua área ou se a formação \"Generalista\" será a mais adequada.",
+      "missingAction": "Contacte-nos."
     },
     "levels": {
       "title": "{count, plural, =2 {Dois níveis, ao seu ritmo} other {Um nível para cada etapa}}",
