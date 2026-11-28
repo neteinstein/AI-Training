@@ -8,6 +8,7 @@ import { AreaIcon } from "@/components/catalog/area-icon";
 import { areaTone } from "@/components/catalog/area-style";
 import type { AreaSummary } from "@/lib/dal/types";
 import { cn } from "@/lib/utils";
+import { HeroExchange } from "./hero-exchange";
 
 /** Areas shown riding the outer ring; more would crowd it. */
 const MAX_AREAS = 6;
@@ -44,24 +45,17 @@ function onRing(angle: number, radius: number): CSSProperties {
 
 /**
  * The landing page's hero art: the brand mark (a sphere with an arc) grown into a small solar
- * system. The catalogue's own areas ride the outer ring, the kinds of work AI helps with ride
- * the inner one, and two cards show a request and its answer. Decorative only: everything it
- * says is also said in the page's text.
+ * system. The catalogue's own areas ride the outer ring and the kinds of work AI helps with
+ * ride the inner one. Over it, two cards play a request and its answer (HeroExchange, which
+ * also sizes the drawing and hides it from assistive technology). Decorative only: everything
+ * it says is also said in the page's text.
  */
-export function HeroOrbit({
-  areas,
-  labels,
-  className,
-}: {
-  areas: AreaSummary[];
-  labels: { prompt: string; reply: string; assistant: string };
-  className?: string;
-}) {
+export function HeroOrbit({ areas, className }: { areas: AreaSummary[]; className?: string }) {
   const shown = areas.slice(0, MAX_AREAS);
   const step = 360 / Math.max(shown.length, 1);
 
   return (
-    <div aria-hidden="true" className={cn("@container relative aspect-square w-full", className)}>
+    <HeroExchange className={className}>
       {/* Halo behind the sphere */}
       <div className="absolute inset-[12%] rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--primary)_32%,transparent),transparent)]" />
 
@@ -161,28 +155,6 @@ export function HeroOrbit({
           />
         </svg>
       ))}
-
-      {/* A request and its answer, floating over the orbit */}
-      <div className="float-slow border-border bg-card/80 absolute top-[2%] right-0 w-[60%] max-w-[16.5rem] rounded-2xl border p-3 shadow-(--shadow-raised) backdrop-blur-xl [animation-delay:-3.5s] max-sm:hidden sm:-right-[3%] sm:p-3.5">
-        <span className="text-muted-foreground flex items-center gap-2 text-xs font-semibold">
-          <span className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-full">
-            <SparkleIcon weight="fill" className="size-3.5" />
-          </span>
-          {labels.assistant}
-        </span>
-        <p className="mt-2 text-xs leading-snug sm:text-[0.8125rem]">{labels.reply}</p>
-        <span className="mt-2.5 flex flex-col gap-1.5">
-          <span className="shimmer h-2 w-full rounded-full" />
-          <span className="shimmer h-2 w-4/5 rounded-full" />
-        </span>
-      </div>
-      <div className="float-slow border-border bg-card/80 absolute bottom-[3%] left-0 flex w-[64%] max-w-[17.5rem] items-start gap-2.5 rounded-2xl border p-3 shadow-(--shadow-raised) backdrop-blur-xl sm:-left-[5%] sm:p-3.5">
-        <span className="size-6 flex-none rounded-full bg-[conic-gradient(from_200deg,var(--art-sun),var(--art-accent),var(--primary),var(--art-sun))]" />
-        <p className="text-xs leading-snug sm:text-[0.8125rem]">
-          {labels.prompt}
-          <span className="caret bg-primary ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px]" />
-        </p>
-      </div>
-    </div>
+    </HeroExchange>
   );
 }

@@ -158,15 +158,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="rise flex justify-center" style={{ "--rise-step": 4 } as CSSProperties}>
-            <HeroOrbit
-              areas={areas}
-              labels={{
-                assistant: t("orbit.assistant"),
-                prompt: t("orbit.prompt"),
-                reply: t("orbit.reply"),
-              }}
-              className="max-w-[310px] sm:max-w-[440px] lg:max-w-[500px]"
-            />
+            <HeroOrbit areas={areas} className="max-w-[310px] sm:max-w-[440px] lg:max-w-[500px]" />
           </div>
         </div>
       </section>

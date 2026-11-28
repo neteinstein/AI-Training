@@ -730,8 +730,84 @@
     "requestInfo": "Request information",
     "orbit": {
       "assistant": "AI assistant",
-      "prompt": "Turn my lesson notes into a 10-question quiz for 8th grade.",
-      "reply": "Here's your quiz, with the answers and a marking guide."
+      "pause": "Pause the animation",
+      "play": "Play the animation",
+      "fields": {
+        "teaching": "Teaching",
+        "medicine": "Medicine"
+      },
+      "examples": {
+        "quiz": {
+          "prompt": "Turn my lesson notes into a 10-question quiz for 8th grade.",
+          "reply": "Here's your quiz, with the answers and a marking guide.",
+          "item1": "10 multiple-choice questions",
+          "item2": "Answer key",
+          "item3": "Marking guide"
+        },
+        "literature": {
+          "prompt": "Summarise the main findings of these three trials on hypertension.",
+          "reply": "Here's the summary, with the limitations of each trial.",
+          "item1": "Design and sample",
+          "item2": "Main results",
+          "item3": "Limitations"
+        },
+        "lessonPlan": {
+          "prompt": "Plan a 50-minute lesson on the water cycle for 5th grade.",
+          "reply": "Here's the plan, with the time for each part.",
+          "item1": "Learning goals",
+          "item2": "3 hands-on activities",
+          "item3": "Worksheet to wrap up"
+        },
+        "patientLeaflet": {
+          "prompt": "Explain how to prepare for a colonoscopy, in plain language, for a patient.",
+          "reply": "Here's a leaflet the patient can follow step by step.",
+          "item1": "The day before",
+          "item2": "On the day of the exam",
+          "item3": "When to call us"
+        },
+        "rubric": {
+          "prompt": "Create a rubric to assess an oral presentation in History.",
+          "reply": "Done: four criteria, each with four levels.",
+          "item1": "Accuracy of the content",
+          "item2": "Structure",
+          "item3": "Speaking skills"
+        },
+        "referralLetter": {
+          "prompt": "Draft a referral letter to cardiology from these anonymised notes.",
+          "reply": "Here's the draft, ready to review.",
+          "item1": "Reason for referral",
+          "item2": "Relevant history",
+          "item3": "Current medication"
+        },
+        "adaptedText": {
+          "prompt": "Adapt this text about volcanoes for a student with dyslexia.",
+          "reply": "Here it is: shorter sentences, the same content.",
+          "item1": "Short, clear sentences",
+          "item2": "Glossary of terms",
+          "item3": "Larger, well-spaced type"
+        },
+        "guidelines": {
+          "prompt": "Compare these two guidelines on type 2 diabetes in a table.",
+          "reply": "Here's the table, with the differences marked.",
+          "item1": "Treatment targets",
+          "item2": "First-line treatment",
+          "item3": "Follow-up schedule"
+        },
+        "parentsNote": {
+          "prompt": "Write a note to parents about next week's school trip to the museum.",
+          "reply": "Here's the note, ready to send.",
+          "item1": "Date, time and meeting point",
+          "item2": "What to bring",
+          "item3": "Permission slip to sign"
+        },
+        "caseSlides": {
+          "prompt": "Turn this clinical case into a 5-slide outline for the department meeting.",
+          "reply": "Here's the outline, with one idea per slide.",
+          "item1": "Presentation of the case",
+          "item2": "Tests and diagnosis",
+          "item3": "Points to remember"
+        }
+      }
     },
     "areas": {
       "title": "For your field",

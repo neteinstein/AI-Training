@@ -26,8 +26,10 @@ import {
 for (const scheme of ["light", "dark"] as const) {
   test.describe(`pictures of the main screens, ${scheme} theme`, () => {
     test.skip(!process.env.SCREENS, "set SCREENS=1 to save them");
-    // The site follows the device: a dark device gets the dark theme.
-    test.use({ colorScheme: scheme });
+    // The site follows the device: a dark device gets the dark theme. And it keeps still for
+    // a device that asks for less motion, so every run pictures the landing page's hero at the
+    // same moment (a finished example) instead of wherever its typing happens to be.
+    test.use({ colorScheme: scheme, reducedMotion: "reduce" });
 
     const classroom = demoCourses.classroom;
     const learnCourse = `/pt/learn/courses/${classroom.slug}`;
