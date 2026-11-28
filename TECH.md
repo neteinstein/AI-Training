@@ -479,7 +479,9 @@ All access rules live in the database, in `supabase/migrations`:
   enrolments, progress, quiz attempts and conversations with it, and the information requests
   sent from the same address. A learner removed from every course is deleted the same way a year
   after the removal: a trigger on `enrollments` notes it in `profiles.unenrolled_at` and clears
-  it when they are enrolled again (learners in no course when this was added count from then).
+  it when they are enrolled again. A learner never in any course is deleted a year after the
+  account was created, and a trainer made a learner while in no course a year after that
+  change (learners in no course when this was added count from then).
   `learner_access` tells the person, or a trainer, both dates. Trainers are never affected, nor
   are learners whose enrolments have no day at all. A restored backup brings back the people
   it holds; the job deletes those already due the following night.

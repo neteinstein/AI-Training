@@ -289,6 +289,71 @@ describe("data retention", () => {
     }
   });
 
+  /** Whether the nightly job would delete this person now (in a transaction that is undone). */
+  async function wouldDelete(id: string): Promise<boolean> {
+    const box = { gone: false };
+    await sql()
+      .begin(async (tx) => {
+        await tx`select private.purge_expired_learners()`;
+        box.gone = (await tx`select 1 from public.profiles where id = ${id}`).length === 0;
+        throw new Rollback();
+      })
+      .catch((error: unknown) => {
+        if (!(error instanceof Rollback)) throw error;
+      });
+    return box.gone;
+  }
+
+  /** Moves the account's creation back, to noon (Lisbon) of the day given. */
+  async function createdOn(id: string, offset: string) {
+    await sql()`
+      update public.profiles
+      set created_at = ((private.site_today() + ${offset}::interval)::date + time '12:00')
+        at time zone 'Europe/Lisbon'
+      where id = ${id}
+    `;
+  }
+
+  test("a learner never in any course is deleted a year after the account was made", async () => {
+    const neo = await createUser("learner", "ret-neo");
+    try {
+      await createdOn(neo.id, "-1 year");
+      expect(await fetchLearnerAccess(neo.client, neo.id)).toMatchObject({
+        keptUntil: await day("0 days"),
+      });
+      expect(await wouldDelete(neo.id)).toBe(false);
+
+      await createdOn(neo.id, "-1 year -1 day");
+      expect(await wouldDelete(neo.id)).toBe(true);
+
+      // In a course, even an undated one: kept.
+      await enroll(neo.id, [catalogue.courses.unlisted]);
+      expect(await fetchLearnerAccess(neo.client, neo.id)).toMatchObject({ keptUntil: null });
+      expect(await wouldDelete(neo.id)).toBe(false);
+    } finally {
+      await deleteUsers([neo]);
+    }
+  });
+
+  test("a trainer made a learner while in no course starts a year from then", async () => {
+    const tom = await createUser("trainer", "ret-tom");
+    try {
+      await createdOn(tom.id, "-3 years");
+      expect(await wouldDelete(tom.id)).toBe(false);
+      const { error } = await trainer.client.rpc("set_user_role", {
+        target: tom.id,
+        new_role: "learner",
+      });
+      expect(error).toBeNull();
+      expect(await fetchLearnerAccess(trainer.client, tom.id)).toMatchObject({
+        keptUntil: await day("1 year"),
+      });
+      expect(await wouldDelete(tom.id)).toBe(false);
+    } finally {
+      await deleteUsers([tom]);
+    }
+  });
+
   test("runs every night", async () => {
     const jobs = await sql()<{ schedule: string; command: string }[]>`
       select schedule, command from cron.job where jobname = 'purge-expired-learners'

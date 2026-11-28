@@ -8,12 +8,13 @@
 --     from the day after.
 --   * The account and everything about the person is deleted once a year has passed since that
 --     day (GDPR storage limitation), by a job that runs every night.
---   * A learner removed from every course is deleted a year after the last removal.
+--   * A learner in no course is deleted a year after they were removed from their last one,
+--     or, if they were never in one, a year after their account was created.
 --
 -- Access is worked out on every query: enrolling the person in a later edition, or moving an
 -- edition's last day, opens it again at once. The rule only ever closes access; it never opens
 -- anything an enrolment does not. A learner with no dated enrolment keeps access and is not
--- deleted by the job (unless they are removed from every course). Trainers are never affected.
+-- deleted by the job. Trainers are never affected.
 --
 -- Access is enforced where the rest of a learner's access is decided: the helpers that say which
 -- courses and editions they may open, and the view that says which materials they see.
@@ -65,8 +66,8 @@ $$;
 -- ---------------------------------------------------------------------------------------------
 -- When a learner was removed from their last course
 -- ---------------------------------------------------------------------------------------------
--- Null while the person is in at least one course. Written only by the triggers below: it is not
--- writable through the API.
+-- Null while the person is in at least one course, and for a learner who never was (their year
+-- runs from created_at). Written only by the triggers below: it is not writable through the API.
 alter table public.profiles add column unenrolled_at timestamptz;
 
 create function private.track_unenrolment()
@@ -98,14 +99,39 @@ create trigger enrollments_track_unenrolment
   after insert or delete on public.enrollments
   for each row execute function private.track_unenrolment();
 
--- Learners already in no course: their year starts now.
+-- A trainer who becomes a learner while in no course starts a year of their own, rather than one
+-- counted from when their account was made.
+create function private.track_demotion()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if old.role = 'trainer' and new.role = 'learner'
+     and not exists (select 1 from public.enrollments e where e.user_id = new.id) then
+    new.unenrolled_at := now();
+  end if;
+  return new;
+end;
+$$;
+
+revoke all on function private.track_demotion() from public;
+
+create trigger profiles_track_demotion
+  before update of role on public.profiles
+  for each row execute function private.track_demotion();
+
+-- Learners already in no course: whether they were ever in one is not known, so their year
+-- starts now.
 update public.profiles p
 set unenrolled_at = now()
 where p.role = 'learner'
   and not exists (select 1 from public.enrollments e where e.user_id = p.id);
 
 -- The last day a learner's data is kept, or null when the job leaves it alone: a year after
--- their last training day, or, when they are in no course, a year after they were removed.
+-- their last training day; or, when they are in no course at all, a year after they were removed
+-- from their last one, or after their account was created if they never had one.
 create function private.data_kept_until(target_user uuid)
 returns date
 language sql
@@ -117,9 +143,11 @@ as $$
     coalesce(
       private.last_training_day(target_user),
       (
-        select (p.unenrolled_at at time zone 'Europe/Lisbon')::date
+        select (coalesce(p.unenrolled_at, p.created_at) at time zone 'Europe/Lisbon')::date
         from public.profiles p
-        where p.id = target_user and p.role = 'learner'
+        where p.id = target_user
+          and p.role = 'learner'
+          and not exists (select 1 from public.enrollments e where e.user_id = p.id)
       )
     ) + interval '1 year'
   )::date;
