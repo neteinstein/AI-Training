@@ -69,6 +69,57 @@ test.describe("landing page", () => {
     await expect(page.getByRole("button", { name: "Send request" })).toBeVisible();
   });
 
+  test("the hero types a request and answers it, and can be stopped", async ({ page }) => {
+    await page.goto("/pt");
+    // The exchange illustrates the page's text and is hidden from assistive technology, so it
+    // is found by its place. It only plays on screen: on a phone it starts below the fold.
+    const hero = page.locator(".hero-stage");
+    await hero.scrollIntoViewIfNeeded();
+    // The page opens on a finished example; then the next request is typed.
+    await expect(hero).toHaveAttribute("data-stage", "typing", { timeout: 15_000 });
+
+    // Stopping holds it where it is: the same stage, the same letters still to come.
+    await page.getByRole("button", { name: "Pausar a animação" }).click();
+    const resume = page.getByRole("button", { name: "Retomar a animação" });
+    await expect(resume).toBeVisible();
+    const moment = async () => [
+      await hero.getAttribute("data-stage"),
+      await hero.locator("p .invisible").textContent(),
+    ];
+    const stopped = await moment();
+    await page.waitForTimeout(3_000);
+    expect(await moment()).toEqual(stopped);
+
+    // Started again, it finishes the request and answers it with what it made.
+    await resume.click();
+    await expect(hero).toHaveAttribute("data-stage", "done", { timeout: 20_000 });
+    await expect(
+      hero.getByText("Resume as principais conclusões destes três ensaios sobre hipertensão."),
+    ).toBeVisible();
+    await expect(
+      hero.getByText("Aqui está o resumo, com as limitações de cada ensaio."),
+    ).toBeVisible();
+    await expect(hero.getByText("Limitações", { exact: true })).toBeVisible();
+    await expect(hero.getByText("Medicina", { exact: true })).toBeAttached();
+  });
+
+  test("the hero keeps still for someone who asks for less motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/en");
+    const hero = page.locator(".hero-stage");
+    await hero.scrollIntoViewIfNeeded();
+    await expect(
+      hero.getByText("Turn my lesson notes into a 10-question quiz for 8th grade."),
+    ).toBeVisible();
+    await expect(
+      hero.getByText("Here's your quiz, with the answers and a marking guide."),
+    ).toBeVisible();
+    // Long enough for the first example to have given way to the next, if it were playing.
+    await page.waitForTimeout(4_000);
+    await expect(hero).toHaveAttribute("data-stage", "still");
+    await expect(hero.getByRole("button")).toHaveCount(0);
+  });
+
   test("answers the common questions, one at a time", async ({ page }) => {
     await page.goto("/pt#faq");
     const faq = page.locator("#faq");

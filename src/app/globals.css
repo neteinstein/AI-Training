@@ -466,18 +466,31 @@
   .float-slow {
     animation: float-slow 7s ease-in-out infinite alternate;
   }
-  .shimmer {
+  /* A line of text that is still on its way. (Not called "shimmer": the component library
+     has a utility of that name, for text, which would win over this and draw nothing.) */
+  .loading-line {
     background: linear-gradient(
       90deg,
-      var(--muted) 0%,
-      color-mix(in oklab, var(--primary) 18%, var(--muted)) 50%,
-      var(--muted) 100%
+      color-mix(in oklab, var(--foreground) 9%, transparent) 0%,
+      color-mix(in oklab, var(--primary) 38%, transparent) 50%,
+      color-mix(in oklab, var(--foreground) 9%, transparent) 100%
     );
     background-size: 200% 100%;
-    animation: shimmer 2.4s linear infinite;
+    animation: loading-line 1.6s linear infinite;
   }
   .pulse-dot {
     animation: pulse-dot 2.4s ease-out infinite;
+  }
+
+  /* The hero's exchange: the send button gives under the finger as a request leaves. */
+  .send-press {
+    animation: send-press 0.36s ease-out;
+  }
+  /* Its pause button holds everything that loops where it is: the drawing with its orbit, and
+     around it the glow and the dot of the section it is in. */
+  .hero-stage[data-paused] *,
+  section:has(.hero-stage[data-paused]) :is(.aurora > span, .pulse-dot) {
+    animation-play-state: paused;
   }
 }
 
@@ -518,9 +531,14 @@
     translate: 0 -10px;
   }
 }
-@keyframes shimmer {
+@keyframes loading-line {
   to {
     background-position: -200% 0;
+  }
+}
+@keyframes send-press {
+  40% {
+    scale: 0.78;
   }
 }
 @keyframes pulse-dot {

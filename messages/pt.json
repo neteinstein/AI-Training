@@ -729,8 +729,84 @@
     "requestInfo": "Pedir informações",
     "orbit": {
       "assistant": "Assistente de IA",
-      "prompt": "Transforma os meus apontamentos num teste de 10 perguntas para o 8.º ano.",
-      "reply": "Aqui está o teste, com as soluções e os critérios de correção."
+      "pause": "Pausar a animação",
+      "play": "Retomar a animação",
+      "fields": {
+        "teaching": "Ensino",
+        "medicine": "Medicina"
+      },
+      "examples": {
+        "quiz": {
+          "prompt": "Transforma os meus apontamentos num teste de 10 perguntas para o 8.º ano.",
+          "reply": "Aqui está o teste, com as soluções e os critérios de correção.",
+          "item1": "10 perguntas de escolha múltipla",
+          "item2": "Soluções",
+          "item3": "Critérios de correção"
+        },
+        "literature": {
+          "prompt": "Resume as principais conclusões destes três ensaios sobre hipertensão.",
+          "reply": "Aqui está o resumo, com as limitações de cada ensaio.",
+          "item1": "Desenho e amostra",
+          "item2": "Resultados principais",
+          "item3": "Limitações"
+        },
+        "lessonPlan": {
+          "prompt": "Planifica uma aula de 50 minutos sobre o ciclo da água para o 5.º ano.",
+          "reply": "Aqui está o plano, com o tempo de cada momento.",
+          "item1": "Objetivos de aprendizagem",
+          "item2": "3 atividades práticas",
+          "item3": "Ficha de consolidação"
+        },
+        "patientLeaflet": {
+          "prompt": "Explica a preparação para uma colonoscopia em linguagem simples, para um doente.",
+          "reply": "Aqui está um folheto que o doente pode seguir passo a passo.",
+          "item1": "Na véspera",
+          "item2": "No dia do exame",
+          "item3": "Quando nos contactar"
+        },
+        "rubric": {
+          "prompt": "Cria uma rubrica para avaliar uma apresentação oral de História.",
+          "reply": "Feito: quatro critérios, cada um com quatro níveis.",
+          "item1": "Rigor do conteúdo",
+          "item2": "Estrutura",
+          "item3": "Expressão oral"
+        },
+        "referralLetter": {
+          "prompt": "Redige uma carta de referenciação para cardiologia com estas notas anonimizadas.",
+          "reply": "Aqui está o rascunho, pronto para rever.",
+          "item1": "Motivo da referenciação",
+          "item2": "Antecedentes relevantes",
+          "item3": "Medicação atual"
+        },
+        "adaptedText": {
+          "prompt": "Adapta este texto sobre vulcões para um aluno com dislexia.",
+          "reply": "Aqui está: frases mais curtas, o mesmo conteúdo.",
+          "item1": "Frases curtas e claras",
+          "item2": "Glossário de termos",
+          "item3": "Letra maior e mais espaçada"
+        },
+        "guidelines": {
+          "prompt": "Compara estas duas normas sobre diabetes tipo 2 numa tabela.",
+          "reply": "Aqui está a tabela, com as diferenças assinaladas.",
+          "item1": "Objetivos terapêuticos",
+          "item2": "Tratamento de primeira linha",
+          "item3": "Calendário de seguimento"
+        },
+        "parentsNote": {
+          "prompt": "Escreve um aviso aos pais sobre a visita de estudo ao museu, na próxima semana.",
+          "reply": "Aqui está o aviso, pronto a enviar.",
+          "item1": "Data, hora e ponto de encontro",
+          "item2": "O que levar",
+          "item3": "Autorização a assinar"
+        },
+        "caseSlides": {
+          "prompt": "Transforma este caso clínico num guião de 5 diapositivos para a reunião de serviço.",
+          "reply": "Aqui está o guião, com uma ideia por diapositivo.",
+          "item1": "Apresentação do caso",
+          "item2": "Exames e diagnóstico",
+          "item3": "Mensagens a reter"
+        }
+      }
     },
     "areas": {
       "title": "Para a sua área",
