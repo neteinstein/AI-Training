@@ -7,7 +7,7 @@ export const siteConfig = {
    * The platform's name in each language: shown in the header, page titles and link previews.
    * The emails spell it out themselves, in supabase/config.toml and supabase/templates.
    */
-  name: { pt: "Formação em AI", en: "AI Training" } satisfies Record<Locale, string>,
+  name: { pt: "Formação em IA", en: "AI Training" } satisfies Record<Locale, string>,
   /** Public contact address shown on the site. Leave empty to hide it. */
   contactEmail: "",
   /** The company that runs the platform: credited in the footer and named in the privacy notice. */

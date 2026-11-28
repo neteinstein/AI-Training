@@ -151,7 +151,7 @@ describe("inviting people", () => {
     expect(second).toMatchObject({ outcome: "reinvited", emailSent: true });
     expect(await subjectsSentTo(email, 2)).toEqual([
       "Your invitation to AI Training",
-      "O seu convite para a Formação em AI",
+      "O seu convite para a Formação em IA",
     ]);
     expect((await profileOf(email))?.locale).toBe("en");
   });

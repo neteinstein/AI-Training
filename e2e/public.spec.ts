@@ -14,9 +14,9 @@ const courseTitles = (page: Page) =>
 
 test.describe("landing page", () => {
   test("carries the platform's name in the language of the page", async ({ page }) => {
-    const names = { pt: "Formação em AI", en: "AI Training" };
+    const names = { pt: "Formação em IA", en: "AI Training" };
     const titles = {
-      pt: "Formação em AI — cursos de inteligência artificial",
+      pt: "Formação em IA — cursos de inteligência artificial",
       en: "AI Training — artificial intelligence courses",
     };
     for (const locale of ["pt", "en"] as const) {
