@@ -477,9 +477,12 @@ All access rules live in the database, in `supabase/migrations`:
   later edition opens access again at once. A year after that day, a nightly `pg_cron` job
   (`purge-expired-learners`, 03:17 UTC) deletes the account, which takes the profile,
   enrolments, progress, quiz attempts and conversations with it, and the information requests
-  sent from the same address. `learner_access` tells the person, or a trainer, both dates.
-  Learners with no dated enrolment, and trainers, are never affected. A restored backup brings
-  back the people it holds; the job deletes those already due the following night.
+  sent from the same address. A learner removed from every course is deleted the same way a year
+  after the removal: a trigger on `enrollments` notes it in `profiles.unenrolled_at` and clears
+  it when they are enrolled again (learners in no course when this was added count from then).
+  `learner_access` tells the person, or a trainer, both dates. Trainers are never affected, nor
+  are learners whose enrolments have no day at all. A restored backup brings back the people
+  it holds; the job deletes those already due the following night.
 - A user's role is never taken from data the user can edit, and the last trainer can be neither
   demoted nor deleted.
 

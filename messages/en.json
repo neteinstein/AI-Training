@@ -151,7 +151,8 @@
     "accessUntil": "You can open your courses until {date}, two months after your last training day.",
     "accessEndedTitle": "Your access has ended",
     "accessEndedText": "Access to the course materials ended on {date}, two months after your last training day. To take another course, get in touch with the training team.",
-    "dataKeptUntil": "Your account and its data will be deleted after {date}, a year after your last training day."
+    "dataKeptUntil": "Your account and its data will be deleted after {date}, a year after your last training day.",
+    "dataKeptUntilRemoved": "Your account and its data will be deleted after {date}, a year after you were removed from your last course, unless you are enrolled again."
   },
   "Conversation": {
     "title": "Messages",
@@ -696,7 +697,8 @@
       "editionOf": "Edition of the course {course}",
       "accessUntil": "Access until {date}",
       "accessEnded": "Access ended on {date}",
-      "retention": "Access ends two months after the person's last training day, and the account and all its data are deleted a year after it: on this person's current enrolments, after {date}. Enrolling them in a later edition moves both dates."
+      "retention": "Access ends two months after the person's last training day, and the account and all its data are deleted a year after it: on this person's current enrolments, after {date}. Enrolling them in a later edition moves both dates.",
+      "retentionRemoved": "This person is in no course: the account and all its data are deleted after {date}, a year after they were removed from their last course. Enrolling them again cancels it."
     },
     "requests": {
       "title": "Information requests",
@@ -1069,7 +1071,7 @@
       },
       "retention": {
         "title": "For how long",
-        "text": "We keep information requests for one year. Your account and its data are deleted one year after your last training day; access to the materials ends two months after it."
+        "text": "We keep information requests for one year. Your account and its data are deleted one year after your last training day, or one year after you are removed from your last course; access to the materials ends two months after your last training day."
       },
       "rights": {
         "title": "Your rights",

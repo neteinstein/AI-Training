@@ -661,6 +661,7 @@ export type Database = {
           id: string;
           locale: string;
           role: Database["public"]["Enums"]["user_role"];
+          unenrolled_at: string | null;
           updated_at: string;
         };
         ComputedFields: never;
@@ -672,6 +673,7 @@ export type Database = {
           id: string;
           locale?: string;
           role?: Database["public"]["Enums"]["user_role"];
+          unenrolled_at?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -682,6 +684,7 @@ export type Database = {
           id?: string;
           locale?: string;
           role?: Database["public"]["Enums"]["user_role"];
+          unenrolled_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];

@@ -8,11 +8,12 @@
 --     from the day after.
 --   * The account and everything about the person is deleted once a year has passed since that
 --     day (GDPR storage limitation), by a job that runs every night.
+--   * A learner removed from every course is deleted a year after the last removal.
 --
 -- Access is worked out on every query: enrolling the person in a later edition, or moving an
 -- edition's last day, opens it again at once. The rule only ever closes access; it never opens
 -- anything an enrolment does not. A learner with no dated enrolment keeps access and is not
--- deleted by the job. Trainers are never affected by either rule.
+-- deleted by the job (unless they are removed from every course). Trainers are never affected.
 --
 -- Access is enforced where the rest of a learner's access is decided: the helpers that say which
 -- courses and editions they may open, and the view that says which materials they see.
@@ -61,7 +62,50 @@ as $$
   select (private.last_training_day(target_user) + interval '2 months')::date;
 $$;
 
--- The last day a learner's data is kept, or null when the job leaves it alone.
+-- ---------------------------------------------------------------------------------------------
+-- When a learner was removed from their last course
+-- ---------------------------------------------------------------------------------------------
+-- Null while the person is in at least one course. Written only by the triggers below: it is not
+-- writable through the API.
+alter table public.profiles add column unenrolled_at timestamptz;
+
+create function private.track_unenrolment()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if tg_op = 'INSERT' then
+    update public.profiles p
+    set unenrolled_at = null
+    where p.id = new.user_id and p.unenrolled_at is not null;
+    return null;
+  end if;
+
+  -- (When the profile itself is being deleted, there is no row left to update.)
+  update public.profiles p
+  set unenrolled_at = now()
+  where p.id = old.user_id
+    and not exists (select 1 from public.enrollments e where e.user_id = old.user_id);
+  return null;
+end;
+$$;
+
+revoke all on function private.track_unenrolment() from public;
+
+create trigger enrollments_track_unenrolment
+  after insert or delete on public.enrollments
+  for each row execute function private.track_unenrolment();
+
+-- Learners already in no course: their year starts now.
+update public.profiles p
+set unenrolled_at = now()
+where p.role = 'learner'
+  and not exists (select 1 from public.enrollments e where e.user_id = p.id);
+
+-- The last day a learner's data is kept, or null when the job leaves it alone: a year after
+-- their last training day, or, when they are in no course, a year after they were removed.
 create function private.data_kept_until(target_user uuid)
 returns date
 language sql
@@ -69,7 +113,16 @@ stable
 security definer
 set search_path = ''
 as $$
-  select (private.last_training_day(target_user) + interval '1 year')::date;
+  select (
+    coalesce(
+      private.last_training_day(target_user),
+      (
+        select (p.unenrolled_at at time zone 'Europe/Lisbon')::date
+        from public.profiles p
+        where p.id = target_user and p.role = 'learner'
+      )
+    ) + interval '1 year'
+  )::date;
 $$;
 
 create function private.has_open_access(target_user uuid)

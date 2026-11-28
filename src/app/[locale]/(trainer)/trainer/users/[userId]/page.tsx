@@ -108,7 +108,9 @@ export default async function UserPage({ params }: Props) {
         <Section id="user-courses" title={t("users.courses")}>
           {access?.keptUntil ? (
             <p className="text-muted-foreground max-w-[44em] text-sm">
-              {t("users.retention", { date: day(access.keptUntil) })}
+              {t(user.courseIds.length > 0 ? "users.retention" : "users.retentionRemoved", {
+                date: day(access.keptUntil),
+              })}
             </p>
           ) : null}
           <UserCoursesForm

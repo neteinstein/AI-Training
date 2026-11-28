@@ -132,6 +132,11 @@ export default async function LearnPage() {
           <div className="border-input flex flex-col items-start gap-3 rounded-2xl border-[1.5px] border-dashed p-6 sm:p-8">
             <h2 className="font-heading text-2xl leading-tight">{t("emptyTitle")}</h2>
             <p className="text-muted-foreground max-w-[34em]">{t("emptyText")}</p>
+            {access?.keptUntil ? (
+              <p className="text-muted-foreground max-w-[34em]">
+                {t("dataKeptUntilRemoved", { date: day(access.keptUntil) })}
+              </p>
+            ) : null}
             <Link
               href={isTrainer ? routes.trainerCourses : routes.courses}
               className={buttonClass({ variant: "outline", size: "sm" })}

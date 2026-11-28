@@ -151,7 +151,8 @@
     "accessUntil": "Pode abrir os seus cursos até {date}, dois meses após o seu último dia de formação.",
     "accessEndedTitle": "O seu acesso terminou",
     "accessEndedText": "O acesso aos materiais dos cursos terminou a {date}, dois meses após o seu último dia de formação. Para fazer outro curso, contacte a equipa de formação.",
-    "dataKeptUntil": "A sua conta e os respetivos dados serão apagados depois de {date}, um ano após o seu último dia de formação."
+    "dataKeptUntil": "A sua conta e os respetivos dados serão apagados depois de {date}, um ano após o seu último dia de formação.",
+    "dataKeptUntilRemoved": "A sua conta e os respetivos dados serão apagados depois de {date}, um ano após ter saído do seu último curso, a menos que volte a ser inscrito(a)."
   },
   "Conversation": {
     "title": "Mensagens",
@@ -696,7 +697,8 @@
       "editionOf": "Edição do curso {course}",
       "accessUntil": "Acesso até {date}",
       "accessEnded": "Acesso terminado a {date}",
-      "retention": "O acesso termina dois meses após o último dia de formação da pessoa, e a conta e todos os seus dados são apagados um ano depois desse dia: com as inscrições atuais, depois de {date}. Inscrevê-la numa edição posterior adia as duas datas."
+      "retention": "O acesso termina dois meses após o último dia de formação da pessoa, e a conta e todos os seus dados são apagados um ano depois desse dia: com as inscrições atuais, depois de {date}. Inscrevê-la numa edição posterior adia as duas datas.",
+      "retentionRemoved": "Esta pessoa não está em nenhum curso: a conta e todos os seus dados são apagados depois de {date}, um ano após ter sido retirada do seu último curso. Voltar a inscrevê-la cancela-o."
     },
     "requests": {
       "title": "Pedidos de informação",
@@ -1069,7 +1071,7 @@
       },
       "retention": {
         "title": "Durante quanto tempo",
-        "text": "Guardamos os pedidos de informação durante um ano. A sua conta e os respetivos dados são apagados um ano após o seu último dia de formação; o acesso aos materiais termina dois meses depois desse dia."
+        "text": "Guardamos os pedidos de informação durante um ano. A sua conta e os respetivos dados são apagados um ano após o seu último dia de formação, ou um ano após sair do seu último curso; o acesso aos materiais termina dois meses após o seu último dia de formação."
       },
       "rights": {
         "title": "Os seus direitos",

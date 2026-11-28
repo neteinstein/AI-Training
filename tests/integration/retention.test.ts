@@ -228,6 +228,67 @@ describe("data retention", () => {
     expect(seen.enrolments).toBe(0);
   });
 
+  test("a learner removed from every course is deleted a year after the removal", async () => {
+    const rui = await createUser("learner", "ret-rui");
+    try {
+      const removedAt = async () => {
+        const [row] = await sql()<{ at: Date | null }[]>`
+          select unenrolled_at as at from public.profiles where id = ${rui.id}
+        `;
+        return row.at;
+      };
+      // Never enrolled: nothing was removed, so nothing is counted.
+      expect(await removedAt()).toBeNull();
+
+      // In an undated course: kept. Removed from it: kept for a year from the removal.
+      await enroll(rui.id, [catalogue.courses.unlisted]);
+      expect(await fetchLearnerAccess(rui.client, rui.id)).toMatchObject({ keptUntil: null });
+      await admin().from("enrollments").delete().eq("user_id", rui.id);
+      expect(await removedAt()).not.toBeNull();
+      expect(await fetchLearnerAccess(rui.client, rui.id)).toMatchObject({
+        keptUntil: await day("1 year"),
+      });
+
+      // Not something the person can change.
+      await rui.client.from("profiles").update({ unenrolled_at: null }).eq("id", rui.id);
+      expect(await removedAt()).not.toBeNull();
+
+      // Enrolled again: the count stops.
+      await enroll(rui.id, [catalogue.courses.unlisted]);
+      expect(await removedAt()).toBeNull();
+      await admin().from("enrollments").delete().eq("user_id", rui.id);
+
+      const deleted = async () => {
+        let gone = false;
+        await sql()
+          .begin(async (tx) => {
+            await tx`select private.purge_expired_learners()`;
+            const rows = await tx`select 1 from public.profiles where id = ${rui.id}`;
+            gone = rows.length === 0;
+            throw new Rollback();
+          })
+          .catch((error: unknown) => {
+            if (!(error instanceof Rollback)) throw error;
+          });
+        return gone;
+      };
+      await sql()`
+        update public.profiles
+        set unenrolled_at = (private.site_today() - interval '1 year')::timestamp
+          at time zone 'Europe/Lisbon' + interval '12 hours'
+        where id = ${rui.id}
+      `;
+      expect(await deleted()).toBe(false);
+      await sql()`
+        update public.profiles set unenrolled_at = unenrolled_at - interval '1 day'
+        where id = ${rui.id}
+      `;
+      expect(await deleted()).toBe(true);
+    } finally {
+      await deleteUsers([rui]);
+    }
+  });
+
   test("runs every night", async () => {
     const jobs = await sql()<{ schedule: string; command: string }[]>`
       select schedule, command from cron.job where jobname = 'purge-expired-learners'
