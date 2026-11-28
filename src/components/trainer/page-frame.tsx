@@ -1,20 +1,23 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Eye } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { Link } from "@/i18n/navigation";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export type Crumb = { label: string; href?: string };
 
 /**
- * The shape every back-office page shares: a bar with where you are, the language switch and
- * (on wide screens) the theme switch, then the page's heading, then its content.
+ * The shape every back-office page shares: a bar with where you are, the way to see the
+ * platform as a learner, the language switch and (on wide screens) the theme switch, then the
+ * page's heading, then its content.
  */
 export async function PageFrame({
   crumbs,
   barActions,
+  learnerView = routes.learn,
   title,
   meta,
   headerAside,
@@ -25,6 +28,11 @@ export async function PageFrame({
   crumbs: Crumb[];
   /** Links shown in the top bar, before the language switch. */
   barActions?: ReactNode;
+  /**
+   * Where "view as learner" leads: the learner area, or what is being edited as a learner
+   * sees it (one course, say).
+   */
+  learnerView?: string;
   title: ReactNode;
   /** A line under the title: chips, counts, a short explanation. */
   meta?: ReactNode;
@@ -60,6 +68,13 @@ export async function PageFrame({
         </nav>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
           {barActions}
+          <Link
+            href={learnerView}
+            className="text-primary hover:text-primary-hover inline-flex min-h-11 items-center gap-2 font-semibold no-underline"
+          >
+            <Eye aria-hidden="true" className="size-[18px]" />
+            {t("nav.learnerArea")}
+          </Link>
           <span className="flex items-center gap-1">
             <LocaleSwitcher />
             {/* On a phone the bar has no room to spare: there the choice is in the menu. */}

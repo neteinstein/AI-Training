@@ -33,6 +33,21 @@ test.describe("my courses", () => {
     await expect(page.getByRole("heading", { level: 1, name: "IA na sala de aula" })).toBeVisible();
   });
 
+  test("a trainer can look at the learner area as a learner would", async ({ page }) => {
+    await signInAs(page, demoUsers.trainer);
+    await page.getByRole("link", { name: "Ver como formando" }).click();
+    await expect(page).toHaveURL(/\/pt\/learn$/);
+    await expect(page.getByText("Está a ver a área de formando", { exact: false })).toBeVisible();
+    // Enrolled in nothing, a trainer still gets every course, to open as a learner would.
+    await expect(
+      page
+        .getByRole("listitem")
+        .getByRole("heading", { level: 2, name: "IA na sala de aula", exact: true }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Voltar ao back-office" }).click();
+    await expect(page).toHaveURL(/\/pt\/trainer$/);
+  });
+
   test("someone with no courses is told what will happen", async ({ page }) => {
     const email = uniqueEmail("sem-cursos");
     const { error } = await admin().auth.admin.createUser({

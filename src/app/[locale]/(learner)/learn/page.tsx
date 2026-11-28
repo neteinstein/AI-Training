@@ -1,4 +1,4 @@
-import { ArrowRight, MessagesSquare } from "lucide-react";
+import { ArrowLeft, ArrowRight, MessagesSquare } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CourseCard } from "@/components/catalog/course-card";
@@ -7,7 +7,7 @@ import { ProgressBar } from "@/components/materials/progress-bar";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { fetchCoursesWithNewAnswers } from "@/lib/dal/conversation-queries";
-import { fetchMyCourses } from "@/lib/dal/learner-queries";
+import { fetchCoursesToPreview, fetchMyCourses } from "@/lib/dal/learner-queries";
 import { requireUser } from "@/lib/dal/session";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -23,10 +23,14 @@ export default async function LearnPage() {
   const t = await getTranslations("Learn");
   const tAccount = await getTranslations("Account");
   const supabase = await createSupabaseServerClient();
+  const isTrainer = user.role === "trainer";
   const [courses, newAnswers] = await Promise.all([
-    fetchMyCourses(supabase, user.id, locale),
-    // The courses whose trainers have answered since the learner last looked.
-    fetchCoursesWithNewAnswers(supabase, user.id),
+    // A trainer is enrolled in nothing: they come here to see the area as a learner would, so
+    // they get every course, each as a learner of it would see it.
+    isTrainer ? fetchCoursesToPreview(supabase, locale) : fetchMyCourses(supabase, user.id, locale),
+    // The courses whose trainers have answered since the learner last looked. (A trainer has
+    // no conversation of their own: they answer in the back-office.)
+    isTrainer ? new Set<string>() : fetchCoursesWithNewAnswers(supabase, user.id),
   ]);
 
   return (
@@ -36,6 +40,18 @@ export default async function LearnPage() {
         id="content"
         className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10"
       >
+        {isTrainer ? (
+          <div className="bg-highlight-tint flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-2xl px-4 py-3 text-[0.9375rem]">
+            <p>{t("trainerNote")}</p>
+            <Link
+              href={routes.trainer}
+              className="text-highlight-foreground inline-flex min-h-11 items-center gap-1.5 font-semibold no-underline hover:underline"
+            >
+              <ArrowLeft aria-hidden="true" className="size-4" />
+              {t("backToBackOffice")}
+            </Link>
+          </div>
+        ) : null}
         <div className="flex flex-col gap-1">
           <p className="text-muted-foreground">
             {t("greeting", { name: user.fullName || user.email })}
@@ -78,10 +94,10 @@ export default async function LearnPage() {
             <h2 className="font-heading text-2xl leading-tight">{t("emptyTitle")}</h2>
             <p className="text-muted-foreground max-w-[34em]">{t("emptyText")}</p>
             <Link
-              href={user.role === "trainer" ? routes.trainerCourses : routes.courses}
+              href={isTrainer ? routes.trainerCourses : routes.courses}
               className={buttonClass({ variant: "outline", size: "sm" })}
             >
-              {user.role === "trainer" ? tAccount("backOffice") : t("browse")}
+              {isTrainer ? tAccount("backOffice") : t("browse")}
               <ArrowRight aria-hidden="true" />
             </Link>
           </div>

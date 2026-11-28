@@ -50,8 +50,10 @@ The interface text, the privacy notice and the demo catalogue are placeholders t
 
 Everything was exercised against a local Supabase stack, and the browser tests also against the
 app running as a Cloudflare Worker. The hosted project has the migrations (applied and recorded
-under the files' versions) and a first trainer; its sign-in settings and SMTP (step 3) are not
-pushed yet.
+under the files' versions), two trainers and the sign-in settings of step 3, and
+`npm run verify-project` passes against it. It has no SMTP provider yet, and so still sends
+Supabase's own emails: on the Free plan, Supabase only accepts custom email templates once a
+custom SMTP provider is set.
 
 ## Requirements
 
@@ -629,6 +631,12 @@ What this puts in place (all visible afterwards in the dashboard, under Authenti
 | Rate limits                      | 150 sign-ins and 150 verifications per 5 minutes | A whole class signing in from one network at the same time    |
 
 Until SMTP is set up, invitations still work through the "copy link" button.
+
+On the Free plan, Supabase refuses the email templates (and the whole push with them) until
+a custom SMTP provider is set. To push the other settings before then, run the push from a copy
+of the `supabase` folder whose `config.toml` leaves out the three `[auth.email.template.*]`
+sections, with `--workdir` pointing at that copy. Once SMTP is in the block, push from the
+repository as usual and the templates go in with it.
 
 ### 4. Deploy the app
 

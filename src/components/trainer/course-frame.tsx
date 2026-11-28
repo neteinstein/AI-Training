@@ -1,4 +1,4 @@
-import { ExternalLink, Eye } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
@@ -63,19 +63,14 @@ export async function CourseFrame({
         ...trail,
       ]}
       barActions={
-        <>
-          {course.status === "published" ? (
-            <Link href={routes.course(course.slug)} className={barLink}>
-              <ExternalLink aria-hidden="true" className="size-[18px]" />
-              {t("courses.viewPublic")}
-            </Link>
-          ) : null}
-          <Link href={routes.learnCourse(course.slug, previewEdition)} className={barLink}>
-            <Eye aria-hidden="true" className="size-[18px]" />
-            {t("courses.viewAsLearner")}
+        course.status === "published" ? (
+          <Link href={routes.course(course.slug)} className={barLink}>
+            <ExternalLink aria-hidden="true" className="size-[18px]" />
+            {t("courses.viewPublic")}
           </Link>
-        </>
+        ) : null
       }
+      learnerView={routes.learnCourse(course.slug, previewEdition)}
       title={title}
       meta={
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
