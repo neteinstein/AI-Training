@@ -139,7 +139,9 @@
     "onlyIn": "Only: {name}",
     "progress": "{done} of {total, plural, one {# material opened} other {# materials opened}}",
     "opened": "Opened",
-    "handedIn": "Handed in"
+    "handedIn": "Handed in",
+    "trainerNote": "You are viewing the learner area as a learner would. Every course is listed here; each learner only sees the ones they are enrolled in.",
+    "backToBackOffice": "Back to the back-office"
   },
   "Trainer": {
     "title": "Back-office",
@@ -303,7 +305,6 @@
         "editions": "Editions",
         "learners": "Learners ({count})"
       },
-      "viewAsLearner": "View as a learner",
       "viewPublic": "View public page",
       "titleField": "Title",
       "summary": "Summary",

@@ -139,7 +139,9 @@
     "onlyIn": "Só: {name}",
     "progress": "{done} de {total, plural, one {# material aberto} other {# materiais abertos}}",
     "opened": "Aberto",
-    "handedIn": "Entregue"
+    "handedIn": "Entregue",
+    "trainerNote": "Está a ver a área de formando como um formando a vê. Aqui aparecem todos os cursos; cada formando só vê aqueles em que está inscrito.",
+    "backToBackOffice": "Voltar ao back-office"
   },
   "Trainer": {
     "title": "Back-office",
@@ -303,7 +305,6 @@
         "editions": "Edições",
         "learners": "Formandos ({count})"
       },
-      "viewAsLearner": "Ver como formando",
       "viewPublic": "Ver página pública",
       "titleField": "Título",
       "summary": "Resumo",
