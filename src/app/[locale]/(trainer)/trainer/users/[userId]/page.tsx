@@ -14,8 +14,10 @@ import {
   UserCoursesForm,
   UserDetailsForm,
 } from "@/features/users/user-forms";
+import { fetchLearnerAccess } from "@/lib/dal/learner-queries";
 import { requireTrainer } from "@/lib/dal/session";
 import { fetchCourseOptions, fetchTrainerUser } from "@/lib/dal/trainer-queries";
+import { dayToDate } from "@/lib/dates";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -51,11 +53,14 @@ function Section({ id, title, children }: { id: string; title: string; children:
 export default async function UserPage({ params }: Props) {
   const { locale, me, supabase, user } = await load(params);
   if (!user) notFound();
-  const [t, format, courses] = await Promise.all([
+  const [t, format, courses, access] = await Promise.all([
     getTranslations("Trainer"),
     getFormatter(),
     fetchCourseOptions(supabase, locale),
+    user.role === "learner" ? fetchLearnerAccess(supabase, user.id) : null,
   ]);
+  const day = (value: string) =>
+    format.dateTime(dayToDate(value), { dateStyle: "long", timeZone: "UTC" });
   const name = user.fullName || user.email;
   const isMe = user.id === me.id;
 
@@ -70,6 +75,13 @@ export default async function UserPage({ params }: Props) {
           </Chip>
           {user.isPending ? <Chip tone="attention">{t("users.pending")}</Chip> : null}
           {isMe ? <Chip>{t("users.you")}</Chip> : null}
+          {access?.endsOn ? (
+            <Chip tone={access.isOpen ? "neutral" : "attention"}>
+              {t(access.isOpen ? "users.accessUntil" : "users.accessEnded", {
+                date: day(access.endsOn),
+              })}
+            </Chip>
+          ) : null}
           <span className="text-muted-foreground text-sm">
             {t("users.since", {
               date: format.dateTime(new Date(user.createdAt), { dateStyle: "long" }),
@@ -94,6 +106,11 @@ export default async function UserPage({ params }: Props) {
         </Section>
 
         <Section id="user-courses" title={t("users.courses")}>
+          {access?.keptUntil ? (
+            <p className="text-muted-foreground max-w-[44em] text-sm">
+              {t("users.retention", { date: day(access.keptUntil) })}
+            </p>
+          ) : null}
           <UserCoursesForm
             userId={user.id}
             courses={courses}

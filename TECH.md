@@ -174,8 +174,8 @@ Trainers sign in at the same address as learners and land on the back-office (`/
   view, so a trainer sees exactly what each edition gets.
 - **Learners** of a course: add people who have an account, remove them, or invite new ones.
   With several editions the list is grouped by edition, people are added to the one chosen,
-  and a menu moves a person to another. Dates are information: they never open or close
-  access; being in the course does.
+  and a menu moves a person to another. Dates never open access, being in the course does;
+  but they close it: see "Access expiry and data retention" below.
 - **Areas and levels**: the two lists courses are organised by. One in use cannot be deleted.
 - **Users**: everyone with an account or a pending invitation; a person's page holds their
   details, role, courses, a new access link, and removal.
@@ -468,6 +468,18 @@ All access rules live in the database, in `supabase/migrations`:
   trigger is added to these tables. `conversation_thread` reads a conversation with the name
   of each author, which is how the name of the trainer who answered reaches the learner. The
   one direct write is a trainer deleting a whole conversation.
+- **Access expiry and data retention** (`20261128120000_learner_retention.sql`). A learner's
+  last training day is the latest day among their enrolments: the edition's last day, else its
+  first, else the course's start. Access is open up to two months after it, and closed from
+  the day after, on Lisbon's clock. It is worked out on every query, inside the helpers that
+  say which courses and editions a learner may open and inside `learner_materials`, so pages,
+  downloads, progress, quizzes and messages all close together, and enrolling the person in a
+  later edition opens access again at once. A year after that day, a nightly `pg_cron` job
+  (`purge-expired-learners`, 03:17 UTC) deletes the account, which takes the profile,
+  enrolments, progress, quiz attempts and conversations with it, and the information requests
+  sent from the same address. `learner_access` tells the person, or a trainer, both dates.
+  Learners with no dated enrolment, and trainers, are never affected. A restored backup brings
+  back the people it holds; the job deletes those already due the following night.
 - A user's role is never taken from data the user can edit, and the last trainer can be neither
   demoted nor deleted.
 

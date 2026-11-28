@@ -955,6 +955,14 @@ export type Database = {
           user_id: string;
         }[];
       };
+      learner_access: {
+        Args: { target_user: string };
+        Returns: {
+          ends_on: string;
+          is_open: boolean;
+          kept_until: string;
+        }[];
+      };
       learner_progress: {
         Args: { target_course_id: string; target_user_id: string };
         Returns: {

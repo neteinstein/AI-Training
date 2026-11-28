@@ -11,7 +11,10 @@ import { isUuid } from "@/lib/ids";
 
 export type EditionInput = {
   name: Bilingual;
-  /** Days as "2027-01-31". Information for people: dates never open or close access. */
+  /**
+   * Days as "2027-01-31". They never open access, but the last one (else the first) sets when
+   * learners lose it: two months after their last training day (see learner_retention.sql).
+   */
   startsOn: string | null;
   endsOn: string | null;
   /** Shown on the public page of the course, while the course is published. */

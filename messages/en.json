@@ -147,7 +147,11 @@
     "askNew": "New answer",
     "askPreview": "This is where learners write to the trainers. As a trainer, you see this course's messages in the back-office.",
     "trainerNote": "You are viewing the learner area as a learner would. Every course is listed here; each learner only sees the ones they are enrolled in.",
-    "backToBackOffice": "Back to the back-office"
+    "backToBackOffice": "Back to the back-office",
+    "accessUntil": "You can open your courses until {date}, two months after your last training day.",
+    "accessEndedTitle": "Your access has ended",
+    "accessEndedText": "Access to the course materials ended on {date}, two months after your last training day. To take another course, get in touch with the training team.",
+    "dataKeptUntil": "Your account and its data will be deleted after {date}, a year after your last training day."
   },
   "Conversation": {
     "title": "Messages",
@@ -540,7 +544,7 @@
       "nameHelp": "For example, “January 2027 class”. Needed in both languages, because an edition can appear on the public site.",
       "startsOn": "First day",
       "endsOn": "Last day",
-      "datesHelp": "Dates are information for people only: they do not open or close access to the materials.",
+      "datesHelp": "The last day (or else the first) also sets how long learners keep access: two months after their last training day. A year after it, their account and data are deleted.",
       "listed": "Show on the course's public page",
       "listedHelp": "The edition appears under “Upcoming editions” while the course is published and it has not started yet. It needs a first day.",
       "default": "Default",
@@ -689,7 +693,10 @@
       "removeSelf": "You cannot delete your own account.",
       "you": "This is your account.",
       "edition": "Edition",
-      "editionOf": "Edition of the course {course}"
+      "editionOf": "Edition of the course {course}",
+      "accessUntil": "Access until {date}",
+      "accessEnded": "Access ended on {date}",
+      "retention": "Access ends two months after the person's last training day, and the account and all its data are deleted a year after it: on this person's current enrolments, after {date}. Enrolling them in a later edition moves both dates."
     },
     "requests": {
       "title": "Information requests",
@@ -962,7 +969,7 @@
         },
         "materials": {
           "question": "Do I get access to the course materials?",
-          "answer": "Yes. Each participant gets their own access to the materials, for one month after the sessions."
+          "answer": "Yes. Each participant gets their own access to the materials, for two months after their last session."
         },
         "certified": {
           "question": "Is the trainer certified?",
@@ -1062,7 +1069,7 @@
       },
       "retention": {
         "title": "For how long",
-        "text": "We keep information requests and account data for one year."
+        "text": "We keep information requests for one year. Your account and its data are deleted one year after your last training day; access to the materials ends two months after it."
       },
       "rights": {
         "title": "Your rights",
