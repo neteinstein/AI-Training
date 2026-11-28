@@ -147,7 +147,12 @@
     "askNew": "Resposta nova",
     "askPreview": "É aqui que os formandos escrevem aos formadores. Como formador, vê as mensagens deste curso no back-office.",
     "trainerNote": "Está a ver a área de formando como um formando a vê. Aqui aparecem todos os cursos; cada formando só vê aqueles em que está inscrito.",
-    "backToBackOffice": "Voltar ao back-office"
+    "backToBackOffice": "Voltar ao back-office",
+    "accessUntil": "Pode abrir os seus cursos até {date}, dois meses após o seu último dia de formação.",
+    "accessEndedTitle": "O seu acesso terminou",
+    "accessEndedText": "O acesso aos materiais dos cursos terminou a {date}, dois meses após o seu último dia de formação. Para fazer outro curso, contacte a equipa de formação.",
+    "dataKeptUntil": "A sua conta e os respetivos dados serão apagados depois de {date}, um ano após o seu último dia de formação.",
+    "dataKeptUntilRemoved": "A sua conta e os respetivos dados serão apagados depois de {date}, a menos que entretanto seja inscrito(a) num curso."
   },
   "Conversation": {
     "title": "Mensagens",
@@ -540,7 +545,7 @@
       "nameHelp": "Por exemplo, «Turma de janeiro de 2027». É necessário nos dois idiomas, porque uma edição pode aparecer no site público.",
       "startsOn": "Primeiro dia",
       "endsOn": "Último dia",
-      "datesHelp": "As datas são apenas informação para as pessoas: não abrem nem fecham o acesso aos materiais.",
+      "datesHelp": "O último dia (ou, na falta dele, o primeiro) também define durante quanto tempo os formandos mantêm o acesso: dois meses após o seu último dia de formação. Um ano depois desse dia, a conta e os dados são apagados.",
       "listed": "Mostrar na página pública do curso",
       "listedHelp": "A edição aparece em «Próximas edições» enquanto o curso estiver publicado e ainda não tiver começado. Precisa de um primeiro dia.",
       "default": "Predefinida",
@@ -689,7 +694,11 @@
       "removeSelf": "Não pode eliminar a sua própria conta.",
       "you": "É a sua conta.",
       "edition": "Edição",
-      "editionOf": "Edição do curso {course}"
+      "editionOf": "Edição do curso {course}",
+      "accessUntil": "Acesso até {date}",
+      "accessEnded": "Acesso terminado a {date}",
+      "retention": "O acesso termina dois meses após o último dia de formação da pessoa, e a conta e todos os seus dados são apagados um ano depois desse dia: com as inscrições atuais, depois de {date}. Inscrevê-la numa edição posterior adia as duas datas.",
+      "retentionRemoved": "Esta pessoa não está em nenhum curso: a conta e todos os seus dados são apagados depois de {date}, um ano após ter sido retirada do seu último curso (ou, se nunca teve nenhum, um ano após a criação da conta). Inscrevê-la cancela-o."
     },
     "requests": {
       "title": "Pedidos de informação",
@@ -962,7 +971,7 @@
         },
         "materials": {
           "question": "Tenho acesso aos materiais do curso?",
-          "answer": "Sim. Cada formando recebe um acesso individual aos materiais, durante um mês após as sessões."
+          "answer": "Sim. Cada formando recebe um acesso individual aos materiais, durante dois meses após a última sessão."
         },
         "certified": {
           "question": "O formador é certificado?",
@@ -1062,7 +1071,7 @@
       },
       "retention": {
         "title": "Durante quanto tempo",
-        "text": "Guardamos os pedidos de informação e os dados das contas durante um ano."
+        "text": "Guardamos os pedidos de informação durante um ano. A sua conta e os respetivos dados são apagados um ano após o seu último dia de formação; se não estiver em nenhum curso, um ano após sair do último ou, se nunca tiver sido inscrito(a), um ano após a criação da conta. O acesso aos materiais termina dois meses após o seu último dia de formação."
       },
       "rights": {
         "title": "Os seus direitos",

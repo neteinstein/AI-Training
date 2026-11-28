@@ -1,14 +1,19 @@
 import { ArrowLeft, ArrowRight, MessagesSquare } from "lucide-react";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { CourseCard } from "@/components/catalog/course-card";
 import { AppHeader } from "@/components/layout/app-header";
 import { ProgressBar } from "@/components/materials/progress-bar";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { fetchCoursesWithNewAnswers } from "@/lib/dal/conversation-queries";
-import { fetchCoursesToPreview, fetchMyCourses } from "@/lib/dal/learner-queries";
+import {
+  fetchCoursesToPreview,
+  fetchLearnerAccess,
+  fetchMyCourses,
+} from "@/lib/dal/learner-queries";
 import { requireUser } from "@/lib/dal/session";
+import { dayToDate } from "@/lib/dates";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -24,14 +29,26 @@ export default async function LearnPage() {
   const tAccount = await getTranslations("Account");
   const supabase = await createSupabaseServerClient();
   const isTrainer = user.role === "trainer";
-  const [courses, newAnswers] = await Promise.all([
-    // A trainer is enrolled in nothing: they come here to see the area as a learner would, so
-    // they get every course, each as a learner of it would see it.
-    isTrainer ? fetchCoursesToPreview(supabase, locale) : fetchMyCourses(supabase, user.id, locale),
-    // The courses whose trainers have answered since the learner last looked. (A trainer has
-    // no conversation of their own: they answer in the back-office.)
-    isTrainer ? new Set<string>() : fetchCoursesWithNewAnswers(supabase, user.id),
-  ]);
+  const format = await getFormatter();
+  // Two months after their last training day, a learner's access ends (the database decides).
+  const access = isTrainer ? null : await fetchLearnerAccess(supabase, user.id);
+  // Access only closes on a known day, so an ended access always has one.
+  const endedOn = access && !access.isOpen ? access.endsOn : null;
+  const hasEnded = endedOn !== null;
+  const day = (value: string) =>
+    format.dateTime(dayToDate(value), { dateStyle: "long", timeZone: "UTC" });
+  const [courses, newAnswers] = hasEnded
+    ? [[], new Set<string>()]
+    : await Promise.all([
+        // A trainer is enrolled in nothing: they come here to see the area as a learner would, so
+        // they get every course, each as a learner of it would see it.
+        isTrainer
+          ? fetchCoursesToPreview(supabase, locale)
+          : fetchMyCourses(supabase, user.id, locale),
+        // The courses whose trainers have answered since the learner last looked. (A trainer has
+        // no conversation of their own: they answer in the back-office.)
+        isTrainer ? new Set<string>() : fetchCoursesWithNewAnswers(supabase, user.id),
+      ]);
 
   return (
     <>
@@ -59,7 +76,29 @@ export default async function LearnPage() {
           <h1 className="font-heading text-[1.75rem] leading-tight sm:text-4xl">{t("title")}</h1>
         </div>
 
-        {courses.length > 0 ? (
+        {access?.isOpen && access.endsOn ? (
+          <p className="text-muted-foreground text-[0.9375rem]">
+            {t("accessUntil", { date: day(access.endsOn) })}
+          </p>
+        ) : null}
+
+        {hasEnded ? (
+          <div className="border-input flex flex-col items-start gap-3 rounded-2xl border-[1.5px] border-dashed p-6 sm:p-8">
+            <h2 className="font-heading text-2xl leading-tight">{t("accessEndedTitle")}</h2>
+            <p className="text-muted-foreground max-w-[34em]">
+              {t("accessEndedText", { date: day(endedOn) })}
+            </p>
+            {access?.keptUntil ? (
+              <p className="text-muted-foreground max-w-[34em]">
+                {t("dataKeptUntil", { date: day(access.keptUntil) })}
+              </p>
+            ) : null}
+            <Link href={routes.courses} className={buttonClass({ variant: "outline", size: "sm" })}>
+              {t("browse")}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+        ) : courses.length > 0 ? (
           <ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-4 sm:gap-6">
             {courses.map((course) => (
               <li key={course.id} className="flex">
@@ -93,6 +132,11 @@ export default async function LearnPage() {
           <div className="border-input flex flex-col items-start gap-3 rounded-2xl border-[1.5px] border-dashed p-6 sm:p-8">
             <h2 className="font-heading text-2xl leading-tight">{t("emptyTitle")}</h2>
             <p className="text-muted-foreground max-w-[34em]">{t("emptyText")}</p>
+            {access?.keptUntil ? (
+              <p className="text-muted-foreground max-w-[34em]">
+                {t("dataKeptUntilRemoved", { date: day(access.keptUntil) })}
+              </p>
+            ) : null}
             <Link
               href={isTrainer ? routes.trainerCourses : routes.courses}
               className={buttonClass({ variant: "outline", size: "sm" })}

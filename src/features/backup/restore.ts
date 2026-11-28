@@ -720,6 +720,9 @@ export async function restoreBackup(
           role: profile.role,
           locale: profile.locale,
           created_at: profile.created_at,
+          // When they were removed from every course: the year before deletion goes on from
+          // there. (Restoring their enrolments afterwards clears it again.)
+          unenrolled_at: profile.unenrolled_at ?? null,
         })),
         { onConflict: "id" },
       );

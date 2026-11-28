@@ -77,6 +77,32 @@ export function toMaterialItem(row: MaterialRow, locale: Locale, isDone = false)
   };
 }
 
+/** How long a learner keeps access, and their data. Days as "2027-01-31"; null: no end. */
+export type LearnerAccess = {
+  /** The last day they may open their courses: two months after their last training day. */
+  endsOn: string | null;
+  isOpen: boolean;
+  /** The last day their account is kept: a year after their last training day. */
+  keptUntil: string | null;
+};
+
+/**
+ * The database's own answer (`learner_access`) for the caller, or for anyone when the caller is
+ * a trainer. Null when the caller may not ask.
+ */
+export async function fetchLearnerAccess(
+  client: Client,
+  userId: string,
+): Promise<LearnerAccess | null> {
+  if (!isUuid(userId)) return null;
+  const { data, error } = await client.rpc("learner_access", { target_user: userId });
+  if (error) throw new Error(`access: ${error.message}`);
+  const row = data?.[0];
+  if (!row) return null;
+  // Generated types call the days strings; the database answers null when there is no end.
+  return { endsOn: row.ends_on || null, isOpen: row.is_open, keptUntil: row.kept_until || null };
+}
+
 /**
  * The courses a user is enrolled in and may open. Drafts are left out by Row Level Security:
  * a learner cannot read a draft course even when enrolled in it.
@@ -175,14 +201,19 @@ export async function fetchCourseContent(
     // A published course is public, so being able to read its row proves nothing: the
     // learner area is only for people enrolled in it.
     if (courseRow.status === "draft") return null;
-    const { data: enrollment, error: enrollmentError } = await client
-      .from("enrollments")
-      .select("course_id, edition_id")
-      .eq("user_id", viewer.id)
-      .eq("course_id", courseRow.id)
-      .maybeSingle();
+    const [{ data: enrollment, error: enrollmentError }, access] = await Promise.all([
+      client
+        .from("enrollments")
+        .select("course_id, edition_id")
+        .eq("user_id", viewer.id)
+        .eq("course_id", courseRow.id)
+        .maybeSingle(),
+      fetchLearnerAccess(client, viewer.id),
+    ]);
     if (enrollmentError) throw new Error(`enrollment: ${enrollmentError.message}`);
     if (!enrollment) return null;
+    // Their access has ended: the database already shows them nothing of the course.
+    if (!access?.isOpen) return null;
 
     const { data: editionRow, error: editionError } = await client
       .from("editions")

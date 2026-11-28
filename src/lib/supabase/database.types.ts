@@ -661,6 +661,7 @@ export type Database = {
           id: string;
           locale: string;
           role: Database["public"]["Enums"]["user_role"];
+          unenrolled_at: string | null;
           updated_at: string;
         };
         ComputedFields: never;
@@ -672,6 +673,7 @@ export type Database = {
           id: string;
           locale?: string;
           role?: Database["public"]["Enums"]["user_role"];
+          unenrolled_at?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -682,6 +684,7 @@ export type Database = {
           id?: string;
           locale?: string;
           role?: Database["public"]["Enums"]["user_role"];
+          unenrolled_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -953,6 +956,14 @@ export type Database = {
         Returns: {
           full_name: string;
           user_id: string;
+        }[];
+      };
+      learner_access: {
+        Args: { target_user: string };
+        Returns: {
+          ends_on: string;
+          is_open: boolean;
+          kept_until: string;
         }[];
       };
       learner_progress: {
