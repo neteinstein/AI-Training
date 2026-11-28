@@ -3,6 +3,8 @@ import { describe, expect, test } from "vitest";
 import type { ZodType } from "zod";
 import { passwordChangeSchema } from "@/features/account/schemas";
 import { areaSchema, levelSchema } from "@/features/catalog/schemas";
+import { MESSAGE_MAX } from "@/features/conversations/constants";
+import { messageSchema } from "@/features/conversations/schemas";
 import { courseSchema } from "@/features/courses/schemas";
 import { editionSchema } from "@/features/editions/schemas";
 import {
@@ -82,6 +84,8 @@ describe("every validation message exists in both languages", () => {
       [inviteSchema, { emails: "a, b@", locale: "fr", role: "admin", mode: "sms" }],
       [infoRequestSchema, { name: "", email: "x", course_id: "1" }],
       [passwordChangeSchema, { current: "a", password: "a", confirm: "b" }],
+      [messageSchema, {}],
+      [messageSchema, { body: "x".repeat(MESSAGE_MAX + 1) }],
     ];
     for (const [schema, input] of samples) {
       const result = schema.safeParse(input);
@@ -437,6 +441,22 @@ describe("information requests", () => {
       name: "Preencha este campo.",
       email: "Introduza um email válido.",
       message: "Use no máximo 4000 caracteres.",
+    });
+  });
+});
+
+describe("messages between learners and trainers", () => {
+  test("a message is some text, kept as written but for the space around it", () => {
+    expect(messageSchema.parse({ body: "  Uma pergunta,\n\ncom duas linhas.  \n" })).toEqual({
+      body: "Uma pergunta,\n\ncom duas linhas.",
+    });
+    expect(messageSchema.parse({ body: "x".repeat(MESSAGE_MAX) }).body.length).toBe(MESSAGE_MAX);
+  });
+
+  test("an empty one, or one that is too long, is refused with the reason", () => {
+    expect(problems(messageSchema, { body: " \n\t " })).toEqual({ body: "Preencha este campo." });
+    expect(problems(messageSchema, { body: "x".repeat(MESSAGE_MAX + 1) }, "en")).toEqual({
+      body: `Use at most ${MESSAGE_MAX} characters.`,
     });
   });
 });

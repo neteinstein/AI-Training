@@ -3,6 +3,7 @@ import {
   admin,
   alertWith,
   confirmation,
+  demoConversations,
   demoCourses,
   demoUsers,
   expectNotice,
@@ -26,12 +27,22 @@ test.describe("back-office frame", () => {
     await expect(page.getByText("Olá, Formador Demo")).toBeVisible();
     await expect(page.getByRole("link", { name: /Cursos publicados/ })).toBeVisible();
     await expect(page.getByRole("link", { name: /Formandos ativos/ })).toBeVisible();
+    // What needs the trainer: here, Ana's question about the demo course.
+    const toAnswer = page.getByRole("region", { name: "Mensagens por responder" });
+    await expect(toAnswer.getByRole("link", { name: "Ana Santos" })).toHaveAttribute(
+      "href",
+      `/pt/trainer/messages/${demoConversations[0].id}`,
+    );
+    await expect(toAnswer).toContainText("IA na sala de aula");
 
     if (isMobile) await page.getByRole("button", { name: "Abrir menu" }).click();
     const menu = isMobile ? page.getByRole("dialog") : page.getByRole("complementary");
     for (const name of ["Painel", "Cursos", "Áreas", "Níveis", "Utilizadores", "Pedidos"]) {
       await expect(menu.getByRole("link", { name, exact: true })).toBeVisible();
     }
+    // Ana's question about the demo course is waiting, and the menu counts it.
+    await expect(menu.getByRole("link", { name: /^Mensagens/ })).toBeVisible();
+    await expect(menu.getByLabel(/^\d+ conversas? por responder$/)).toBeVisible();
     await menu.getByRole("link", { name: "Áreas", exact: true }).click();
     await expect(page).toHaveURL(/\/pt\/trainer\/areas$/);
     await expect(page.getByRole("heading", { level: 1, name: "Áreas" })).toBeVisible();
@@ -261,8 +272,11 @@ test.describe("course details", () => {
       await page.getByRole("button", { name: "Fechar mensagem" }).click();
 
       await page.getByRole("link", { name: "Detalhes", exact: true }).click();
+      // Whoever creates a course teaches it, until its trainers are chosen here.
+      await expect(page.getByRole("heading", { level: 2, name: "Formadores" })).toBeVisible();
+      await expect(page.getByRole("checkbox", { name: /Formador Demo/ })).toBeChecked();
       await fillBoth(page, "Resumo", "Resumo para o público.", "Summary for the public.");
-      await page.getByRole("button", { name: "Guardar" }).click();
+      await page.getByRole("button", { name: "Guardar", exact: true }).click();
       await expect(confirmation(page, "Alterações guardadas.")).toBeVisible();
 
       await page.getByRole("combobox", { name: "Estado" }).selectOption("published");
@@ -318,7 +332,7 @@ test.describe("course details", () => {
       await field(page, "Duração em horas (opcional)").fill("7,5");
       await field(page, "Data").fill("2027-10-09");
       await field(page, "Local").fill("  Online  ");
-      await page.getByRole("button", { name: "Guardar" }).click();
+      await page.getByRole("button", { name: "Guardar", exact: true }).click();
       await expect(confirmation(page, "Alterações guardadas.")).toBeVisible();
 
       await page.reload();
@@ -334,13 +348,13 @@ test.describe("course details", () => {
 
       // A number that is not a duration is refused, with the reason.
       await field(page, "Duração em horas (opcional)").fill("muitas");
-      await page.getByRole("button", { name: "Guardar" }).click();
+      await page.getByRole("button", { name: "Guardar", exact: true }).click();
       await expect(page.getByText("Indique as horas com um número entre 0,5 e 999")).toBeVisible();
 
       // The place cannot be emptied.
       await field(page, "Duração em horas (opcional)").fill("7,5");
       await field(page, "Local").fill(" ");
-      await page.getByRole("button", { name: "Guardar" }).click();
+      await page.getByRole("button", { name: "Guardar", exact: true }).click();
       await expect(page.getByText("Preencha este campo.").filter({ visible: true })).toHaveCount(1);
     } finally {
       if (before) {

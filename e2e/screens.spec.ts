@@ -4,6 +4,7 @@ import { expect, test, type Page } from "@playwright/test";
 import {
   admin,
   deleteUserByEmail,
+  demoConversations,
   demoCourses,
   demoEditions,
   demoMaterials,
@@ -149,6 +150,8 @@ for (const scheme of ["light", "dark"] as const) {
         "learner-4-video": `${learnCourse}/materials/${demoMaterials.video}`,
         "learner-6-account": "/pt/learn/account",
         "learner-7-quiz": `${learnCourse}/materials/${demoMaterials.quiz}`,
+        // Her conversation with the trainers of the course.
+        "learner-9-messages": `${learnCourse}/messages`,
       };
       for (const [name, path] of Object.entries(pages)) {
         await open(page, path);
@@ -209,6 +212,9 @@ for (const scheme of ["light", "dark"] as const) {
         "office-17-learner-progress": `${trainerCourse}/learners/${demoUsers.ana.id}`,
         // A quiz: its questions, and below them what each learner has handed in.
         "office-18-quiz-form": `${trainerCourse}/content/materials/${demoMaterials.quiz}`,
+        // What learners wrote to their trainers: every conversation, then one of them.
+        "office-19-messages": "/pt/trainer/messages?show=all",
+        "office-20-conversation": `/pt/trainer/messages/${demoConversations[0].id}`,
       };
       await showSomeProgress();
       // For the pictures only, the demo course's second edition gets a learner too, so that

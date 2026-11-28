@@ -5,6 +5,7 @@ import {
   Download,
   ExternalLink,
   EyeOff,
+  MessagesSquare,
   Pencil,
   UsersRound,
 } from "lucide-react";
@@ -20,6 +21,10 @@ import { ProgressBar } from "@/components/materials/progress-bar";
 import { materialMeta } from "@/components/materials/meta";
 import { htmlLang } from "@/config/site";
 import { Link } from "@/i18n/navigation";
+import {
+  fetchCourseTrainerNames,
+  fetchCoursesWithNewAnswers,
+} from "@/lib/dal/conversation-queries";
 import { fetchCourseContent } from "@/lib/dal/learner-queries";
 import { requireUser } from "@/lib/dal/session";
 import type { MaterialItem } from "@/lib/dal/types";
@@ -40,7 +45,7 @@ async function loadCourse(params: Props["params"], asked?: Props["searchParams"]
   const content = await fetchCourseContent(supabase, user, slug, locale, {
     editionId: typeof edition === "string" ? edition : null,
   });
-  return { slug, locale, user, content };
+  return { slug, locale, user, supabase, content };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -49,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function LearnCoursePage({ params, searchParams }: Props) {
-  const { slug, locale, user, content } = await loadCourse(params, searchParams);
+  const { slug, locale, user, supabase, content } = await loadCourse(params, searchParams);
   if (!content) notFound();
 
   const t = await getTranslations("Learn");
@@ -61,6 +66,16 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
   const previewEdition = isTrainer ? edition?.id : undefined;
   const editionDays = edition ? formatDays(format, edition.startsOn, edition.endsOn) : null;
   const editionName = (id: string) => editions.find((entry) => entry.id === id)?.name ?? "";
+  // Who teaches the course, and whether they have answered since the learner last looked.
+  // (A trainer has no conversation of their own: they answer in the back-office.)
+  const [trainers, newAnswers] = await Promise.all([
+    fetchCourseTrainerNames(supabase, course.id),
+    isTrainer ? new Set<string>() : fetchCoursesWithNewAnswers(supabase, user.id),
+  ]);
+  const trainerNames = format.list(
+    trainers.map((trainer) => trainer.name),
+    { type: "conjunction" },
+  );
   const labels = {
     kind: (kind: MaterialItem["kind"]) => tm(`kind.${kind}`),
     provider: (provider: NonNullable<MaterialItem["embed"]>["provider"]) =>
@@ -144,6 +159,46 @@ export default async function LearnCoursePage({ params, searchParams }: Props) {
             ) : null}
           </div>
         ) : null}
+
+        {/* The way to the trainers: a learner's own conversation, or for a trainer the back-office. */}
+        <Link
+          href={
+            isTrainer
+              ? routes.trainerConversationsWith({ show: "all", course: course.id })
+              : routes.learnConversation(slug)
+          }
+          className="group border-border bg-card text-foreground hover:border-input mb-2 flex items-center gap-3 rounded-2xl border py-3 pr-2 pl-4 no-underline transition-colors"
+        >
+          <span
+            aria-hidden="true"
+            className="bg-accent text-accent-foreground flex size-10 flex-none items-center justify-center rounded-xl"
+          >
+            <MessagesSquare className="size-5" strokeWidth={1.75} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="group-hover:text-primary text-[0.9375rem] leading-[1.35] font-semibold transition-colors">
+              {t("askTitle")}
+            </span>
+            <span className="text-muted-foreground text-[0.8125rem] break-words">
+              {isTrainer
+                ? t("askPreview")
+                : trainers.length > 0
+                  ? t("askTrainers", { count: trainers.length, names: trainerNames })
+                  : t("askTeam")}
+            </span>
+          </span>
+          {newAnswers.has(course.id) ? (
+            <span className="bg-highlight text-on-highlight inline-flex min-h-6.5 flex-none items-center rounded-full px-2.5 text-xs font-semibold">
+              {t("askNew")}
+            </span>
+          ) : null}
+          <span
+            aria-hidden="true"
+            className="text-muted-foreground flex size-11 flex-none items-center justify-center"
+          >
+            <ChevronRight className="size-[18px]" />
+          </span>
+        </Link>
 
         <h2 className="text-muted-foreground mx-1 text-[0.8125rem] font-semibold tracking-[0.06em] uppercase">
           {t("modules")}

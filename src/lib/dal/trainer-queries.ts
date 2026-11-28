@@ -110,6 +110,8 @@ export type TrainerCourseRow = {
   level: { id: string; name: string; step: 1 | 2 | 3 };
   durationHours: number | null;
   learnerCount: number;
+  /** Who teaches it, by name. */
+  trainers: string[];
   updatedAt: string;
 };
 
@@ -118,14 +120,26 @@ export async function fetchTrainerCourses(
   client: Client,
   locale: Locale,
 ): Promise<TrainerCourseRow[]> {
-  const [courses, areas, levels] = await Promise.all([
+  const [courses, areas, levels, teaching] = await Promise.all([
     client.from("courses").select("*, enrollments(count)").order("sort_order").order("slug"),
     client.from("areas").select("*"),
     client.from("levels").select("*").order("sort_order").order("slug"),
+    // Only people who are trainers now: a row of someone who is a learner again does not count.
+    client
+      .from("course_trainers")
+      .select("course_id, profiles!inner(full_name, email, role)")
+      .eq("profiles.role", "trainer"),
   ]);
   check("courses", courses.error);
   check("areas", areas.error);
   check("levels", levels.error);
+  check("course trainers", teaching.error);
+
+  const trainersOf = new Map<string, string[]>();
+  for (const row of teaching.data ?? []) {
+    const name = row.profiles.full_name || row.profiles.email;
+    trainersOf.set(row.course_id, [...(trainersOf.get(row.course_id) ?? []), name]);
+  }
 
   const areaById = new Map((areas.data ?? []).map((row) => [row.id, row]));
   const levelRows = levels.data ?? [];
@@ -157,6 +171,9 @@ export async function fetchTrainerCourses(
         },
         durationHours: row.duration_hours,
         learnerCount: countOf(row.enrollments),
+        trainers: (trainersOf.get(row.id) ?? []).sort((a, b) =>
+          a.localeCompare(b, "pt", { sensitivity: "base" }),
+        ),
         updatedAt: row.updated_at,
       },
     ];
@@ -573,6 +590,34 @@ export async function fetchLearnerProgress(
       },
     ]),
   );
+}
+
+/** A trainer to choose from, saying whether they teach the course in question. */
+export type TrainerOption = Person & { teaches: boolean };
+
+/**
+ * Every trainer, by name, each saying whether they teach the course. With no course (a new
+ * one), nobody does yet.
+ */
+export async function fetchTrainerOptions(
+  client: Client,
+  courseId?: string,
+): Promise<TrainerOption[]> {
+  const [trainers, teaching] = await Promise.all([
+    client
+      .from("profiles")
+      .select("id, email, full_name, email_confirmed_at")
+      .eq("role", "trainer"),
+    courseId && isUuid(courseId)
+      ? client.from("course_trainers").select("user_id").eq("course_id", courseId)
+      : { data: [], error: null },
+  ]);
+  check("profiles", trainers.error);
+  check("course trainers", teaching.error);
+  const teachers = new Set((teaching.data ?? []).map((row) => row.user_id));
+  return (trainers.data ?? [])
+    .map((row) => ({ ...toPerson(row), teaches: teachers.has(row.id) }))
+    .sort(byName);
 }
 
 /** Learners who could be added to a course: everyone with an account who is not in it yet. */

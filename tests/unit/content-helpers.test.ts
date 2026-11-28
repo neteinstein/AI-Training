@@ -8,8 +8,14 @@ import {
   storageKey,
   uploadMimeType,
 } from "@/lib/files/rules";
+import {
+  excerptOf,
+  waitingLongestFirst,
+  type ConversationSummary,
+} from "@/lib/dal/conversation-queries";
 import { isUuid } from "@/lib/ids";
 import { localized, pickLocalized, translationGaps } from "@/lib/i18n/localized";
+import { routes } from "@/lib/routes";
 import { isSlug, slugify } from "@/lib/slug";
 
 describe("bilingual fields", () => {
@@ -150,5 +156,55 @@ describe("upload rules", () => {
     expect(formatFileSize(2.4 * 1024 * 1024, "en")).toBe("2.4 MB");
     expect(formatFileSize(48 * 1024 * 1024, "en")).toBe("48 MB");
     expect(formatFileSize(512, "en")).toBe("512 B");
+  });
+});
+
+describe("messages in a list", () => {
+  test("a short message is shown whole, on one line", () => {
+    expect(excerptOf("  Uma pergunta,\n\ncom duas   linhas. ")).toBe(
+      "Uma pergunta, com duas linhas.",
+    );
+    expect(excerptOf("")).toBe("");
+  });
+
+  test("a long one is cut at a word, and says so", () => {
+    const long = "palavra ".repeat(60);
+    const excerpt = excerptOf(long);
+    expect(excerpt.endsWith("palavra…")).toBe(true);
+    expect(excerpt.length).toBeLessThanOrEqual(161);
+    // One long word has nowhere to be cut but in the middle.
+    expect(excerptOf("x".repeat(500), 20)).toBe(`${"x".repeat(20)}…`);
+  });
+
+  test("those waiting come out longest wait first, whatever the moments look like as text", () => {
+    const conversation = (id: string, unansweredSince: string | null): ConversationSummary => ({
+      id,
+      course: { id: "c1", title: "Curso" },
+      learner: { id: "u1", name: "Ana", email: "ana@example.test" },
+      lastMessageAt: "2026-11-28T10:00:00+00:00",
+      unansweredSince,
+      lastMessage: null,
+      isMine: true,
+    });
+    const waiting = waitingLongestFirst([
+      conversation("later", "2026-11-28T09:00:00.5+00:00"),
+      conversation("answered", null),
+      // On the second exactly: the database writes no fraction, and it is still the earlier.
+      conversation("earlier", "2026-11-28T09:00:00+00:00"),
+      conversation("first", "2026-11-27T23:59:59.999999+00:00"),
+    ]);
+    expect(waiting.map((entry) => entry.id)).toEqual(["first", "earlier", "later"]);
+  });
+
+  test("the list's address says which messages and whose courses", () => {
+    expect(routes.trainerConversationsWith({})).toBe("/trainer/messages");
+    expect(routes.trainerConversationsWith({ show: "all" })).toBe("/trainer/messages?show=all");
+    expect(routes.trainerConversationsWith({ course: "all" })).toBe("/trainer/messages?course=all");
+    expect(routes.trainerConversationsWith({ show: "all", course: "c1" })).toBe(
+      "/trainer/messages?show=all&course=c1",
+    );
+    expect(routes.trainerConversationsWith({ show: null, course: null })).toBe(
+      routes.trainerConversations,
+    );
   });
 });

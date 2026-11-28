@@ -29,6 +29,9 @@ const PRIVATE_TABLES = [
   "quiz_question_keys",
   "quiz_attempts",
   "info_requests",
+  "course_trainers",
+  "conversations",
+  "conversation_messages",
   "storage_deletions",
 ] as const;
 

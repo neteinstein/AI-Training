@@ -139,7 +139,33 @@
     "onlyIn": "Only: {name}",
     "progress": "{done} of {total, plural, one {# material opened} other {# materials opened}}",
     "opened": "Opened",
-    "handedIn": "Handed in"
+    "handedIn": "Handed in",
+    "newAnswer": "New answer from the trainers",
+    "askTitle": "Questions about the course?",
+    "askTrainers": "{count, plural, one {Write to the trainer} other {Write to the trainers}}: {names}.",
+    "askTeam": "Write to the training team.",
+    "askNew": "New answer",
+    "askPreview": "This is where learners write to the trainers. As a trainer, you see this course's messages in the back-office."
+  },
+  "Conversation": {
+    "title": "Messages",
+    "heading": "Ask the trainers",
+    "toTrainers": "{count, plural, one {The trainer of this course, {names}, answers} other {The trainers of this course, {names}, answer}} your questions here.",
+    "toTeam": "The training team answers your questions here.",
+    "notLive": "This is not a live chat: an answer may take a while. When it comes it stays here, and the course is marked in your list.",
+    "whoSees": "Only the trainers see what you write here.",
+    "empty": "You have not written anything yet. A question about the course? Write it below.",
+    "messages": "Messages in this conversation",
+    "you": "You",
+    "trainer": "Trainer",
+    "new": "New",
+    "earlier": "Only the latest {count} messages are shown.",
+    "label": "Your message",
+    "send": "Send",
+    "sent": "Message sent.",
+    "failed": "The message could not be sent. Please try again.",
+    "gone": "It is no longer possible to write about this course.",
+    "trainersAnswer": "Trainers answer messages in the back-office."
   },
   "Trainer": {
     "title": "Back-office",
@@ -153,6 +179,8 @@
       "users": "Users",
       "requests": "Requests",
       "newRequests": "{count, plural, one {# new request} other {# new requests}}",
+      "conversations": "Messages",
+      "toAnswer": "{count, plural, one {# conversation to answer} other {# conversations to answer}}",
       "role": "Trainer",
       "account": "My account",
       "learnerArea": "View as a learner",
@@ -203,7 +231,10 @@
       "noPending": "There are no pending invitations.",
       "seeAll": "See all",
       "newCourse": "New course",
-      "invite": "Invite people"
+      "invite": "Invite people",
+      "toAnswer": "Messages to answer",
+      "noMessages": "There are no messages to answer.",
+      "seeAllMessages": "See all"
     },
     "areas": {
       "title": "Fields",
@@ -337,7 +368,15 @@
       "hours": "{hours} h",
       "open": "Open {name}",
       "emptyAction": "Create the first course",
-      "summariesWhilePublic": "A published or unlisted course must keep its summary in both languages."
+      "summariesWhilePublic": "A published or unlisted course must keep its summary in both languages.",
+      "trainers": "Trainers",
+      "trainersHelp": "Who teaches this course. Its learners see these names, and what they write about the course reaches these people first.",
+      "trainersLegend": "Trainers of this course",
+      "trainerYou": "You",
+      "saveTrainers": "Save trainers",
+      "trainersSaved": "The course's trainers were updated.",
+      "noTrainer": "No trainer",
+      "taughtBy": "Trainers: {names}"
     },
     "content": {
       "empty": "This course has no content yet. Start by creating a module: materials live inside modules.",
@@ -688,6 +727,49 @@
       "deleteTitle": "Delete the request from {name}?",
       "deleteText": "The request and the details the person sent are erased. This cannot be undone."
     },
+    "conversations": {
+      "title": "Messages",
+      "lead": "What learners ask the trainers of their courses. Not a live chat: each message waits for whoever is to read it.",
+      "tabsLabel": "Messages to show",
+      "tabs": {
+        "waiting": "To answer ({count})",
+        "all": "All ({count})"
+      },
+      "scopeMine": "From the courses you teach, and those that have no trainer yet.",
+      "scopeAll": "From every course.",
+      "scopeCourse": "Only from the course “{course}”.",
+      "showAllCourses": "Show every course",
+      "showMine": "Show my courses only",
+      "emptyWaiting": "There are no messages to answer.",
+      "emptyAll": "Nobody has written yet.",
+      "list": "Conversations",
+      "waiting": "To answer",
+      "unread": "Answer not read yet",
+      "notMine": "Other trainers' course",
+      "answerExcerpt": "Answer: {text}",
+      "waitingSince": "Waiting since {date}",
+      "lastMessage": "Last message on {date}",
+      "course": "Course",
+      "courseTrainers": "Trainers of the course",
+      "noTrainers": "This course has no trainers yet: its learners' messages show for every trainer.",
+      "chooseTrainers": "Choose trainers",
+      "seeProgress": "See progress",
+      "seeUser": "See user",
+      "noAccess": "This person can no longer open the course: they will only see an answer if they can again.",
+      "messages": "Messages in this conversation",
+      "you": "You",
+      "trainer": "Trainer",
+      "earlier": "Only the latest {count} messages are shown.",
+      "replyLabel": "Your answer",
+      "reply": "Answer",
+      "answered": "Answer sent.",
+      "setAsideAction": "Needs no answer",
+      "setAside": "The conversation is no longer waiting for an answer.",
+      "delete": "Delete conversation",
+      "deleteTitle": "Delete the conversation with {name}?",
+      "deleteText": "Every message of this conversation is deleted: the learner's and the trainers'. This cannot be undone.",
+      "deleted": "Conversation deleted."
+    },
     "backup": {
       "title": "Backup",
       "intro": "Download a copy of everything on the platform as a ZIP file, to keep somewhere safe.",
@@ -697,7 +779,7 @@
       "optionsTitle": "Also include",
       "includeFiles": "Uploaded files ({count, plural, one {# file} other {# files}}, {size})",
       "includeFilesHint": "Untick for a small file with only the text and the structure.",
-      "includePeople": "People: accounts, enrolments, progress, quizzes handed in and information requests ({people, plural, one {# person} other {# people}}, {requests, plural, one {# request} other {# requests}})",
+      "includePeople": "People: accounts, enrolments, progress, quizzes handed in, messages, information requests and the trainers of each course ({people, plural, one {# person} other {# people}}, {requests, plural, one {# request} other {# requests}})",
       "includePeopleHint": "This is personal data. Keep the backup somewhere safe and delete it when it is no longer needed.",
       "download": "Download backup",
       "preparing": "Preparing the backup. The download starts in a moment and carries on in your browser.",
@@ -882,7 +964,7 @@
       },
       "data": {
         "title": "What we collect",
-        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language, the courses you are enrolled in which of their materials you opened, and when, and the quizzes you handed in, with their results. Trainers see this, to follow how the course is going. We do not collect browsing data for advertising and we use no third-party analytics."
+        "text": "When you request information: your name, your email and, if you give them, your organisation, the course you are interested in and your message. When you have an account: name, email, preferred language, the courses you are enrolled in which of their materials you opened, and when, and the quizzes you handed in, with their results. If you write to the trainers of a course, we also keep your messages and their answers. Trainers see this, to follow how the course is going. We do not collect browsing data for advertising and we use no third-party analytics."
       },
       "purpose": {
         "title": "What we use it for",

@@ -7,7 +7,8 @@ and how it looks, see the [README](README.md).
 [Getting started](#getting-started) · [Scripts](#scripts) ·
 [How the code is organised](#how-the-code-is-organised) · [The back-office](#the-back-office) ·
 [Sign-in and invitations](#sign-in-and-invitations) · [Materials](#materials) ·
-[Backups](#backups) · [Database and access rules](#database-and-access-rules) · [Tests](#tests) ·
+[Trainers and messages](#trainers-and-messages) · [Backups](#backups) ·
+[Database and access rules](#database-and-access-rules) · [Tests](#tests) ·
 [Screenshots](#screenshots) · [Going live](#going-live)
 
 ## Stack
@@ -42,6 +43,7 @@ and how it looks, see the [README](README.md).
 | Editions of a course: own learners, own view of the content       | Done, tested in the browser     |
 | Progress: what each learner has opened, for them and for trainers | Done, tested in the browser     |
 | Quizzes: written by trainers, answered and graded, results kept   | Done, tested in the browser     |
+| Trainers of a course, and messages between learners and trainers  | Done, tested in the browser     |
 
 The interface text, the privacy notice and the demo catalogue are placeholders to be replaced
 (see "Going live").
@@ -74,6 +76,10 @@ The demo course "IA na sala de aula" has two editions: the general one, and a pu
 presencial" that starts six weeks after the day the database was built, with a page of its own
 and one of the course's materials hidden.
 
+The demo trainer teaches four of the six courses; nobody teaches the other two yet. There are
+two conversations: Ana's, about "IA na sala de aula", is waiting for an answer, and John's,
+about "IA na prática clínica", has an answer he has not opened.
+
 Demo accounts (local only, password `demo-password-123`):
 
 | Role    | Email                   |
@@ -103,7 +109,7 @@ Emails sent locally (invitations, password resets) are caught at <http://127.0.0
 | `npm run db:reset`          | Rebuild the local database from migrations and seed        |
 | `npm run db:types`          | Regenerate `src/lib/supabase/database.types.ts`            |
 | `npm run env:local`         | Write the local stack's URL and keys to `.env.local`       |
-| `npm run seed:dev`          | Create the demo accounts, enrolments and sample PDF        |
+| `npm run seed:dev`          | Create the demo accounts, enrolments, messages and PDF     |
 | `npm run bootstrap-trainer` | Create the first trainer and print their activation link   |
 | `npm run verify-project`    | Check that a Supabase project is set up as the app expects |
 | `npm run restore-backup`    | Put a backup back into an empty project (see Backups)      |
@@ -152,7 +158,8 @@ Trainers sign in at the same address as learners and land on the back-office (`/
 
 - **Courses**: create and describe a course in both languages, order the list (it is the order
   of the public site), and set its status. A course needs both summaries before it can leave
-  draft.
+  draft. Its details page also says who teaches it: every trainer with a tick box. Whoever
+  creates a course starts as its trainer.
 - **Content**: modules and their materials, with a switch that shows or hides each material
   for learners, "make everything visible" per module, and a menu to edit, move to another
   module or delete. A new material is visible unless the trainer unticks that option.
@@ -172,6 +179,11 @@ Trainers sign in at the same address as learners and land on the back-office (`/
   details, role, courses, a new access link, and removal.
 - **Invitations**: one or many addresses, by email or as links to pass on by hand. Someone who
   already has an account just gets the new courses.
+- **Messages**: what learners wrote to the trainers of their courses (see
+  [Trainers and messages](#trainers-and-messages)). The list opens on what is waiting for an
+  answer from the trainer looking; a conversation's page shows it as a chat, with a box to
+  answer in, "needs no answer" to take it off the list, and deletion. The dashboard lists the
+  ones that have waited longest.
 - **Requests** from the public form: mark as contacted, archive, delete, or invite the person
   with what they wrote (name, address, language, course).
 - **Backup**: download everything as a ZIP file (see [Backups](#backups)).
@@ -220,6 +232,54 @@ Two things worth knowing:
   given a token that is good for that one file only; the file's type and size are checked
   before the upload, by the storage service during it, and again when the material is saved.
 
+## Trainers and messages
+
+**Who teaches a course** is a list of trainers per course (`course_trainers`), chosen on the
+course's details page. It gives no rights and takes none away: every trainer still manages
+every course. What it decides is whose course it is:
+
+- the course's learners are shown its trainers' names, in the learner area;
+- what those learners write falls to those trainers first (below).
+
+A row only counts while its person is a trainer, as an enrolment only counts while its person
+is a learner. Nothing is deleted when a role changes, so nothing has to be put back when it
+changes again.
+
+**Messages** are one conversation per learner and course (`conversations`, with its
+`conversation_messages`). The learner writes from the course's page in the learner area
+(`/learn/courses/<course>/messages`); trainers read and answer in the back-office
+(`/trainer/messages`). It is drawn as a chat, but nothing in it is live: no page watches for
+new messages, each is there the next time the page is opened. What is waiting is kept on the
+conversation, in two marks:
+
+| Mark               | Set when           | Cleared when                                        | Shown as                                             |
+| ------------------ | ------------------ | --------------------------------------------------- | ---------------------------------------------------- |
+| `unanswered_since` | the learner writes | a trainer answers, or says it needs no answer       | "To answer" in the back-office, and the menu's count |
+| `unread_since`     | a trainer answers  | the learner opens the conversation, or writes again | "New answer" on the learner's course list and course |
+
+Choices worth knowing:
+
+- **Trainers share a conversation.** Any trainer can read and answer any conversation, also
+  one of a course they do not teach, and the learner sees the name of whoever answered. The
+  page tells the learner that the trainers see what they write, and it is true of all of them.
+- **A trainer's list is their own.** By default **Messages** shows, and the menu counts, the
+  conversations of the courses the trainer teaches, plus those of courses nobody teaches: a
+  question is never left without a reader because a course has no trainer yet. "Show every
+  course" is one click away, and only offered when it would show something more.
+- **Learners write, trainers answer.** A conversation starts with a learner's first message.
+  Only someone enrolled in a course that is open to them (not a draft) can write about it; a
+  trainer looking at a course as a learner is sent to the back-office instead. Someone taken
+  out of a course keeps their conversation but can add nothing to it, and the back-office
+  says an answer will only be seen if they come back.
+- **Plain text**, up to 4,000 characters a message, shown as written with its line breaks.
+- **No emails.** Nobody is told by email that a message or an answer arrived: the platform
+  only sends the sign-in service's emails (invitations, password links). The marks above are
+  how people find out, when they next sign in.
+- A conversation shows its latest 200 messages (`THREAD_LIMIT` in
+  `src/lib/dal/conversation-queries.ts`) and says so when there are older ones.
+- A trainer can delete a whole conversation. A learner's conversations go with their account;
+  when a trainer's account is removed their answers stay, without a name.
+
 ## Backups
 
 The back-office's **Backup** page (`/trainer/backup`) downloads the platform as a ZIP file. Its
@@ -239,8 +299,10 @@ manifest.json          when and by whom, what was included, rows per table, and 
   the quizzes' questions with their right answers and explanations.
 - **Ticked by default:** the uploaded files. Untick them for a small, text-only backup.
 - **Unticked by default:** people (`profiles`, `enrollments`, `info_requests`), what each of
-  them has opened (`material_progress`) and the quizzes they handed in (`quiz_attempts`). It is
-  personal data, and the page says so.
+  them has opened (`material_progress`), the quizzes they handed in (`quiz_attempts`), who
+  teaches each course (`course_trainers`, which points at accounts) and the messages between
+  learners and trainers (`conversations`, `conversation_messages`). It is personal data, and
+  the page says so.
 - **Never in it:** passwords (accounts live in Supabase Auth; after a restore people are
   invited again) and the content of videos and Google documents, which stays with those
   services.
@@ -305,7 +367,8 @@ npm run restore-backup -- ai-training-backup-2026-11-27-1530.zip
    in, that one is removed again, so each course ends with exactly the editions it had, and the
    same default.
 3. The accounts, when the backup holds people (below).
-4. What belongs to people: enrolments, requests, progress and quiz attempts.
+4. What belongs to people: enrolments, requests, progress, quiz attempts, the trainers of
+   each course, and the conversations with their messages (what was waiting stays waiting).
 5. The files, each uploaded to the `course-materials` bucket under its `storagePath`, with its
    material's type. A file listed under `missingFiles` (storage did not have it when the
    backup was made) is named in the report: its material comes back without a file, to be
@@ -316,7 +379,7 @@ npm run restore-backup -- ai-training-backup-2026-11-27-1530.zip
 were. The choice made:
 
 - Each account is created again through the Auth admin API with **the same id and email**, so
-  every enrolment, request, progress row and quiz attempt points at it again. It is
+  every enrolment, request, progress row, quiz attempt and message points at it again. It is
   **unconfirmed and has no password**; it carries the person's name and language. Nothing is
   emailed.
 - The profile then gets the backup's role, name, language and creation date. Two of its
@@ -390,6 +453,19 @@ All access rules live in the database, in `supabase/migrations`:
   `save_quiz`, which replaces all questions at once; the app only calls it when the questions
   changed, because a form opened before the change has to be opened again. A quiz without
   questions is shown to no learner. Deleting a quiz deletes its attempts.
+- Who teaches a course is in `course_trainers`, which only trainers can read or change. A
+  learner gets their trainers' names from one function, `course_trainer_names`, which answers
+  for a course the caller may open and gives the names of people who are trainers now, nothing
+  else: learners still cannot read anyone else's profile.
+- A conversation and its messages are readable by the learner whose conversation it is and by
+  trainers. **Nobody writes them through the API**: `send_course_message` (a learner, about a
+  course they may open), `answer_conversation` (a trainer), `mark_conversation_read` (that
+  learner) and `mark_conversation_answered` (a trainer) do, each after checking who is
+  calling, so the two marks always agree with the messages. They are functions, not triggers,
+  so that a restore can put a backup's rows back exactly as they were; a test fails if a
+  trigger is added to these tables. `conversation_thread` reads a conversation with the name
+  of each author, which is how the name of the trainer who answered reaches the learner. The
+  one direct write is a trainer deleting a whole conversation.
 - A user's role is never taken from data the user can edit, and the last trainer can be neither
   demoted nor deleted.
 
@@ -413,7 +489,8 @@ and Google hosts, and the site can never be shown inside another site.
 - `npm run e2e`: the journeys in a real browser at desktop and phone sizes, reading emails
   from the local mail catcher. Run `npm run build` first. Besides the journeys (building a
   course, uploading a file, inviting someone who then activates the account and reads the
-  materials, a request becoming an invitation, a backup downloaded and unpacked) they include:
+  materials, a learner asking a question and a trainer answering it, a request becoming an
+  invitation, a backup downloaded and unpacked) they include:
   - the automated accessibility rules (WCAG 2.1 A and AA) on every main screen, in the light
     and in the dark theme;
   - the back-office used with the keyboard alone (menus, dialogs, switches, reordering);

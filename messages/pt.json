@@ -139,7 +139,33 @@
     "onlyIn": "Só: {name}",
     "progress": "{done} de {total, plural, one {# material aberto} other {# materiais abertos}}",
     "opened": "Aberto",
-    "handedIn": "Entregue"
+    "handedIn": "Entregue",
+    "newAnswer": "Resposta nova dos formadores",
+    "askTitle": "Dúvidas sobre o curso?",
+    "askTrainers": "{count, plural, one {Escreva ao formador} other {Escreva aos formadores}}: {names}.",
+    "askTeam": "Escreva à equipa de formação.",
+    "askNew": "Resposta nova",
+    "askPreview": "É aqui que os formandos escrevem aos formadores. Como formador, vê as mensagens deste curso no back-office."
+  },
+  "Conversation": {
+    "title": "Mensagens",
+    "heading": "Fale com os formadores",
+    "toTrainers": "{count, plural, one {O formador deste curso, {names}, responde} other {Os formadores deste curso, {names}, respondem}} aqui às suas dúvidas.",
+    "toTeam": "A equipa de formação responde aqui às suas dúvidas.",
+    "notLive": "Não é uma conversa em direto: a resposta pode demorar. Quando chegar, fica aqui, e o curso aparece assinalado na sua lista.",
+    "whoSees": "Só os formadores veem o que escreve aqui.",
+    "empty": "Ainda não escreveu nada. Tem uma dúvida sobre o curso? Escreva-a em baixo.",
+    "messages": "Mensagens desta conversa",
+    "you": "Eu",
+    "trainer": "Formador",
+    "new": "Nova",
+    "earlier": "Só são mostradas as {count} mensagens mais recentes.",
+    "label": "A sua mensagem",
+    "send": "Enviar",
+    "sent": "Mensagem enviada.",
+    "failed": "Não foi possível enviar a mensagem. Tente novamente.",
+    "gone": "Já não é possível escrever sobre este curso.",
+    "trainersAnswer": "Os formadores respondem às mensagens no back-office."
   },
   "Trainer": {
     "title": "Back-office",
@@ -153,6 +179,8 @@
       "users": "Utilizadores",
       "requests": "Pedidos",
       "newRequests": "{count, plural, one {# pedido novo} other {# pedidos novos}}",
+      "conversations": "Mensagens",
+      "toAnswer": "{count, plural, one {# conversa por responder} other {# conversas por responder}}",
       "role": "Formador",
       "account": "A minha conta",
       "learnerArea": "Ver como formando",
@@ -203,7 +231,10 @@
       "noPending": "Não há convites por aceitar.",
       "seeAll": "Ver todos",
       "newCourse": "Novo curso",
-      "invite": "Convidar pessoas"
+      "invite": "Convidar pessoas",
+      "toAnswer": "Mensagens por responder",
+      "noMessages": "Não há mensagens por responder.",
+      "seeAllMessages": "Ver todas"
     },
     "areas": {
       "title": "Áreas",
@@ -337,7 +368,15 @@
       "hours": "{hours} h",
       "open": "Abrir {name}",
       "emptyAction": "Criar o primeiro curso",
-      "summariesWhilePublic": "Um curso publicado ou não listado tem de manter o resumo nos dois idiomas."
+      "summariesWhilePublic": "Um curso publicado ou não listado tem de manter o resumo nos dois idiomas.",
+      "trainers": "Formadores",
+      "trainersHelp": "Quem dá este curso. Os formandos veem estes nomes, e é a estas pessoas que chegam primeiro as mensagens que escrevem sobre o curso.",
+      "trainersLegend": "Formadores deste curso",
+      "trainerYou": "Eu",
+      "saveTrainers": "Guardar formadores",
+      "trainersSaved": "Formadores do curso atualizados.",
+      "noTrainer": "Sem formador",
+      "taughtBy": "Formadores: {names}"
     },
     "content": {
       "empty": "Este curso ainda não tem conteúdo. Comece por criar um módulo: os materiais ficam dentro de módulos.",
@@ -688,6 +727,49 @@
       "deleteTitle": "Eliminar o pedido de {name}?",
       "deleteText": "O pedido e os dados que a pessoa enviou são apagados. Não pode ser desfeito."
     },
+    "conversations": {
+      "title": "Mensagens",
+      "lead": "O que os formandos perguntam aos formadores dos seus cursos. Não é uma conversa em direto: cada mensagem fica à espera de quem a vai ler.",
+      "tabsLabel": "Mensagens a mostrar",
+      "tabs": {
+        "waiting": "Por responder ({count})",
+        "all": "Todas ({count})"
+      },
+      "scopeMine": "Dos cursos de que é formador e dos que ainda não têm nenhum.",
+      "scopeAll": "De todos os cursos.",
+      "scopeCourse": "Só do curso «{course}».",
+      "showAllCourses": "Ver todos os cursos",
+      "showMine": "Ver só os meus cursos",
+      "emptyWaiting": "Não há mensagens por responder.",
+      "emptyAll": "Ainda ninguém escreveu.",
+      "list": "Conversas",
+      "waiting": "Por responder",
+      "unread": "Resposta por ler",
+      "notMine": "Curso de outros formadores",
+      "answerExcerpt": "Resposta: {text}",
+      "waitingSince": "À espera desde {date}",
+      "lastMessage": "Última mensagem a {date}",
+      "course": "Curso",
+      "courseTrainers": "Formadores do curso",
+      "noTrainers": "Este curso ainda não tem formadores: as mensagens dos seus formandos aparecem a todos.",
+      "chooseTrainers": "Escolher formadores",
+      "seeProgress": "Ver progresso",
+      "seeUser": "Ver utilizador",
+      "noAccess": "Esta pessoa já não tem acesso ao curso: só verá uma resposta se voltar a ter.",
+      "messages": "Mensagens desta conversa",
+      "you": "Eu",
+      "trainer": "Formador",
+      "earlier": "Só são mostradas as {count} mensagens mais recentes.",
+      "replyLabel": "A sua resposta",
+      "reply": "Responder",
+      "answered": "Resposta enviada.",
+      "setAsideAction": "Não precisa de resposta",
+      "setAside": "A conversa já não está à espera de resposta.",
+      "delete": "Eliminar conversa",
+      "deleteTitle": "Eliminar a conversa com {name}?",
+      "deleteText": "São apagadas todas as mensagens desta conversa: as do formando e as dos formadores. Não pode ser desfeito.",
+      "deleted": "Conversa eliminada."
+    },
     "backup": {
       "title": "Cópia de segurança",
       "intro": "Descarregue uma cópia de tudo o que está na plataforma, num ficheiro ZIP, para guardar num lugar seguro.",
@@ -697,7 +779,7 @@
       "optionsTitle": "Incluir também",
       "includeFiles": "Ficheiros carregados ({count, plural, one {# ficheiro} other {# ficheiros}}, {size})",
       "includeFilesHint": "Desmarque para um ficheiro pequeno, só com os textos e a estrutura.",
-      "includePeople": "Pessoas: contas, inscrições, progresso, questionários entregues e pedidos de informação ({people, plural, one {# pessoa} other {# pessoas}}, {requests, plural, one {# pedido} other {# pedidos}})",
+      "includePeople": "Pessoas: contas, inscrições, progresso, questionários entregues, mensagens, pedidos de informação e os formadores de cada curso ({people, plural, one {# pessoa} other {# pessoas}}, {requests, plural, one {# pedido} other {# pedidos}})",
       "includePeopleHint": "São dados pessoais. Guarde a cópia num lugar seguro e apague-a quando já não for precisa.",
       "download": "Descarregar cópia",
       "preparing": "A preparar a cópia. A transferência começa dentro de momentos e continua no seu navegador.",
@@ -882,7 +964,7 @@
       },
       "data": {
         "title": "Que dados recolhemos",
-        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido, os cursos em que está inscrito que materiais desses cursos abriu, e quando, e os questionários que entregou, com os resultados. Os formadores veem essa informação, para acompanharem o curso. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
+        "text": "Quando pede informações: o seu nome, o seu email e, se os indicar, a organização, o curso de interesse e a mensagem. Quando tem conta: nome, email, idioma preferido, os cursos em que está inscrito que materiais desses cursos abriu, e quando, e os questionários que entregou, com os resultados. Se escrever aos formadores de um curso, guardamos também as suas mensagens e as respostas. Os formadores veem essa informação, para acompanharem o curso. Não recolhemos dados de navegação para publicidade nem usamos ferramentas de análise de terceiros."
       },
       "purpose": {
         "title": "Para que os usamos",

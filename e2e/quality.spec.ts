@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import {
   admin,
+  demoConversations,
   demoCourses,
   demoEditions,
   demoMaterials,
@@ -45,6 +46,8 @@ const learnerPages = [
   `${learnCourse}/materials/${demoMaterials.link}`,
   `${learnCourse}/materials/${demoMaterials.slidesPdf}`,
   `${learnCourse}/materials/${demoMaterials.quiz}`,
+  // Ana's conversation with the trainers of the course: both sides have written.
+  `${learnCourse}/messages`,
   "/pt/learn/account",
 ];
 
@@ -76,6 +79,10 @@ const trainerPages = [
   "/pt/trainer/users/invite",
   `/pt/trainer/users/${demoUsers.ana.id}`,
   "/pt/trainer/requests",
+  // What learners wrote: those waiting, all of them, and one conversation.
+  "/pt/trainer/messages",
+  "/pt/trainer/messages?show=all&course=all",
+  `/pt/trainer/messages/${demoConversations[0].id}`,
   "/pt/trainer/backup",
   "/en/trainer/courses",
 ];

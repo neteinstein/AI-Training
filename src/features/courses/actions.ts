@@ -5,7 +5,7 @@ import { freeSlug } from "@/features/catalog/operations";
 import { redirect } from "@/i18n/navigation";
 import type { ActionState } from "@/lib/actions/state";
 import { failed, leaveNotice, succeeded, trainerAction } from "@/lib/actions/trainer";
-import { fieldErrors, fields, text } from "@/lib/actions/validation";
+import { fieldErrors, fields, text, textList } from "@/lib/actions/validation";
 import type { Direction } from "@/lib/dal/mutations";
 import { routes } from "@/lib/routes";
 import { slugify } from "@/lib/slug";
@@ -14,14 +14,15 @@ import {
   deleteCourse,
   moveCourse,
   setCourseStatus,
+  setCourseTrainers,
   updateCourse,
 } from "./operations";
 import { courseFields, courseSchema, courseStatusSchema } from "./schemas";
 
-/** Form handlers for courses: details, status, order and deletion. Trainers only. */
+/** Form handlers for courses: details, trainers, status, order and deletion. Trainers only. */
 
 export async function saveCourse(_previous: ActionState, formData: FormData): Promise<ActionState> {
-  const { locale, supabase, t, tv } = await trainerAction(formData);
+  const { locale, user, supabase, t, tv } = await trainerAction(formData);
   const id = text(formData, "id");
   const values = fields(formData, courseFields);
 
@@ -38,9 +39,10 @@ export async function saveCourse(_previous: ActionState, formData: FormData): Pr
     return failed(t("common.checkFields"), { fieldErrors: errors, values });
   }
 
+  // Whoever creates a course teaches it, until its trainers are chosen on its page.
   const result = id
     ? await updateCourse(supabase, id, parsed.data)
-    : await createCourse(supabase, parsed.data);
+    : await createCourse(supabase, parsed.data, user.id);
   if (!result.ok) {
     switch (result.reason) {
       case "slug_taken":
@@ -70,6 +72,21 @@ export async function saveCourse(_previous: ActionState, formData: FormData): Pr
   }
   refresh();
   return succeeded(t("common.saved"), { values: { ...values, slug } });
+}
+
+/** Makes a course's trainers exactly the ones ticked. */
+export async function saveCourseTrainers(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, t } = await trainerAction(formData);
+  const done = await setCourseTrainers(
+    supabase,
+    text(formData, "course_id"),
+    textList(formData, "trainer_ids"),
+  );
+  refresh();
+  return done ? succeeded(t("courses.trainersSaved")) : failed(t("common.failed"));
 }
 
 export async function changeCourseStatus(

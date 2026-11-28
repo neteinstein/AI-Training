@@ -211,6 +211,8 @@ const pictures = {
       "office-3-course-content",
     ]),
   bilingual: () => twoWindows("public-1-landing", "public-6-landing-english"),
+  // One conversation from both ends: as its learner sees it, and as a trainer does.
+  messages: () => twoWindows("learner-9-messages", "office-20-conversation"),
 };
 
 const wanted = process.argv.slice(2);
