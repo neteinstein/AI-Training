@@ -221,7 +221,7 @@ test.describe("forgotten password", () => {
       await expect(page.getByRole("status")).toContainText("Se existir uma conta com este email");
 
       const message = await latestEmailTo(email);
-      expect(message.subject).toBe("Defina uma nova palavra-passe na AI Training");
+      expect(message.subject).toBe("Defina uma nova palavra-passe na Formação em AI");
       expect(message.link).toContain("/pt/auth/confirm?token_hash=");
       expect(message.link).toContain("type=recovery");
 

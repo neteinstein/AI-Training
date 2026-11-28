@@ -13,6 +13,29 @@ const courseTitles = (page: Page) =>
     .allTextContents();
 
 test.describe("landing page", () => {
+  test("carries the platform's name in the language of the page", async ({ page }) => {
+    const names = { pt: "Formação em AI", en: "AI Training" };
+    const titles = {
+      pt: "Formação em AI — cursos de inteligência artificial",
+      en: "AI Training — artificial intelligence courses",
+    };
+    for (const locale of ["pt", "en"] as const) {
+      await page.goto(`/${locale}`);
+      await expect(page).toHaveTitle(titles[locale]);
+      await expect(
+        page.getByRole("banner").getByRole("link", { name: new RegExp(`^${names[locale]}:`) }),
+      ).toHaveText(names[locale]);
+      await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
+        "content",
+        names[locale],
+      );
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+        "content",
+        new RegExp(`/og-image-${locale}\\.png$`),
+      );
+    }
+  });
+
   test("presents areas, levels and the published courses", async ({ page }) => {
     await page.goto("/pt");
     await expect(

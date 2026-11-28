@@ -261,15 +261,15 @@ otp_expiry = 86400
 # links would otherwise use up the one-time token). On a hosted project, paste the same
 # subjects and files under Authentication > Email Templates.
 [auth.email.template.invite]
-subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Your invitation to AI Training{{ else }}O seu convite para a AI Training{{ end }}'
+subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Your invitation to AI Training{{ else }}O seu convite para a Formação em AI{{ end }}'
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.recovery]
-subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Set a new password for AI Training{{ else }}Defina uma nova palavra-passe na AI Training{{ end }}'
+subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Set a new password for AI Training{{ else }}Defina uma nova palavra-passe na Formação em AI{{ end }}'
 content_path = "./supabase/templates/recovery.html"
 
 [auth.email.template.magic_link]
-subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Your sign-in link for AI Training{{ else }}A sua ligação de acesso à AI Training{{ end }}'
+subject = '{{ if eq (printf "%v" .Data.locale) "en" }}Your sign-in link for AI Training{{ else }}A sua ligação de acesso à Formação em AI{{ end }}'
 content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template

@@ -11,7 +11,7 @@
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 520px; background: #ffffff; border: 1px solid #dde3ec; border-radius: 16px">
             <tr>
               <td style="padding: 32px">
-                <p style="margin: 0 0 24px; font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: bold">AI Training</p>
+                <p style="margin: 0 0 24px; font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: bold">{{ if eq (printf "%v" .Data.locale) "en" }}AI Training{{ else }}Formação em AI{{ end }}</p>
                 {{ if eq (printf "%v" .Data.locale) "en" }}
                 <h1 style="margin: 0 0 12px; font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 26px; line-height: 1.2">Set a new password</h1>
                 <p style="margin: 0 0 24px">We received a request to set a new password for your AI Training account. Press the button to choose one.</p>
@@ -23,7 +23,7 @@
                 <p style="margin: 0; color: #475569; font-size: 14px">If you did not ask for this, you can ignore this email: your password stays the same.</p>
                 {{ else }}
                 <h1 style="margin: 0 0 12px; font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 26px; line-height: 1.2">Definir nova palavra-passe</h1>
-                <p style="margin: 0 0 24px">Recebemos um pedido para definir uma nova palavra-passe para a sua conta na AI Training. Carregue no botão para escolher uma.</p>
+                <p style="margin: 0 0 24px">Recebemos um pedido para definir uma nova palavra-passe para a sua conta na Formação em AI. Carregue no botão para escolher uma.</p>
                 <p style="margin: 0 0 24px">
                   <a href="{{ .SiteURL }}/pt/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery" style="display: inline-block; padding: 14px 24px; border-radius: 10px; background: #1d4ed8; color: #ffffff; font-weight: bold; text-decoration: none">Definir nova palavra-passe</a>
                 </p>

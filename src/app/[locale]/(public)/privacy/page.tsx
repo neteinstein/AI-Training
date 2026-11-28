@@ -31,6 +31,7 @@ const sections = [
 const inlineLink = "text-primary hover:text-primary-hover underline";
 
 export default async function PrivacyPage() {
+  const locale = await getLocale();
   const t = await getTranslations("Privacy");
 
   return (
@@ -44,7 +45,7 @@ export default async function PrivacyPage() {
             </h2>
             <p>
               {t.rich(`sections.${section}.text`, {
-                name: siteConfig.name,
+                name: siteConfig.name[locale],
                 link: (chunks) => (
                   <a href={siteConfig.operator.url} className={inlineLink}>
                     {chunks}
