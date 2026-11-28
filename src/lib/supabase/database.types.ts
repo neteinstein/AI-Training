@@ -46,6 +46,129 @@ export type Database = {
         };
         Relationships: [];
       };
+      conversation_messages: {
+        Row: {
+          author_id: string | null;
+          body: string;
+          conversation_id: string;
+          created_at: string;
+          from_trainer: boolean;
+          id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id?: string | null;
+          body: string;
+          conversation_id: string;
+          created_at?: string;
+          from_trainer: boolean;
+          id?: string;
+        };
+        Update: {
+          author_id?: string | null;
+          body?: string;
+          conversation_id?: string;
+          created_at?: string;
+          from_trainer?: boolean;
+          id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_messages_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversations: {
+        Row: {
+          course_id: string;
+          created_at: string;
+          id: string;
+          last_message_at: string;
+          learner_id: string;
+          unanswered_since: string | null;
+          unread_since: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          course_id: string;
+          created_at?: string;
+          id?: string;
+          last_message_at?: string;
+          learner_id: string;
+          unanswered_since?: string | null;
+          unread_since?: string | null;
+        };
+        Update: {
+          course_id?: string;
+          created_at?: string;
+          id?: string;
+          last_message_at?: string;
+          learner_id?: string;
+          unanswered_since?: string | null;
+          unread_since?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversations_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversations_learner_id_fkey";
+            columns: ["learner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      course_trainers: {
+        Row: {
+          course_id: string;
+          created_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          course_id: string;
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          course_id?: string;
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "course_trainers_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "course_trainers_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       courses: {
         Row: {
           area_id: string;
@@ -800,6 +923,21 @@ export type Database = {
       };
     };
     Functions: {
+      answer_conversation: {
+        Args: { message: string; target_conversation_id: string };
+        Returns: string;
+      };
+      conversation_thread: {
+        Args: { target_conversation_id: string };
+        Returns: {
+          author_id: string;
+          author_name: string;
+          body: string;
+          created_at: string;
+          from_trainer: boolean;
+          id: string;
+        }[];
+      };
       course_progress: {
         Args: { target_course_id: string };
         Returns: {
@@ -807,6 +945,13 @@ export type Database = {
           edition_id: string;
           last_activity_at: string;
           total_materials: number;
+          user_id: string;
+        }[];
+      };
+      course_trainer_names: {
+        Args: { target_course_id: string };
+        Returns: {
+          full_name: string;
           user_id: string;
         }[];
       };
@@ -819,6 +964,8 @@ export type Database = {
           opened_at: string;
         }[];
       };
+      mark_conversation_answered: { Args: { target_conversation_id: string }; Returns: boolean };
+      mark_conversation_read: { Args: { target_conversation_id: string }; Returns: boolean };
       record_material_open: { Args: { target_material_id: string }; Returns: boolean };
       reorder_areas: { Args: { ordered_ids: string[] }; Returns: undefined };
       reorder_courses: { Args: { ordered_ids: string[] }; Returns: undefined };
@@ -832,6 +979,7 @@ export type Database = {
         Returns: undefined;
       };
       save_quiz: { Args: { questions: Json; target_material_id: string }; Returns: number };
+      send_course_message: { Args: { message: string; target_course_id: string }; Returns: string };
       set_default_edition: { Args: { target_edition_id: string }; Returns: undefined };
       set_user_role: {
         Args: { new_role: Database["public"]["Enums"]["user_role"]; target: string };

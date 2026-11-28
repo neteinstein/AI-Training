@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, MessagesSquare } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CourseCard } from "@/components/catalog/course-card";
@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { ProgressBar } from "@/components/materials/progress-bar";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { fetchCoursesWithNewAnswers } from "@/lib/dal/conversation-queries";
 import { fetchCoursesToPreview, fetchMyCourses } from "@/lib/dal/learner-queries";
 import { requireUser } from "@/lib/dal/session";
 import { routes } from "@/lib/routes";
@@ -23,11 +24,14 @@ export default async function LearnPage() {
   const tAccount = await getTranslations("Account");
   const supabase = await createSupabaseServerClient();
   const isTrainer = user.role === "trainer";
-  // A trainer is enrolled in nothing: they come here to see the area as a learner would, so
-  // they get every course, each as a learner of it would see it.
-  const courses = isTrainer
-    ? await fetchCoursesToPreview(supabase, locale)
-    : await fetchMyCourses(supabase, user.id, locale);
+  const [courses, newAnswers] = await Promise.all([
+    // A trainer is enrolled in nothing: they come here to see the area as a learner would, so
+    // they get every course, each as a learner of it would see it.
+    isTrainer ? fetchCoursesToPreview(supabase, locale) : fetchMyCourses(supabase, user.id, locale),
+    // The courses whose trainers have answered since the learner last looked. (A trainer has
+    // no conversation of their own: they answer in the back-office.)
+    isTrainer ? new Set<string>() : fetchCoursesWithNewAnswers(supabase, user.id),
+  ]);
 
   return (
     <>
@@ -65,13 +69,21 @@ export default async function LearnPage() {
                   headingLevel="h2"
                   className="w-full"
                   footer={
-                    course.progress ? (
-                      <ProgressBar
-                        done={course.progress.done}
-                        total={course.progress.total}
-                        label={t("progress", course.progress)}
-                      />
-                    ) : undefined
+                    <>
+                      {newAnswers.has(course.id) ? (
+                        <span className="bg-highlight-tint text-highlight-foreground inline-flex min-h-6.5 items-center gap-1.5 self-start rounded-full px-2.5 text-xs font-semibold">
+                          <MessagesSquare aria-hidden="true" className="size-3.5" />
+                          {t("newAnswer")}
+                        </span>
+                      ) : null}
+                      {course.progress ? (
+                        <ProgressBar
+                          done={course.progress.done}
+                          total={course.progress.total}
+                          label={t("progress", course.progress)}
+                        />
+                      ) : null}
+                    </>
                   }
                 />
               </li>

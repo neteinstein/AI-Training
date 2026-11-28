@@ -79,8 +79,15 @@ function courseColumns(input: CourseInput) {
   };
 }
 
-/** A new course always starts as a draft, at the end of the list. */
-export async function createCourse(client: Client, input: CourseInput): Promise<CourseSaveResult> {
+/**
+ * A new course always starts as a draft, at the end of the list. `trainerId` is the trainer
+ * creating it: they teach it, until someone says otherwise on the course's page.
+ */
+export async function createCourse(
+  client: Client,
+  input: CourseInput,
+  trainerId?: string,
+): Promise<CourseSaveResult> {
   const columns = courseColumns(input);
   if (!columns) return { ok: false, reason: "invalid" };
 
@@ -97,6 +104,8 @@ export async function createCourse(client: Client, input: CourseInput): Promise<
     .select("id")
     .single();
   if (error || !data) return saveFailure(error ?? {});
+  // The course exists either way: without this it only starts with no trainer of its own.
+  if (trainerId) await setCourseTrainers(client, data.id, [trainerId]);
   return { ok: true, id: data.id };
 }
 
@@ -178,4 +187,50 @@ export async function moveCourse(
   if (!order) return false;
   const { error } = await client.rpc("reorder_courses", { ordered_ids: order });
   return !error;
+}
+
+/**
+ * Makes a course's trainers exactly the people given: adds the missing, removes the others.
+ * Only trainers can teach, so anyone else in the list is left out. True when it was done;
+ * false for a course that does not exist, and for a caller who is not a trainer.
+ */
+export async function setCourseTrainers(
+  client: Client,
+  courseId: string,
+  userIds: string[],
+): Promise<boolean> {
+  if (!isUuid(courseId)) return false;
+  const ids = new Set(userIds.filter(isUuid));
+
+  const [course, trainers, current] = await Promise.all([
+    client.from("courses").select("id").eq("id", courseId).maybeSingle(),
+    client.from("profiles").select("id").eq("role", "trainer"),
+    client.from("course_trainers").select("user_id").eq("course_id", courseId),
+  ]);
+  if (course.error || trainers.error || current.error || !course.data) return false;
+  // A trainer sees every trainer, themselves to begin with. Whoever sees none is not one, and
+  // would change nothing: better to say so than to answer that it was done.
+  if (trainers.data.length === 0) return false;
+  const wanted = new Set(trainers.data.map((row) => row.id).filter((id) => ids.has(id)));
+  const existing = new Set(current.data.map((row) => row.user_id));
+
+  const toAdd = [...wanted].filter((id) => !existing.has(id));
+  const toRemove = [...existing].filter((id) => !wanted.has(id));
+
+  if (toAdd.length > 0) {
+    const { error } = await client.from("course_trainers").upsert(
+      toAdd.map((user_id) => ({ course_id: courseId, user_id })),
+      { onConflict: "course_id,user_id", ignoreDuplicates: true },
+    );
+    if (error) return false;
+  }
+  if (toRemove.length > 0) {
+    const { error } = await client
+      .from("course_trainers")
+      .delete()
+      .eq("course_id", courseId)
+      .in("user_id", toRemove);
+    if (error) return false;
+  }
+  return true;
 }

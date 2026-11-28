@@ -31,6 +31,11 @@ const PEOPLE_TABLES = [
   { name: "material_progress", order: ["user_id", "material_id"] },
   // Every quiz handed in, each with a copy of what was asked and answered then.
   { name: "quiz_attempts", order: ["submitted_at", "id"] },
+  // Who teaches each course. With the people, not the content: each row points at an account.
+  { name: "course_trainers", order: ["course_id", "user_id"] },
+  // What learners asked the trainers of their courses, then every message, answers included.
+  { name: "conversations", order: ["created_at", "id"] },
+  { name: "conversation_messages", order: ["created_at", "id"] },
 ] as const;
 
 export type BackupTable =

@@ -82,6 +82,39 @@ describe("database structure", () => {
     });
   });
 
+  test("conversations are only written by the database's own functions", async () => {
+    const privileges = await sql()<{ grant: string }[]>`
+      select table_name || ':' || privilege_type as grant
+      from information_schema.role_table_grants
+      where table_schema = 'public'
+        and grantee = 'authenticated'
+        and table_name in ('conversations', 'conversation_messages', 'course_trainers')
+      order by 1
+    `;
+    // Read, and for trainers (by row level security) delete a whole conversation. Who teaches
+    // a course is added or removed, never changed.
+    expect(privileges.map((row) => row.grant)).toEqual([
+      "conversation_messages:SELECT",
+      "conversations:DELETE",
+      "conversations:SELECT",
+      "course_trainers:DELETE",
+      "course_trainers:INSERT",
+      "course_trainers:SELECT",
+    ]);
+
+    // No trigger writes them either: a backup's rows go back exactly as they were.
+    const triggers = await sql()<{ name: string }[]>`
+      select t.tgname as name
+      from pg_trigger t
+      join pg_class c on c.oid = t.tgrelid
+      join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'public'
+        and c.relname in ('conversations', 'conversation_messages', 'course_trainers')
+        and not t.tgisinternal
+    `;
+    expect(triggers.map((row) => row.name)).toEqual([]);
+  });
+
   test("signed-in users cannot write the role column, nor insert or delete profiles", async () => {
     const [row] = await sql()`
       select

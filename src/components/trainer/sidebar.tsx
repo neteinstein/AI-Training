@@ -4,6 +4,7 @@ import {
   Inbox,
   Layers,
   LayoutDashboard,
+  MessagesSquare,
   Signal,
   Users,
   type LucideIcon,
@@ -16,6 +17,7 @@ import { NavLink } from "@/components/layout/nav-link";
 import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { SignOutButton } from "@/features/auth/sign-out-button";
 import { Link } from "@/i18n/navigation";
+import { countConversationsToAnswer } from "@/lib/dal/conversation-queries";
 import { requireTrainer } from "@/lib/dal/session";
 import { routes } from "@/lib/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -34,20 +36,41 @@ export async function Sidebar() {
   const t = await getTranslations("Trainer.nav");
   const tMenu = await getTranslations("Nav");
   const supabase = await createSupabaseServerClient();
-  const { count } = await supabase
-    .from("info_requests")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "new");
+  // What is waiting: requests from the public form, and learners' messages that fall to this
+  // trainer (those of the courses they teach, and of courses nobody teaches yet).
+  const [{ count }, toAnswer] = await Promise.all([
+    supabase.from("info_requests").select("id", { count: "exact", head: true }).eq("status", "new"),
+    countConversationsToAnswer(supabase, user.id),
+  ]);
   const newRequests = count ?? 0;
-  const badgeLabel = newRequests > 0 ? t("newRequests", { count: newRequests }) : undefined;
 
-  const items: Array<{ href: string; label: string; icon: LucideIcon; badge?: number }> = [
+  const items: Array<{
+    href: string;
+    label: string;
+    icon: LucideIcon;
+    badge?: number;
+    /** What the number counts, for assistive technology. */
+    badgeLabel?: string;
+  }> = [
     { href: routes.trainer, label: t("dashboard"), icon: LayoutDashboard },
     { href: routes.trainerCourses, label: t("courses"), icon: BookOpen },
     { href: routes.trainerAreas, label: t("areas"), icon: Layers },
     { href: routes.trainerLevels, label: t("levels"), icon: Signal },
     { href: routes.trainerUsers, label: t("users"), icon: Users },
-    { href: routes.trainerRequests, label: t("requests"), icon: Inbox, badge: newRequests },
+    {
+      href: routes.trainerConversations,
+      label: t("conversations"),
+      icon: MessagesSquare,
+      badge: toAnswer,
+      badgeLabel: toAnswer > 0 ? t("toAnswer", { count: toAnswer }) : undefined,
+    },
+    {
+      href: routes.trainerRequests,
+      label: t("requests"),
+      icon: Inbox,
+      badge: newRequests,
+      badgeLabel: newRequests > 0 ? t("newRequests", { count: newRequests }) : undefined,
+    },
     { href: routes.trainerBackup, label: t("backup"), icon: DatabaseBackup },
   ];
 
@@ -74,7 +97,12 @@ export async function Sidebar() {
           <Logo size={30} className="[&>span]:text-xl" />
         </Link>
         <MobileMenu
-          items={items.map(({ href, label, badge }) => ({ href, label, badge, badgeLabel }))}
+          items={items.map(({ href, label, badge, badgeLabel }) => ({
+            href,
+            label,
+            badge,
+            badgeLabel,
+          }))}
           labels={{ open: tMenu("openMenu"), close: tMenu("closeMenu"), title: tMenu("menu") }}
           exactFirst
           footer={
@@ -122,7 +150,7 @@ export async function Sidebar() {
               <span className="flex-1">{item.label}</span>
               {item.badge ? (
                 <span
-                  aria-label={badgeLabel}
+                  aria-label={item.badgeLabel}
                   className="bg-highlight text-on-highlight flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[0.8125rem] font-semibold"
                 >
                   {item.badge}

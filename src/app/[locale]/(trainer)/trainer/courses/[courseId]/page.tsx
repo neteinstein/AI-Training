@@ -6,8 +6,11 @@ import { ActionButton } from "@/components/trainer/action-button";
 import { CourseFrame } from "@/components/trainer/course-frame";
 import { removeCourse } from "@/features/courses/actions";
 import { CourseForm } from "@/features/courses/course-form";
+import { CourseTrainersForm } from "@/features/courses/trainers-form";
 import { requireTrainer } from "@/lib/dal/session";
 import { getTrainerAreas, getTrainerCourse, getTrainerLevels } from "@/lib/dal/trainer";
+import { fetchTrainerOptions } from "@/lib/dal/trainer-queries";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type Props = PageProps<"/[locale]/trainer/courses/[courseId]">;
 
@@ -22,12 +25,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CourseDetailsPage({ params }: Props) {
   const { courseId } = await params;
   const locale = await getLocale();
-  await requireTrainer(locale);
+  const user = await requireTrainer(locale);
   const t = await getTranslations("Trainer");
-  const [course, areas, levels] = await Promise.all([
+  const [course, areas, levels, trainers] = await Promise.all([
     getTrainerCourse(courseId),
     getTrainerAreas(),
     getTrainerLevels(),
+    fetchTrainerOptions(await createSupabaseServerClient(), courseId),
   ]);
   if (!course) notFound();
   const name = course.title[locale];
@@ -39,6 +43,19 @@ export default async function CourseDetailsPage({ params }: Props) {
         areas={areas.map((area) => ({ id: area.id, name: area.name[locale] }))}
         levels={levels.map((level) => ({ id: level.id, name: level.name[locale] }))}
       />
+
+      <section
+        aria-labelledby="course-trainers"
+        className="border-border mt-6 flex flex-col gap-3 border-t pt-6"
+      >
+        <div className="flex flex-col gap-2">
+          <h2 id="course-trainers" className="font-heading text-xl leading-tight">
+            {t("courses.trainers")}
+          </h2>
+          <p className="text-muted-foreground max-w-[44em]">{t("courses.trainersHelp")}</p>
+        </div>
+        <CourseTrainersForm courseId={course.id} trainers={trainers} currentUserId={user.id} />
+      </section>
 
       <section
         aria-labelledby="delete-course"

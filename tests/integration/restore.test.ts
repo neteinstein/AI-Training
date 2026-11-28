@@ -19,6 +19,8 @@ import {
   type BackupArchive,
 } from "@/features/backup/restore";
 import { zipStream } from "@/features/backup/zip";
+import { answerConversation, sendCourseMessage } from "@/features/conversations/operations";
+import { setCourseTrainers } from "@/features/courses/operations";
 import { BACKUP_TABLES, collectBackup, type BackupData, type BackupRow } from "@/lib/dal/backup";
 import { saveQuiz } from "@/lib/dal/quiz-queries";
 import {
@@ -234,6 +236,24 @@ beforeAll(async () => {
   const opened = await learner.client.rpc("record_material_open", { target_material_id: own.id });
   if (opened.error || opened.data !== true) throw new Error("Recording progress failed");
 
+  // The trainer teaches the published course. The learner has asked them twice and been
+  // answered once since: a conversation that is both waiting for an answer and read.
+  const published = catalogue.courses.published;
+  if (!(await setCourseTrainers(trainer.client, published, [trainer.id]))) {
+    throw new Error("Choosing the course's trainer failed");
+  }
+  const asked = await sendCourseMessage(learner.client, published, "Há gravação da sessão?");
+  if (asked !== "sent") throw new Error(`Writing to the trainers failed: ${asked}`);
+  const { data: conversation } = await service
+    .from("conversations")
+    .select("id")
+    .eq("learner_id", learner.id)
+    .single();
+  const answer = await answerConversation(trainer.client, conversation!.id, "Não, só os slides.");
+  if (answer !== "sent") throw new Error(`Answering failed: ${answer}`);
+  const again = await sendCourseMessage(learner.client, published, "Obrigado.\nE as notas?");
+  if (again !== "sent") throw new Error(`Writing again failed: ${again}`);
+
   // A request a trainer has answered.
   const { error: requestError } = await service.from("info_requests").insert({
     name: "Maria Restauro",
@@ -390,6 +410,16 @@ describe("restoring a backup", () => {
       expect(before.tables[table]?.length, table).toBe(archive.manifest.tables[table]);
     }
     expect(after.tables.profiles!.every((row) => row.email_confirmed_at === null)).toBe(true);
+    // The conversation came back with its three messages, still waiting for an answer.
+    const conversation = after.tables.conversations!.find((row) => row.learner_id === learner.id);
+    expect(conversation?.unanswered_since).not.toBeNull();
+    expect(
+      after.tables.conversation_messages!.filter((row) => row.conversation_id === conversation!.id)
+        .length,
+    ).toBe(3);
+    expect(after.tables.course_trainers).toContainEqual(
+      expect.objectContaining({ course_id: catalogue.courses.published, user_id: trainer.id }),
+    );
 
     // The levels a new database starts with gave way to the backup's, which have their ids.
     expect(report.replacedLevels.sort()).toEqual(["advanced", "introductory"]);

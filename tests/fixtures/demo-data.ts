@@ -96,3 +96,67 @@ export const demoUsers = {
     courseIds: [demoCourses.clinical.id] as string[],
   },
 } as const;
+
+/**
+ * Who teaches what: the demo trainer has four of the six courses. Nobody teaches the other
+ * two yet, so what their learners write falls to every trainer.
+ */
+export const demoTeaching: string[] = [
+  demoCourses.classroom.id,
+  demoCourses.assessment.id,
+  demoCourses.clinical.id,
+  demoCourses.unlisted.id,
+];
+
+/**
+ * Two conversations, each as a list of messages from oldest to newest. `daysAgo` is when a
+ * message was written, counted back from the moment the demo data is created.
+ */
+export const demoConversations = [
+  {
+    // Ana has asked again since the trainer answered: it is waiting for an answer.
+    id: "c0100000-0000-4000-8000-000000000001",
+    courseId: demoCourses.classroom.id,
+    learnerId: demoUsers.ana.id,
+    messages: [
+      {
+        id: "c0200000-0000-4000-8000-000000000001",
+        fromTrainer: false,
+        daysAgo: 3,
+        body: "Boa tarde! No guia de prompts, o exemplo do plano de aula serve também para o 1.º ciclo?",
+      },
+      {
+        id: "c0200000-0000-4000-8000-000000000002",
+        fromTrainer: true,
+        daysAgo: 2,
+        body: "Olá, Ana. Serve: basta indicar no pedido o ano de escolaridade e a duração da aula.\n\nNa próxima sessão vemos um exemplo para o 3.º ano.",
+      },
+      {
+        id: "c0200000-0000-4000-8000-000000000003",
+        fromTrainer: false,
+        daysAgo: 1,
+        body: "Obrigada! E posso usar os diapositivos da sessão 1 com os meus colegas da escola?",
+      },
+    ],
+  },
+  {
+    // The trainer has answered John, who has not opened the conversation since.
+    id: "c0100000-0000-4000-8000-000000000002",
+    courseId: demoCourses.clinical.id,
+    learnerId: demoUsers.john.id,
+    messages: [
+      {
+        id: "c0200000-0000-4000-8000-000000000004",
+        fromTrainer: false,
+        daysAgo: 2,
+        body: "Hello, is there a recording of the first session? I missed the last half hour.",
+      },
+      {
+        id: "c0200000-0000-4000-8000-000000000005",
+        fromTrainer: true,
+        daysAgo: 1,
+        body: "Hi John. There is no recording, but the slides cover everything we did. I will add my notes to the first module this week.",
+      },
+    ],
+  },
+] as const;

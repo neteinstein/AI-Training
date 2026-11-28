@@ -98,6 +98,14 @@ readings and pages. Everything for the course is on one screen.
 </tr>
 </table>
 
+### Questions, answered when there is time
+
+<img src="docs/screenshots/messages.png" alt="A learner's conversation with the trainer of a course, and the same conversation in the back-office" width="100%">
+
+Each course names its trainers, and its learners can write to them from the course. It reads
+like a chat, but nobody has to be online: the question waits for a trainer, and the answer
+waits for the learner, each marked where the other will see it.
+
 ### A back-office trainers can use without a manual
 
 <table>
@@ -109,8 +117,8 @@ readings and pages. Everything for the course is on one screen.
 <td valign="top">
 
 **A dashboard that answers "what needs me?"** Published, draft and unlisted courses, active
-learners, pending invitations and new requests, the latest of each listed below, and shortcuts to
-invite someone or start a course.
+learners, pending invitations and new requests; below them, the learners' messages still to
+answer and the latest requests and invitations, and shortcuts to invite someone or start a course.
 
 </td>
 <td valign="top">
@@ -203,6 +211,15 @@ and can open one person's page to see what they opened and when. A material coun
 page, its download or its link has been opened, and a quiz once it has been handed in; a
 trainer looking around is never counted.
 
+### Trainers of a course, and a way to ask them
+
+Each course says who teaches it: whoever creates a course does, until its trainers are chosen
+on its page. Learners see those names on the course, with a place to **write to them**. It
+looks like a chat and works like a letter box: the learner asks, a trainer answers when they
+next come by, and nobody has to be there at the same time. A learner finds a new answer marked
+on their course; a trainer finds what is waiting in **Messages**, with a count in the menu.
+Trainers share each conversation, so any of them can answer, and the learner sees who did.
+
 ### Quizzes for practice
 
 A trainer writes questions in Portuguese, English or both: two or more answers each, one or
@@ -216,8 +233,8 @@ in.
 
 From the back-office, a trainer downloads the whole platform as a ZIP file: the catalogue with
 its editions, every module and material, the quizzes' questions, the uploaded files and, when
-they choose, the people, their enrolments, progress and quiz results, and the requests. A README
-inside says what is where.
+they choose, the people, their enrolments, progress and quiz results, the messages they
+exchanged with trainers, and the requests. A README inside says what is where.
 
 ## 🔐 Built to be trusted
 

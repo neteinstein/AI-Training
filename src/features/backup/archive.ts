@@ -174,8 +174,11 @@ data/     Uma lista JSON por tabela da base de dados, com todas as colunas, tal 
           as respostas possíveis, e quais estão certas, com as explicações.
           profiles, enrollments, info_requests, material_progress, quiz_attempts: as
           pessoas, as inscrições, os pedidos de informação, o que cada pessoa já abriu e
-          os questionários que entregou, quando foram incluídos. São dados pessoais:
-          guarde a cópia num lugar seguro e apague-a quando já não for precisa.
+          os questionários que entregou, quando foram incluídos.
+          course_trainers, conversations, conversation_messages: os formadores de cada
+          curso, e as mensagens trocadas entre formandos e formadores, também só quando
+          as pessoas foram incluídas. São dados pessoais: guarde a cópia num lugar seguro
+          e apague-a quando já não for precisa.
 files/    Os ficheiros carregados, numa pasta por curso, com o nome original. Em
           manifest.json, "files" diz a que material pertence cada um (storagePath é o
           materials.storage_path), e "missingFiles" os que faltavam no armazenamento.
@@ -199,8 +202,11 @@ data/     One JSON list per database table, with every column, exactly as stored
           their possible answers, and which of them are right, with the explanations.
           profiles, enrollments, info_requests, material_progress, quiz_attempts: people,
           enrolments, information requests, what each person has opened and the quizzes
-          they handed in, when they were included. This is personal data: keep the backup
-          somewhere safe and delete it once it is no longer needed.
+          they handed in, when they were included.
+          course_trainers, conversations, conversation_messages: the trainers of each
+          course, and the messages between learners and trainers, also only when people
+          were included. This is personal data: keep the backup somewhere safe and delete
+          it once it is no longer needed.
 files/    The uploaded files, one folder per course, under their original names. In
           manifest.json, "files" says which material each one belongs to (storagePath is
           materials.storage_path), and "missingFiles" lists any that storage did not have.

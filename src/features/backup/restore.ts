@@ -48,6 +48,9 @@ export const PRIMARY_KEYS: Record<BackupTable, readonly string[]> = {
   info_requests: ["id"],
   material_progress: ["user_id", "material_id"],
   quiz_attempts: ["id"],
+  course_trainers: ["course_id", "user_id"],
+  conversations: ["id"],
+  conversation_messages: ["id"],
 };
 
 export type Reference = {
@@ -119,6 +122,22 @@ export const REFERENCES: readonly Reference[] = [
   { table: "quiz_attempts", columns: ["user_id"], parent: "profiles", onDelete: "cascade" },
   { table: "quiz_attempts", columns: ["material_id"], parent: "materials", onDelete: "cascade" },
   { table: "quiz_attempts", columns: ["edition_id"], parent: "editions", onDelete: "set null" },
+  { table: "course_trainers", columns: ["course_id"], parent: "courses", onDelete: "cascade" },
+  { table: "course_trainers", columns: ["user_id"], parent: "profiles", onDelete: "cascade" },
+  { table: "conversations", columns: ["course_id"], parent: "courses", onDelete: "cascade" },
+  { table: "conversations", columns: ["learner_id"], parent: "profiles", onDelete: "cascade" },
+  {
+    table: "conversation_messages",
+    columns: ["conversation_id"],
+    parent: "conversations",
+    onDelete: "cascade",
+  },
+  {
+    table: "conversation_messages",
+    columns: ["author_id"],
+    parent: "profiles",
+    onDelete: "set null",
+  },
 ];
 
 export type Tables = Partial<Record<BackupTable, BackupRow[]>>;
@@ -384,7 +403,15 @@ export type RestoreOptions = {
 };
 
 /** The tables that point at people: written once the accounts exist. */
-const PEOPLE_ROWS = ["enrollments", "info_requests", "material_progress", "quiz_attempts"] as const;
+const PEOPLE_ROWS = [
+  "enrollments",
+  "info_requests",
+  "material_progress",
+  "quiz_attempts",
+  "course_trainers",
+  "conversations",
+  "conversation_messages",
+] as const;
 
 /** Rows per request, and roughly the most text per request, so no request grows too large. */
 const BATCH_ROWS = 500;

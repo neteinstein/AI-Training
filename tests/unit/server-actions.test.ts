@@ -49,6 +49,7 @@ describe("server actions", () => {
     "features/requests/actions.ts": "public", // the information-request form
     "features/account/actions.ts": "signed-in", // a person's own details
     "features/quizzes/actions.ts": "signed-in", // handing in a quiz; the database decides whose
+    "features/conversations/actions.ts": "signed-in", // a learner's message; the database decides whose course
     "features/catalog/actions.ts": "trainer",
     "features/courses/actions.ts": "trainer",
     "features/materials/actions.ts": "trainer",
@@ -56,6 +57,7 @@ describe("server actions", () => {
     "features/enrollments/actions.ts": "trainer",
     "features/users/actions.ts": "trainer",
     "features/requests/trainer-actions.ts": "trainer",
+    "features/conversations/trainer-actions.ts": "trainer",
   };
 
   test("every file of actions has a declared audience", () => {

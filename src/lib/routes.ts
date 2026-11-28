@@ -36,6 +36,8 @@ export const routes = {
     `/learn/courses/${slug}${editionQuery(previewEdition)}`,
   learnMaterial: (slug: string, materialId: string, previewEdition?: string | null) =>
     `/learn/courses/${slug}/materials/${materialId}${editionQuery(previewEdition)}`,
+  /** A learner's conversation with the trainers of one of their courses. */
+  learnConversation: (slug: string) => `/learn/courses/${slug}/messages`,
   account: "/learn/account",
   /** Not under a language: it answers with a file, not a page. `?inline=1` opens it in the browser. */
   materialDownload: (materialId: string) => `/api/materials/${materialId}/download`,
@@ -86,6 +88,20 @@ export const routes = {
   trainerRequests: "/trainer/requests",
   trainerRequestsIn: (status: string) => `/trainer/requests?status=${status}`,
   trainerInviteTo: (courseId: string) => `/trainer/users/invite?course=${courseId}`,
+  /** What learners wrote to their trainers: by default, what the trainer asking has to answer. */
+  trainerConversations: "/trainer/messages",
+  /**
+   * The same list, narrowed or widened. `show: "all"` also lists what needs no answer.
+   * `course` is "all" for every course, or the id of one; without it, the trainer's own.
+   */
+  trainerConversationsWith: (filter: { show?: string | null; course?: string | null }) => {
+    const query = [
+      filter.show ? `show=${filter.show}` : "",
+      filter.course ? `course=${filter.course}` : "",
+    ].filter(Boolean);
+    return `/trainer/messages${query.length > 0 ? `?${query.join("&")}` : ""}`;
+  },
+  trainerConversation: (conversationId: string) => `/trainer/messages/${conversationId}`,
   trainerBackup: "/trainer/backup",
   /** Not under a language: the backup page's form posts here and gets a ZIP file back. */
   backupDownload: "/api/trainer/backup",

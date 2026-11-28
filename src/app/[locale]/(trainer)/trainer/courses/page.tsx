@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { AreaChip } from "@/components/catalog/area-chip";
 import { LevelGlyph } from "@/components/catalog/level-glyph";
 import { Chip, courseStatusTone } from "@/components/trainer/chips";
@@ -23,6 +23,7 @@ export default async function CoursesPage() {
   const locale = await getLocale();
   await requireTrainer(locale);
   const t = await getTranslations("Trainer");
+  const format = await getFormatter();
   const courses = await fetchTrainerCourses(await createSupabaseServerClient(), locale);
 
   const newCourse = (label: string) => (
@@ -59,6 +60,11 @@ export default async function CoursesPage() {
                     {course.level.name}
                   </span>
                   <span>{t("courses.learnerCount", { count: course.learnerCount })}</span>
+                  <span className="break-words">
+                    {course.trainers.length > 0
+                      ? t("courses.taughtBy", { names: format.list(course.trainers) })
+                      : t("courses.noTrainer")}
+                  </span>
                 </span>
               </span>
               <span className="flex flex-wrap items-center gap-2">

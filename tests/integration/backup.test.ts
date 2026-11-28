@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { answerConversation, sendCourseMessage } from "@/features/conversations/operations";
+import { setCourseTrainers } from "@/features/courses/operations";
 import { collectBackup, fetchBackupSummary, type BackupRow } from "@/lib/dal/backup";
 import { saveQuiz } from "@/lib/dal/quiz-queries";
 import {
@@ -122,6 +124,23 @@ beforeAll(async () => {
     .from("edition_hidden_materials")
     .insert({ edition_id: secondEdition, material_id: catalogue.materials.visible });
   if (hideError) throw new Error(`Hiding a material failed: ${hideError.message}`);
+
+  // The trainer teaches the published course. Each learner has written to them about it, and
+  // the first has had an answer.
+  if (!(await setCourseTrainers(trainer.client, catalogue.courses.published, [trainer.id]))) {
+    throw new Error("Choosing the course's trainer failed");
+  }
+  for (const user of [learner, otherLearner]) {
+    const sent = await sendCourseMessage(user.client, catalogue.courses.published, "Uma pergunta");
+    if (sent !== "sent") throw new Error(`Writing to the trainers failed: ${sent}`);
+  }
+  const { data: asked } = await admin()
+    .from("conversations")
+    .select("id")
+    .eq("learner_id", learner.id)
+    .single();
+  const answered = await answerConversation(trainer.client, asked!.id, "Uma resposta");
+  if (answered !== "sent") throw new Error(`Answering failed: ${answered}`);
 });
 
 afterAll(async () => {
@@ -211,9 +230,30 @@ describe("backup data", () => {
         "info_requests",
         "material_progress",
         "quiz_attempts",
+        "course_trainers",
+        "conversations",
+        "conversation_messages",
       ]),
     );
     expect(ids(backup.tables.profiles)).toEqual(expect.arrayContaining([trainer.id, learner.id]));
+    // Who teaches the course, and what its learners and its trainer wrote to each other.
+    expect(backup.tables.course_trainers).toContainEqual(
+      expect.objectContaining({ course_id: catalogue.courses.published, user_id: trainer.id }),
+    );
+    const conversations = backup.tables.conversations!.filter(
+      (row) => row.course_id === catalogue.courses.published,
+    );
+    expect(conversations.map((row) => row.learner_id).sort()).toEqual(
+      [learner.id, otherLearner.id].sort(),
+    );
+    const written = backup.tables.conversation_messages!.filter((row) =>
+      ids(conversations).includes(row.conversation_id as string),
+    );
+    expect(written.map((row) => row.body).sort()).toEqual([
+      "Uma pergunta",
+      "Uma pergunta",
+      "Uma resposta",
+    ]);
     // An enrolment says which edition it is in, and that edition is in the backup too.
     expect(backup.tables.enrollments).toContainEqual(
       expect.objectContaining({
@@ -264,6 +304,16 @@ describe("backup data", () => {
     );
     expect(backup.tables.quiz_question_keys).toEqual([]);
     expect(backup.tables.info_requests).toEqual([]);
+    // Their own conversation, with the answer they were given, and nobody else's. Not the
+    // list of who teaches what: a learner is told their trainers' names another way.
+    expect(backup.tables.conversations).toEqual([
+      expect.objectContaining({ learner_id: learner.id }),
+    ]);
+    expect(backup.tables.conversation_messages!.map((row) => row.body)).toEqual([
+      "Uma pergunta",
+      "Uma resposta",
+    ]);
+    expect(backup.tables.course_trainers).toEqual([]);
     expect(backup.files.map((entry) => entry.materialId)).not.toContain(fileMaterialId);
   });
 

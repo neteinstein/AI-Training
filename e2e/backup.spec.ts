@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { expect, test, type Download, type Page } from "@playwright/test";
 import { strFromU8, unzipSync } from "fflate";
 import {
+  demoConversations,
   demoCourses,
   demoEditions,
   demoMaterials,
@@ -46,6 +47,7 @@ test.describe("backup", () => {
     expect(names).not.toContain("data/profiles.json");
     expect(names).not.toContain("data/material_progress.json");
     expect(names).not.toContain("data/quiz_attempts.json");
+    expect(names).not.toContain("data/conversation_messages.json");
 
     const courses = json<Row[]>(files["data/courses.json"]);
     expect(courses.map((course) => course.slug)).toContain(demoCourses.classroom.slug);
@@ -103,7 +105,23 @@ test.describe("backup", () => {
         "data/info_requests.json",
         "data/material_progress.json",
         "data/quiz_attempts.json",
+        "data/course_trainers.json",
+        "data/conversations.json",
+        "data/conversation_messages.json",
       ]),
+    );
+    // Who teaches the demo course, and what Ana and its trainer wrote to each other.
+    expect(json<Row[]>(second["data/course_trainers.json"])).toContainEqual(
+      expect.objectContaining({
+        course_id: demoCourses.classroom.id,
+        user_id: demoUsers.trainer.id,
+      }),
+    );
+    const written = json<Row[]>(second["data/conversation_messages.json"]).filter(
+      (message) => message.conversation_id === demoConversations[0].id,
+    );
+    expect(written.map((message) => message.body)).toEqual(
+      demoConversations[0].messages.map((message) => message.body),
     );
     expect(Array.isArray(json<Row[]>(second["data/material_progress.json"]))).toBe(true);
     // Every enrolment names its edition, and that edition is in the same archive.

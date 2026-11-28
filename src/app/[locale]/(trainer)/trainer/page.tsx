@@ -4,6 +4,7 @@ import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { PageFrame } from "@/components/trainer/page-frame";
 import { buttonClass } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { fetchConversations, waitingLongestFirst } from "@/lib/dal/conversation-queries";
 import { requireTrainer } from "@/lib/dal/session";
 import { fetchDashboard } from "@/lib/dal/trainer-queries";
 import { routes } from "@/lib/routes";
@@ -26,8 +27,16 @@ export default async function TrainerDashboardPage() {
   const user = await requireTrainer(locale);
   const t = await getTranslations("Trainer");
   const format = await getFormatter();
-  const dashboard = await fetchDashboard(await createSupabaseServerClient(), locale);
+  const supabase = await createSupabaseServerClient();
+  const [dashboard, conversations] = await Promise.all([
+    fetchDashboard(supabase, locale),
+    fetchConversations(supabase, user.id, locale),
+  ]);
   const day = (iso: string) => format.dateTime(new Date(iso), { dateStyle: "medium" });
+  // What learners wrote that falls to this trainer and waits for an answer, longest wait first.
+  const toAnswer = waitingLongestFirst(
+    conversations.filter((conversation) => conversation.isMine),
+  ).slice(0, 5);
 
   const figures = [
     {
@@ -97,6 +106,44 @@ export default async function TrainerDashboardPage() {
       </ul>
 
       <div className="grid gap-4 xl:grid-cols-2">
+        <section aria-labelledby="to-answer" className={`${panel} xl:col-span-2`}>
+          <div className={panelHead}>
+            <h2 id="to-answer" className={panelTitle}>
+              {t("dashboard.toAnswer")}
+            </h2>
+            <Link href={routes.trainerConversations} className={panelLink}>
+              {t("dashboard.seeAllMessages")}
+            </Link>
+          </div>
+          {toAnswer.length === 0 ? (
+            <p className="text-muted-foreground px-5 py-4">{t("dashboard.noMessages")}</p>
+          ) : (
+            <ul className="flex list-none flex-col">
+              {toAnswer.map((conversation) => (
+                <li
+                  key={conversation.id}
+                  className="border-muted flex flex-wrap items-baseline justify-between gap-x-4 px-5 py-3 not-first:border-t"
+                >
+                  <span className="flex min-w-0 flex-col">
+                    <Link
+                      href={routes.trainerConversation(conversation.id)}
+                      className="text-foreground self-start font-semibold break-words no-underline hover:underline"
+                    >
+                      {conversation.learner.name}
+                    </Link>
+                    <span className="text-muted-foreground text-[0.8125rem] break-words">
+                      {conversation.course.title}
+                    </span>
+                  </span>
+                  <span className="text-muted-foreground text-[0.8125rem] whitespace-nowrap">
+                    {day(conversation.unansweredSince ?? conversation.lastMessageAt)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         <section aria-labelledby="latest-requests" className={panel}>
           <div className={panelHead}>
             <h2 id="latest-requests" className={panelTitle}>
