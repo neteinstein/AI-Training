@@ -471,6 +471,23 @@ token_refresh = 300
 sign_in_sign_ups = 150
 token_verifications = 150
 
+# Locally a reset email can be asked for every second, for the tests. Once a minute here.
+[remotes.production.auth.email]
+max_frequency = "1m"
+
+# SMS is off; keep the hosted default.
+[remotes.production.auth.sms]
+enable_confirmations = true
+
+# The hosted pooler is sized by Supabase for the project's compute; keep its values.
+[remotes.production.db.pooler]
+default_pool_size = 15
+max_client_conn = 200
+
+# Vector buckets are not used.
+[remotes.production.storage.vector]
+enabled = false
+
 # Uncomment once an SMTP provider is set up for pedrovicente.pt.
 # [remotes.production.auth.email.smtp]
 # enabled = true
